@@ -40,6 +40,7 @@ test('a click outside closes it', async () => {
   await user.click(button)
   await user.click(screen.getByText('outside'))
   expect(button).toHaveAttribute('aria-expanded', 'false')
+  expect(button).not.toHaveFocus()
 })
 
 test('shows the app version', async () => {

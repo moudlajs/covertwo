@@ -2,8 +2,8 @@ import { useEffect, useId, useRef, useState } from 'react'
 
 /**
  * Hamburger button with a small dropdown panel. A home for future settings;
- * for now it shows the version and a link to the repo. Escape and a click
- * outside close it, and focus returns to the button.
+ * for now it shows the version and a link to the repo. Escape closes it and
+ * returns focus to the button; a click outside just closes it.
  */
 export function Menu() {
   const [open, setOpen] = useState(false)
@@ -13,15 +13,15 @@ export function Menu() {
 
   useEffect(() => {
     if (!open) return
-    const close = () => {
+    // Escape returns focus to the button; an outside click already put focus
+    // where the user wanted it, so it only closes.
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
       setOpen(false)
       button.current?.focus()
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
-    }
     const onPointer = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) close()
+      if (!root.current?.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('keydown', onKey)
     document.addEventListener('pointerdown', onPointer)
