@@ -52,7 +52,27 @@ Compact, table-aligned rows that are not an HTML table. Header: title, EU/US
 toggle, hamburger menu. A reserved NFL/NCAA segmented toggle slot, hidden
 until the College Football milestone. No NFL shield logo.
 
-The chosen variant is recorded here once the design exploration issue merges.
+**Chosen: variant D** (#14). C's "ticker" graphics with B's centered layout:
+
+- Background: `#0b1020` with a warm amber glow top-left, a faint sky glow
+  bottom-right, and two diagonal bands of hash marks partly behind the panel.
+- Panel: solid `slate-900`, `rounded-xl`, layered drop shadow plus a 1px
+  slate ring, and a 2px amber→rose gradient top edge. Max width 560px.
+- Header: darker strip, monospace `covertwo_` title with an amber underscore,
+  amber segmented toggles (EU/US now, NFL/NCAA later in the same row), and
+  a hamburger button.
+- Day headings: monospace, uppercase, amber, with a muted "N games" count.
+- Rows: compact 3-column grid, away | centre | home. The centre holds the
+  score (monospace, tabular) or kickoff time, with a status line under it:
+  "Final", network for scheduled games, or a pulsing rose dot + "Q3 · 8:42 ·
+  2nd & 7" when live. The losing team is dimmed on finals. Live rows get a
+  lighter background; red zone adds a rose left edge and an "RZ" tag.
+- Footer: monospace source and "updated Xs ago".
+
+The reference render lives in `src/design/` (open
+`/covertwo/design/index.html`, `?league` shows the league toggle) with
+screenshots in `design/screenshots/`. Delete both once #21 and #22 have
+implemented it.
 
 ## Milestones
 
