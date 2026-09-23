@@ -26,7 +26,7 @@ function summary(game: Game, mode: TimeMode): string {
   const { away, home } = game
   if (game.state === 'pre')
     return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
-  return `${away.name} ${away.score}, ${home.name} ${home.score}, ${status(game)}`
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -51,9 +51,9 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
           </time>
         ) : (
           <span className="font-mono text-[15px] font-bold tabular-nums">
-            <span className={dim(game.away) ? 'text-slate-500' : ''}>{game.away.score}</span>
+            <span className={dim(game.away) ? 'text-slate-500' : ''}>{game.away.score ?? '-'}</span>
             <span className="px-1 text-slate-600">-</span>
-            <span className={dim(game.home) ? 'text-slate-500' : ''}>{game.home.score}</span>
+            <span className={dim(game.home) ? 'text-slate-500' : ''}>{game.home.score ?? '-'}</span>
           </span>
         )}
         <span

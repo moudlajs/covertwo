@@ -12,8 +12,8 @@ test('renders one row per fixture game', async ({ page }) => {
 
 test('shows final, live and scheduled states', async ({ page }) => {
   const games = page.getByRole('list', { name: 'Games' })
-  await expect(games.getByText('Final/OT')).toBeVisible()
-  await expect(games.getByText('Q3 · 8:42')).toBeVisible()
-  await expect(games.getByText('Halftime')).toBeVisible()
-  await expect(games.getByText('22:25')).toBeVisible()
+  await expect(games.getByText('Final/OT', { exact: true })).toBeVisible()
+  await expect(games.getByText('Q3 · 8:42', { exact: true })).toBeVisible()
+  await expect(games.getByText('Halftime', { exact: true })).toBeVisible()
+  await expect(games.getByText('22:25', { exact: true })).toBeVisible()
 })
