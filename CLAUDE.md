@@ -9,9 +9,6 @@ to you.
 `Closes #N`, mark ready only when CI is green. Never push to `main`. Don't
 start a milestone until the owner says so.
 
-Never write the literal `@claude` in a GitHub comment, PR, or issue body: it
-triggers a Claude run on the owner's subscription.
-
 ## What this is
 
 covertwo: a small, modest NFL live scoreboard. One compact row per game,

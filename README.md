@@ -65,10 +65,10 @@ flowchart TB
     title[pr-title]
     claude[claude-review<br/>non-draft only]
   end
-  subgraph Main["Push to main"]
+  subgraph Main["Push to main (both run in parallel)"]
     direction LR
-    ci2[CI jobs] --> rp[release-please]
-    rp -- release created --> deploy[deploy.yml<br/>build → Pages]
+    ci2[CI jobs]
+    rp[release-please] -- release created --> deploy[deploy.yml<br/>build → Pages]
   end
   PR -- squash merge --> Main
 ```
