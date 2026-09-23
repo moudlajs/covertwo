@@ -70,6 +70,13 @@ test('keeps previous games and logs context when a refetch fails', async () => {
   )
 })
 
+test('retry() fetches again', async () => {
+  const { result } = renderHook(() => useScoreboard())
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  act(() => result.current.retry())
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+})
+
 describe('live polling', () => {
   // Fake clock that still advances with real time, so waitFor keeps polling;
   // the 30s interval only fires when a test jumps the clock.
@@ -120,6 +127,19 @@ describe('live polling', () => {
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     await tick()
     expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  test('keeps retrying every 30s after a failure, even with nothing live', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    fetchMock.mockImplementation(() => Promise.resolve(new Response('', { status: 500 })))
+    const { result } = renderHook(() => useScoreboard())
+    await waitFor(() => expect(result.current.status).toBe('error'))
+    fetchMock.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(allFinal))))
+    await tick()
+    await waitFor(() => expect(result.current.status).toBe('ready'))
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    await tick()
+    expect(fetchMock).toHaveBeenCalledTimes(2) // recovered, nothing live: stops
   })
 
   test('clears the interval on unmount', async () => {

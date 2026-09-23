@@ -1,3 +1,5 @@
+import { LoadError } from './components/LoadError'
+import { Retrying } from './components/Retrying'
 import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
@@ -5,12 +7,18 @@ import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status } = useScoreboard()
+  const { games, status, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
+  const empty = games.length === 0
 
   return (
     <Shell
-      footer={<span>ESPN</span>}
+      footer={
+        <>
+          <span>ESPN</span>
+          <Retrying active={status === 'error' && !empty} />
+        </>
+      }
       controls={
         <Segmented
           label="Time zone"
@@ -24,7 +32,9 @@ export default function App() {
         />
       }
     >
-      {status === 'loading' && games.length === 0 ? (
+      {status === 'error' && empty ? (
+        <LoadError onRetry={retry} />
+      ) : status === 'loading' && empty ? (
         <p className="px-3 py-6 text-center font-mono text-xs text-slate-500">Loading…</p>
       ) : (
         <ScoreList games={games} mode={mode} />

@@ -16,11 +16,11 @@ export type Scoreboard = {
 
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
- * focus or the tab becomes visible. While any game is live it also polls
- * every 30s (skipped while the tab is hidden). A newer request aborts an
- * older one.
+ * focus or the tab becomes visible. While any game is live, or the last load
+ * failed, it also refetches every 30s (skipped while the tab is hidden). A
+ * failed load keeps the last good games. A newer request aborts an older one.
  */
-export function useScoreboard(url = SCOREBOARD_URL): Scoreboard {
+export function useScoreboard(url = SCOREBOARD_URL): Scoreboard & { retry: () => void } {
   const [board, setBoard] = useState<Scoreboard>({
     games: [],
     status: 'loading',
@@ -65,13 +65,15 @@ export function useScoreboard(url = SCOREBOARD_URL): Scoreboard {
   }, [load])
 
   const live = board.games.some((g) => g.state === 'in')
+  const failed = board.status === 'error'
   useEffect(() => {
-    if (!live) return
+    if (!live && !failed) return
     const id = setInterval(() => {
       if (document.visibilityState === 'visible') void load()
     }, POLL_MS)
     return () => clearInterval(id)
-  }, [live, load])
+  }, [live, failed, load])
 
-  return board
+  const retry = useCallback(() => void load(), [load])
+  return { ...board, retry }
 }

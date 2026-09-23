@@ -11,6 +11,10 @@ const PIXEL = Buffer.from(
  * Route every ESPN request to local fixtures. CI must never hit the real API;
  * any other ESPN URL fails the request loudly instead of reaching the network.
  */
+/** The scoreboard API URL, for tests that override its response. */
+export const SCOREBOARD_API =
+  /site\.api\.espn\.com\/apis\/site\/v2\/sports\/football\/nfl\/scoreboard/
+
 export async function mockEspn(page: Page) {
   // Playwright tries the most recently registered route first, so the
   // catch-all abort goes first and the specific routes after it.
@@ -18,8 +22,5 @@ export async function mockEspn(page: Page) {
   await page.route(/espncdn\.com/, (route) =>
     route.fulfill({ contentType: 'image/png', body: PIXEL }),
   )
-  await page.route(
-    /site\.api\.espn\.com\/apis\/site\/v2\/sports\/football\/nfl\/scoreboard/,
-    (route) => route.fulfill({ json: scoreboard }),
-  )
+  await page.route(SCOREBOARD_API, (route) => route.fulfill({ json: scoreboard }))
 }
