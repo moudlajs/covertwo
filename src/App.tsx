@@ -4,6 +4,7 @@ import { Retrying } from './components/Retrying'
 import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
+import { Skeleton } from './components/Skeleton'
 import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
@@ -39,7 +40,11 @@ export default function App() {
       {status === 'error' && empty ? (
         <LoadError onRetry={retry} />
       ) : status === 'loading' && empty ? (
-        <p className="px-3 py-6 text-center font-mono text-xs text-slate-500">Loading…</p>
+        <Skeleton />
+      ) : empty ? (
+        <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
+          No games scheduled.
+        </p>
       ) : (
         <ScoreList games={games} mode={mode} />
       )}
