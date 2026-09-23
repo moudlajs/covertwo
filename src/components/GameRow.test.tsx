@@ -30,7 +30,9 @@ describe('GameRow', () => {
 
   test('live: score and quarter clock', () => {
     renderRow('JAX', 'DEN')
-    expect(screen.getByRole('listitem')).toHaveTextContent(/17.*to 10/)
+    expect(screen.getByText('Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42')).toHaveClass(
+      'sr-only',
+    )
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
   })
 
@@ -67,10 +69,16 @@ describe('GameRow', () => {
     expect(screen.getByText('Final/OT')).toBeInTheDocument()
   })
 
-  test('team names are available to screen readers, logos are decorative', () => {
+  test('screen readers hear both teams, then the status', () => {
     const { container } = renderRow('DET', 'BUF')
-    expect(screen.getByText('Detroit Lions')).toHaveClass('sr-only')
-    expect(screen.getByText('Buffalo Bills')).toHaveClass('sr-only')
+    expect(screen.getByText('Detroit Lions 31, Buffalo Bills 41, Final')).toHaveClass('sr-only')
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '')
+  })
+
+  test('scheduled summary names both teams and the kickoff', () => {
+    renderRow('MIA', 'SF')
+    expect(screen.getByText('Miami Dolphins at San Francisco 49ers, 22:25, FOX')).toHaveClass(
+      'sr-only',
+    )
   })
 })

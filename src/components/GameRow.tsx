@@ -12,15 +12,21 @@ function status(game: Game): string {
 function Side({ team, dim, align }: { team: Team; dim: boolean; align: 'start' | 'end' }) {
   return (
     <div
+      aria-hidden="true"
       className={`flex min-w-0 items-center gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
     >
       <img src={team.logo} alt="" width={20} height={20} className="size-5 shrink-0" />
-      <span aria-hidden="true" className="truncate text-[13px] font-bold">
-        {team.abbr}
-      </span>
-      <span className="sr-only">{team.name}</span>
+      <span className="truncate text-[13px] font-bold">{team.abbr}</span>
     </div>
   )
+}
+
+/** What a screen reader hears, in reading order: both teams, then the status. */
+function summary(game: Game, mode: TimeMode): string {
+  const { away, home } = game
+  if (game.state === 'pre')
+    return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
+  return `${away.name} ${away.score}, ${home.name} ${home.score}, ${status(game)}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -33,8 +39,9 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
     <li
       className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''}`}
     >
+      <span className="sr-only">{summary(game, mode)}</span>
       <Side team={game.away} dim={dim(game.away)} align="start" />
-      <div className="flex min-w-24 flex-col items-center leading-none">
+      <div aria-hidden="true" className="flex min-w-24 flex-col items-center leading-none">
         {game.state === 'pre' ? (
           <time
             dateTime={game.startsAt}
@@ -45,10 +52,7 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
         ) : (
           <span className="font-mono text-[15px] font-bold tabular-nums">
             <span className={dim(game.away) ? 'text-slate-500' : ''}>{game.away.score}</span>
-            <span aria-hidden="true" className="px-1 text-slate-600">
-              -
-            </span>
-            <span className="sr-only"> to </span>
+            <span className="px-1 text-slate-600">-</span>
             <span className={dim(game.home) ? 'text-slate-500' : ''}>{game.home.score}</span>
           </span>
         )}
