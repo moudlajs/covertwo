@@ -36,8 +36,9 @@ ESPN unofficial API, no key:
 - CORS: responds with `access-control-allow-origin: *`.
 - Map the response to a clean internal type at the edge; keep all times UTC
   and only format them in the UI (Europe/Prague 24h or America/New_York 12h).
-- Poll every 30s only while a game is live; otherwise load once and refetch
-  on window focus.
+- Poll every 30s only while a game is live, or while retrying after a failed
+  load (until the next success); otherwise load once and refetch on window
+  focus. Polls are skipped while the tab is hidden.
 - On a fetch error keep the last good data, show a small "retrying"
   indicator, and `console.error` with context (URL, status).
 - `fixtures/espn-scoreboard.json` is real week-2 2026 data, with four games

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapScoreboard, SCOREBOARD_URL } from './espn'
 import type { Game } from './game'
 
-/** How often to refetch while at least one game is live. */
+/** How often to refetch while a game is live, or while retrying after a failure. */
 export const POLL_MS = 30_000
 
 export type ScoreboardStatus = 'loading' | 'ready' | 'error'
