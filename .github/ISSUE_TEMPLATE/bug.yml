@@ -1,0 +1,39 @@
+name: Bug
+description: Something is broken or wrong
+title: 'fix: '
+labels: ['type:fix']
+assignees: [moudlajs]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is wrong? Include steps to reproduce, expected vs actual, browser/device, and console output.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Impact - who sees it, and when (live games, a specific time mode...).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist. Include the test expectation (unit / component / e2e).
+      value: |
+        - [ ] 
+        - [ ] Tests:
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Links, API fields, design references.

@@ -1,0 +1,7 @@
+dist
+playwright-report
+test-results
+package-lock.json
+fixtures/*.json
+CHANGELOG.md
+.release-please-manifest.json
