@@ -100,9 +100,10 @@ npm run build
 
 Releases are automated. Merging `feat:` / `fix:` PRs makes release-please
 open (or update) a release PR; merging that tags `vX.Y.Z`, publishes a GitHub
-Release, and deploys to Pages. While below 1.0, features bump the patch
-version; each milestone is closed with a `chore: release 0.N.0` PR carrying a
-`Release-As: 0.N.0` footer.
+Release, and deploys to Pages. Versions come from the PR titles only:
+`feat` bumps the minor version, `fix` the patch. Milestones are for planning
+and don't set versions; the one manual override is `Release-As: 1.0.0` when
+the MVP (M1) ships.
 
 To redeploy without a release, run the **Deploy** workflow manually.
 
