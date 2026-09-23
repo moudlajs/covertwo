@@ -7,14 +7,14 @@ const PIXEL = Buffer.from(
   'base64',
 )
 
-/**
- * Route every ESPN request to local fixtures. CI must never hit the real API;
- * any other ESPN URL fails the request loudly instead of reaching the network.
- */
 /** The scoreboard API URL, for tests that override its response. */
 export const SCOREBOARD_API =
   /site\.api\.espn\.com\/apis\/site\/v2\/sports\/football\/nfl\/scoreboard/
 
+/**
+ * Route every ESPN request to local fixtures. CI must never hit the real API;
+ * any other ESPN URL fails the request loudly instead of reaching the network.
+ */
 export async function mockEspn(page: Page) {
   // Playwright tries the most recently registered route first, so the
   // catch-all abort goes first and the specific routes after it.
