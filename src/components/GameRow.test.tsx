@@ -46,6 +46,22 @@ describe('GameRow', () => {
     expect(screen.getByText('41')).not.toHaveClass('text-slate-500')
   })
 
+  test('tied final dims neither team', () => {
+    const base = games.find((g) => g.away.abbr === 'GB')
+    if (!base) throw new Error('no GB game')
+    const tie = {
+      ...base,
+      home: { ...base.home, score: 20, winner: false },
+      away: { ...base.away, score: 20, winner: false },
+    }
+    render(
+      <ul>
+        <GameRow game={tie} mode="eu" />
+      </ul>,
+    )
+    for (const score of screen.getAllByText('20')) expect(score).not.toHaveClass('text-slate-500')
+  })
+
   test('overtime final', () => {
     renderRow('GB', 'NYJ')
     expect(screen.getByText('Final/OT')).toBeInTheDocument()

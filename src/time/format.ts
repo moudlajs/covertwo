@@ -9,16 +9,9 @@ const ZONES: Record<
   us: { locale: 'en-US', timeZone: 'America/New_York', hour12: true, hour: 'numeric' },
 }
 
-const cache = new Map<string, Intl.DateTimeFormat>()
 function formatter(mode: TimeMode, options: Intl.DateTimeFormatOptions) {
-  const key = mode + JSON.stringify(options)
-  let f = cache.get(key)
-  if (!f) {
-    const { locale, timeZone, hour12 } = ZONES[mode]
-    f = new Intl.DateTimeFormat(locale, { timeZone, hour12, ...options })
-    cache.set(key, f)
-  }
-  return f
+  const { locale, timeZone, hour12 } = ZONES[mode]
+  return new Intl.DateTimeFormat(locale, { timeZone, hour12, ...options })
 }
 
 /** Kickoff time, e.g. "22:25" (EU) or "4:25 PM" (US). */

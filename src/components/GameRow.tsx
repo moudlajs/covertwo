@@ -26,7 +26,9 @@ function Side({ team, dim, align }: { team: Team; dim: boolean; align: 'start' |
 /** One compact row: away | score or kickoff + status | home. */
 export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
   const live = game.state === 'in'
-  const dim = (t: Team) => game.state === 'post' && !t.winner
+  // Dim the loser only when there is a winner; a tie dims neither side.
+  const decided = game.state === 'post' && (game.home.winner || game.away.winner)
+  const dim = (t: Team) => decided && !t.winner
   return (
     <li
       className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''}`}
