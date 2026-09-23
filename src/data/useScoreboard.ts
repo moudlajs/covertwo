@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapScoreboard, SCOREBOARD_URL } from './espn'
 import type { Game } from './game'
 
+/** How often to refetch while at least one game is live. */
+export const POLL_MS = 30_000
+
 export type ScoreboardStatus = 'loading' | 'ready' | 'error'
 
 export type Scoreboard = {
@@ -13,7 +16,9 @@ export type Scoreboard = {
 
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
- * focus or the tab becomes visible. A newer request aborts an older one.
+ * focus or the tab becomes visible. While any game is live it also polls
+ * every 30s (skipped while the tab is hidden). A newer request aborts an
+ * older one.
  */
 export function useScoreboard(url = SCOREBOARD_URL): Scoreboard {
   const [board, setBoard] = useState<Scoreboard>({
@@ -58,6 +63,15 @@ export function useScoreboard(url = SCOREBOARD_URL): Scoreboard {
       inFlight.current?.abort()
     }
   }, [load])
+
+  const live = board.games.some((g) => g.state === 'in')
+  useEffect(() => {
+    if (!live) return
+    const id = setInterval(() => {
+      if (document.visibilityState === 'visible') void load()
+    }, POLL_MS)
+    return () => clearInterval(id)
+  }, [live, load])
 
   return board
 }
