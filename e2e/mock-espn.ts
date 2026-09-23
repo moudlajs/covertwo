@@ -12,6 +12,9 @@ const PIXEL = Buffer.from(
  * any other ESPN URL fails the request loudly instead of reaching the network.
  */
 export async function mockEspn(page: Page) {
+  // Playwright tries the most recently registered route first, so the
+  // catch-all abort goes first and the specific routes after it.
+  await page.route(/espn\.com/, (route) => route.abort())
   await page.route(/espncdn\.com/, (route) =>
     route.fulfill({ contentType: 'image/png', body: PIXEL }),
   )
@@ -19,5 +22,4 @@ export async function mockEspn(page: Page) {
     /site\.api\.espn\.com\/apis\/site\/v2\/sports\/football\/nfl\/scoreboard/,
     (route) => route.fulfill({ json: scoreboard }),
   )
-  await page.route(/espn\.com/, (route) => route.abort())
 }

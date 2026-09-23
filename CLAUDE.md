@@ -72,10 +72,7 @@ until the College Football milestone. No NFL shield logo.
   lighter background; red zone adds a rose left edge and an "RZ" tag.
 - Footer: monospace source and "updated Xs ago".
 
-The reference render lives in `src/design/` (open
-`/covertwo/design/index.html`, `?league` shows the league toggle) with
-screenshots in `design/screenshots/`. Delete both once #21 and #22 have
-implemented it.
+Implemented in `src/components/` (`Shell`, `Backdrop`, `Header`, `GameRow`).
 
 ## Milestones
 
