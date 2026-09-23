@@ -72,7 +72,7 @@ export function downDistance(id: string): string {
   const e = fixture.events.find((x) => x.id === id)
   const c = e?.competitions[0]
   const sit = c && 'situation' in c ? (c.situation as Record<string, unknown>) : undefined
-  return typeof sit?.downDistanceText === 'string' ? sit.downDistanceText : ''
+  return typeof sit?.shortDownDistanceText === 'string' ? sit.shortDownDistanceText : ''
 }
 
 /** `?league` in the URL reveals the reserved NFL/NCAA toggle slot. */

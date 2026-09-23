@@ -45,7 +45,7 @@ function GameRow({ row }: { row: Row }) {
             />
           )}
           {row.state === 'pre' ? row.network || row.status : row.status}
-          {dd && <span className="font-normal text-slate-400"> · {dd.replace(/ at .*/, '')}</span>}
+          {dd && <span className="font-normal text-slate-400"> · {dd}</span>}
           {row.redZone && (
             <span className="ml-0.5 rounded-sm bg-rose-500/20 px-1 font-bold text-rose-300">
               RZ
