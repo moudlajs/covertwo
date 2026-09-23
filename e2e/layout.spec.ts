@@ -24,3 +24,14 @@ test('page never scrolls horizontally', async ({ page }) => {
   )
   expect(overflow).toBe(0)
 })
+
+test('open menu stays inside the viewport', async ({ page }) => {
+  await page.getByRole('button', { name: 'Menu' }).click()
+  const link = page.getByRole('link', { name: 'Source on GitHub' })
+  await expect(link).toBeVisible()
+  const box = await link.boundingBox()
+  const viewport = page.viewportSize()
+  if (!box || !viewport) throw new Error('no layout')
+  expect(box.x).toBeGreaterThanOrEqual(0)
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width)
+})
