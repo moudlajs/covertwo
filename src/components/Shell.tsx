@@ -17,11 +17,13 @@ export function Shell({
       <Backdrop />
       <div
         data-testid="panel"
-        className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-xl bg-slate-900 shadow-[0_0_0_1px_rgb(51_65_85/0.7),0_24px_48px_-12px_rgb(0_0_0/0.85),0_4px_12px_-2px_rgb(0_0_0/0.5)]"
+        className="relative mx-auto w-full max-w-[560px] rounded-xl bg-slate-900 shadow-[0_0_0_1px_rgb(51_65_85/0.7),0_24px_48px_-12px_rgb(0_0_0/0.85),0_4px_12px_-2px_rgb(0_0_0/0.5)]"
       >
+        {/* No overflow-hidden on the panel, so the menu dropdown is never clipped.
+            The edge is inset to stay inside the rounded corners instead. */}
         <div
           aria-hidden="true"
-          className="h-0.5 bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
+          className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
         />
         <Header controls={controls} />
         <main>{children}</main>

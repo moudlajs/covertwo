@@ -1,4 +1,5 @@
 import { LoadError } from './components/LoadError'
+import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
 import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
@@ -20,16 +21,19 @@ export default function App() {
         </>
       }
       controls={
-        <Segmented
-          label="Time zone"
-          name="time-mode"
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: 'eu', label: 'EU' },
-            { value: 'us', label: 'US' },
-          ]}
-        />
+        <>
+          <Segmented
+            label="Time zone"
+            name="time-mode"
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: 'eu', label: 'EU' },
+              { value: 'us', label: 'US' },
+            ]}
+          />
+          <Menu />
+        </>
       }
     >
       {status === 'error' && empty ? (

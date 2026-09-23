@@ -6,6 +6,10 @@ export default defineConfig({
   // GitHub Pages serves the app from /<repo>/.
   base: '/covertwo/',
   plugins: [react(), tailwindcss()],
+  define: {
+    // release-please bumps package.json; npm sets this for every npm script.
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? 'dev'),
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
