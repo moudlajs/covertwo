@@ -27,14 +27,16 @@ export function useScoreboard(url = SCOREBOARD_URL): Scoreboard {
     inFlight.current?.abort()
     const controller = new AbortController()
     inFlight.current = controller
+    let status: number | undefined
     try {
       const res = await fetch(url, { signal: controller.signal })
+      status = res.status
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const games = mapScoreboard(await res.json())
       setBoard({ games, status: 'ready', lastUpdated: Date.now() })
     } catch (error) {
       if (controller.signal.aborted) return
-      console.error('[scoreboard] load failed', { url, error })
+      console.error('[scoreboard] load failed', { url, status, error })
       setBoard((prev) => ({ ...prev, status: 'error' }))
     }
   }, [url])

@@ -56,6 +56,6 @@ test('keeps previous games and logs context when a refetch fails', async () => {
   expect(result.current.games).toHaveLength(16)
   expect(error).toHaveBeenCalledWith(
     '[scoreboard] load failed',
-    expect.objectContaining({ url: expect.stringContaining('scoreboard') }),
+    expect.objectContaining({ url: expect.stringContaining('scoreboard'), status: 503 }),
   )
 })
