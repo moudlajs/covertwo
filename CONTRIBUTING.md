@@ -19,9 +19,10 @@ The rules still apply to both.
 [Conventional Commits](https://www.conventionalcommits.org/), checked in CI:
 `feat`, `fix`, `chore`, `docs`, `test`, `ci`, `refactor`, `perf`.
 
-`feat` and `fix` produce a release (patch bumps while below 1.0). A
-milestone is closed with a `chore: release 0.N.0` PR whose body carries a
-`Release-As: 0.N.0` footer.
+Versions come from these titles, never from milestones: `feat` bumps the
+minor version, `fix` the patch. release-please opens a release PR; merging it
+tags, releases and deploys. Milestones are for planning only. The one manual
+override is `Release-As: 1.0.0` when the MVP (M1) ships.
 
 ## Checks
 

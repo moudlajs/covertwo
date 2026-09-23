@@ -81,8 +81,10 @@ implemented it.
 
 M0 Foundation · M1 MVP Scoreboard · M2 Live Game Context · M3 College
 Football · M4 Navigation & Personalization · M5 PWA · M6 Context & Stats.
-Each milestone is one minor release. From M3 on, every feature works for both
-leagues or says "NFL-only" in its issue.
+Milestones are for planning only; versions come from commits via
+release-please (`feat` → minor, `fix` → patch), with 1.0.0 cut when M1 ships.
+From M3 on, every feature works for both leagues or says "NFL-only" in its
+issue.
 
 ## Out of scope
 
