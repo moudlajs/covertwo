@@ -25,15 +25,24 @@ React 19, Vite, TypeScript (strict, `noUncheckedIndexedAccess`), Tailwind v4
 Playwright, ESLint 9 (pinned: `eslint-plugin-jsx-a11y` does not support 10
 yet) + Prettier.
 
-No backend, no state library, no router until a milestone needs one. KISS:
-no abstractions ahead of need.
+No backend except the API proxy Worker (`worker/`), no state library, no
+router until a milestone needs one. KISS: no abstractions ahead of need.
 
 ## Data source
 
-ESPN unofficial API, no key:
+ESPN unofficial API, no key, reached **through our Cloudflare Worker**:
+app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`
 
-- CORS: responds with `access-control-allow-origin: *`.
+- Why the proxy (verified 2026-09-24, #18): ESPN's bot protection answers
+  browser requests from other sites with a 403 **without** CORS headers, so
+  it surfaces as a CORS error. It hit the owner's phone on mobile data and
+  over a VPN; server-side requests pass. `curl` checks are misleading
+  (plain `curl` passes, `curl` with a browser User-Agent gets 403). Only a
+  real browser on the deployed site proves anything.
+- The Worker forwards allow-listed paths only (not an open proxy), adds CORS
+  for the Pages and localhost origins, and caches ~15s at the edge so all
+  viewers share one upstream request. Deployed by `.github/workflows/worker.yml`.
 - Map the response to a clean internal type at the edge; keep all times UTC
   and only format them in the UI (Europe/Prague 24h or America/New_York 12h).
 - Poll every 30s only while a game is live, or while retrying after a failed
@@ -87,6 +96,6 @@ issue.
 ## Out of scope
 
 - Fantasy / Sleeper features of any kind (that lives in waiverwatch).
-- A backend or proxy. If ESPN ever blocks CORS, stop and ask.
+- Any backend beyond the proxy Worker. Ask before adding server features.
 - Server push notifications (needs a Worker; backlog).
 - The NFL shield or other league trademarks in the UI.

@@ -20,7 +20,8 @@ export default defineConfig({
   ],
   webServer: {
     // Tests run against the production build, not the dev server.
-    command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
+    // e2e builds point the app at a fake API host that mock-espn.ts serves.
+    command: `VITE_API_BASE=http://api.test npm run build && npx vite preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}/covertwo/`,
     reuseExistingServer: !process.env.CI,
   },
