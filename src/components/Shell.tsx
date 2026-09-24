@@ -32,7 +32,13 @@ export function Shell({
         <Header controls={controls} />
         {/* relative: keeps absolutely positioned descendants (sr-only text) inside
             the scroll container, so they can't stretch the page. */}
-        <main className="relative min-h-0 overflow-y-auto overscroll-contain [scrollbar-color:var(--color-slate-700)_transparent] [scrollbar-width:thin]">
+        {/* tabIndex: the list is the only scroll container and has no focusable
+            children, so keyboard users need to focus it to scroll (WCAG SCR29). */}
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+        <main
+          tabIndex={0}
+          className="relative min-h-0 overflow-y-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60 overscroll-contain [scrollbar-color:var(--color-slate-700)_transparent] [scrollbar-width:thin]"
+        >
           {children}
         </main>
         {footer && (

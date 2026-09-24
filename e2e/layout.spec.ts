@@ -92,3 +92,13 @@ test('a short week keeps a short panel pinned at the top', async ({ page }) => {
   expect(panel.y).toBe(firstPanel.y) // same top margin as a full week
   expect(panel.height).toBeLessThan(viewport.height / 2)
 })
+
+test('keyboard users can tab to the game list and scroll it', async ({ page }) => {
+  const main = page.getByRole('main')
+  await expect(main.getByRole('listitem')).toHaveCount(16)
+  for (let i = 0; i < 5 && !(await main.evaluate((el) => el === document.activeElement)); i++)
+    await page.keyboard.press('Tab')
+  await expect(main).toBeFocused()
+  await page.keyboard.press('PageDown')
+  await expect.poll(() => main.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
+})
