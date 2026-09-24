@@ -1,4 +1,5 @@
 import type { Game, Team } from '../data/game'
+import { isCrunchTime } from '../data/crunch'
 import { COUNTDOWN_WINDOW_MS, formatCountdown } from '../time/countdown'
 import { formatTime, type TimeMode } from '../time/format'
 import { GameDetails } from './GameDetails'
@@ -24,32 +25,19 @@ function Ball() {
   )
 }
 
-/** Three pips, filled for each timeout left. */
-function Timeouts({ left }: { left: number }) {
-  return (
-    <span className="flex gap-0.5">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className={`h-0.5 w-2 rounded-full ${i < left ? 'bg-amber-400/80' : 'bg-slate-700'}`}
-        />
-      ))}
-    </span>
-  )
-}
-
 function Side({
   team,
   dim,
   align,
   ball,
-  timeouts,
+  timeouts = null,
 }: {
   team: Team
   dim: boolean
   align: 'start' | 'end'
   ball: boolean
-  timeouts: number | null
+  /** Timeouts left, shown only in crunch time. */
+  timeouts?: number | null
 }) {
   return (
     <div
@@ -65,7 +53,9 @@ function Side({
           )}
           {team.abbr}
         </span>
-        {timeouts !== null && <Timeouts left={timeouts} />}
+        {timeouts !== null && (
+          <span className="font-mono text-[9px] leading-none text-amber-400/80">TO {timeouts}</span>
+        )}
       </span>
       {ball && <Ball />}
     </div>
@@ -86,12 +76,11 @@ function summary(game: Game, mode: TimeMode, now?: number): string {
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
-  const left = (n: number) => `${n} ${n === 1 ? 'timeout' : 'timeouts'}`
-  const tos = game.timeouts
-    ? `, timeouts left: ${away.name} ${left(game.timeouts.away)}, ${home.name} ${left(game.timeouts.home)}`
-    : ''
-  const play = game.lastPlay ? `. Last play: ${game.lastPlay}` : ''
-  return `${name(away)} ${away.score ?? '-'}, ${name(home)} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}${play}`
+  const tos =
+    game.timeouts && isCrunchTime(game)
+      ? `, timeouts: ${away.name} ${game.timeouts.away}, ${home.name} ${game.timeouts.home}`
+      : ''
+  return `${name(away)} ${away.score ?? '-'}, ${name(home)} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -120,6 +109,9 @@ export function GameRow({
   now?: number
 }) {
   const live = game.state === 'in'
+  // Timeouts matter at a glance only late in close games; otherwise they're
+  // in the expanded view.
+  const crunch = isCrunchTime(game)
   // Started games open to quarter scores and leaders; scheduled ones have none.
   const expandable = game.state !== 'pre' && onToggle !== undefined
   const detailsId = `details-${game.id}`
@@ -156,7 +148,7 @@ export function GameRow({
           dim={dim(game.away)}
           align="start"
           ball={game.possession === 'away'}
-          timeouts={game.timeouts?.away ?? null}
+          timeouts={crunch ? (game.timeouts?.away ?? null) : null}
         />
         <div
           aria-hidden="true"
@@ -218,17 +210,8 @@ export function GameRow({
           dim={dim(game.home)}
           align="end"
           ball={game.possession === 'home'}
-          timeouts={game.timeouts?.home ?? null}
+          timeouts={crunch ? (game.timeouts?.home ?? null) : null}
         />
-        {game.lastPlay && (
-          <p
-            aria-hidden="true"
-            title={game.lastPlay}
-            className="col-span-3 -mt-1 truncate text-center font-mono text-[10px] text-slate-500"
-          >
-            {game.lastPlay}
-          </p>
-        )}
       </div>
     )
   }

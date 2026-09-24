@@ -20,17 +20,18 @@ test.describe('panel size by screen', () => {
   }
 
   test('large monitor: day headings still stick flush under the header', async ({ page }) => {
-    // Large enough to scale, short enough that the scaled week still scrolls.
+    // Large enough to scale; the college slate (22 games) is long enough to scroll.
     await page.setViewportSize({ width: 2560, height: 1050 })
     await mockEspn(page)
     await page.goto('./')
-    await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
-    const sunday = page.getByRole('heading', { level: 2, name: /^Sunday/ })
-    const top = await sunday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
-    await page.evaluate((y) => window.scrollTo(0, y + 200), top)
+    await page.getByText('NCAA', { exact: true }).click()
+    await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(22)
+    const saturday = page.getByRole('heading', { level: 2, name: /^Saturday/ })
+    const top = await saturday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
+    await page.evaluate((y) => window.scrollTo(0, y + 100), top)
     expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
     const block = await page.getByTestId('pinned-header').boundingBox()
-    const heading = await sunday.boundingBox()
+    const heading = await saturday.boundingBox()
     expect(Math.abs((heading?.y ?? 0) - ((block?.y ?? 0) + (block?.height ?? 0)))).toBeLessThan(0.5)
   })
 
