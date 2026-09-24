@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/moudlajs/covertwo/compare/v0.3.0...v1.0.0) (2026-09-24)
+
+
+### Chores
+
+* release 1.0.0 ([#101](https://github.com/moudlajs/covertwo/issues/101)) ([1fdce61](https://github.com/moudlajs/covertwo/commit/1fdce614815edb2537d82c72624e93f940f0e78b))
+
 ## [0.3.0](https://github.com/moudlajs/covertwo/compare/v0.2.0...v0.3.0) (2026-09-24)
 
 
