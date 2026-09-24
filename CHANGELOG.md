@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/moudlajs/covertwo/compare/v1.3.0...v1.3.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* scroll the page with a pinned header and footer, not an inner list ([#122](https://github.com/moudlajs/covertwo/issues/122)) ([8f816f1](https://github.com/moudlajs/covertwo/commit/8f816f184515f0f550f1ad1aa268b3296e0f554b))
+
 ## [1.3.0](https://github.com/moudlajs/covertwo/compare/v1.2.0...v1.3.0) (2026-09-24)
 
 
