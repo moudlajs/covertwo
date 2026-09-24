@@ -18,7 +18,7 @@ test('college: Top 25 by default, All FBS on demand, ranks shown', async ({ page
   await expect(page.getByRole('radio', { name: 'All FBS' })).toBeChecked()
 })
 
-test('college day headings stick under the taller header', async ({ page }) => {
+test('college day headings stick flush under the pinned header', async ({ page }) => {
   await mockEspn(page)
   await page.goto('./')
   await page.getByText('NCAA', { exact: true }).click()
