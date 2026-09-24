@@ -14,7 +14,16 @@ test('renders the title, landmarks, controls and footer', () => {
   expect(screen.getByRole('contentinfo')).toHaveTextContent('ESPN')
 })
 
-test('renders the league switch in its header slot', () => {
-  render(<Shell league={<button type="button">NFL</button>}>x</Shell>)
-  expect(screen.getByRole('banner')).toContainElement(screen.getByRole('button', { name: 'NFL' }))
+test('second header row: league on the left, view on the right, both pinned', () => {
+  render(
+    <Shell league={<button type="button">NFL</button>} view={<button type="button">Top 25</button>}>
+      x
+    </Shell>,
+  )
+  const pinned = screen.getByTestId('pinned-header')
+  expect(pinned).toContainElement(screen.getByRole('button', { name: 'NFL' }))
+  expect(pinned).toContainElement(screen.getByRole('button', { name: 'Top 25' }))
+  expect(screen.getByRole('banner')).not.toContainElement(
+    screen.getByRole('button', { name: 'NFL' }),
+  )
 })

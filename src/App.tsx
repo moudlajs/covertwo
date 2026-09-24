@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { LoadError } from './components/LoadError'
 import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
@@ -7,11 +7,9 @@ import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
-import { LEAGUES, onlyRanked, scoreboardUrl, type League } from './data/leagues'
+import { LEAGUES, scoreboardUrl, type League } from './data/leagues'
 import { useLeague } from './data/useLeague'
 import { useNcaaView } from './data/useNcaaView'
-import { useConference } from './data/useConference'
-import { ConferenceSelect } from './components/ConferenceSelect'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
@@ -20,16 +18,7 @@ import { useTimeMode } from './time/useTimeMode'
 export default function App() {
   const [league, setLeague] = useLeague()
   const [ncaaView, setNcaaView] = useNcaaView()
-  const [conference, setConference] = useConference()
-  const board = useScoreboard(scoreboardUrl(league, ncaaView, conference))
-  const { status, lastUpdated, live, retry } = board
-  // A conference slate holds all its games; Top 25 keeps the ranked ones.
-  const filtered = league === 'ncaaf' && ncaaView === 'top25' && conference !== 'all'
-  // Memoized: useScoreChanges compares array identity to detect new data.
-  const games = useMemo(
-    () => (filtered ? onlyRanked(board.games) : board.games),
-    [filtered, board.games],
-  )
+  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league, ncaaView))
   const [mode, setMode] = useTimeMode()
   const changes = useScoreChanges(games)
   const title = documentTitle(games)
@@ -54,21 +43,18 @@ export default function App() {
           }))}
         />
       }
-      toolbar={
+      view={
         league === 'ncaaf' && (
-          <>
-            <Segmented
-              label="College games"
-              name="ncaa-view"
-              value={ncaaView}
-              onChange={setNcaaView}
-              options={[
-                { value: 'top25', label: 'Top 25' },
-                { value: 'fbs', label: 'All FBS' },
-              ]}
-            />
-            <ConferenceSelect value={conference} onChange={setConference} />
-          </>
+          <Segmented
+            label="College games"
+            name="ncaa-view"
+            value={ncaaView}
+            onChange={setNcaaView}
+            options={[
+              { value: 'top25', label: 'Top 25' },
+              { value: 'fbs', label: 'All FBS' },
+            ]}
+          />
         )
       }
       footer={
@@ -106,7 +92,7 @@ export default function App() {
         <Skeleton />
       ) : empty ? (
         <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
-          {filtered ? 'No Top 25 games in this conference.' : 'No games scheduled.'}
+          No games scheduled.
         </p>
       ) : (
         <ScoreList games={games} mode={mode} flashing={changes.flashing} />
