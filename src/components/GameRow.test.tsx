@@ -121,6 +121,22 @@ describe('GameRow', () => {
     expect(container.querySelector('p[title]')).toBeNull()
   })
 
+  test('college ranks: number before the abbreviation, "No. 5" when spoken', async () => {
+    const { mapScoreboard: map } = await import('../data/espn')
+    const ncaaf = (await import('../../fixtures/espn-ncaaf-scoreboard.json')).default
+    const game = map(ncaaf).find((g) => g.away.abbr === 'MIA')
+    if (!game) throw new Error('no MIA game')
+    const { container } = render(
+      <ul>
+        <GameRow game={game} mode="eu" />
+      </ul>,
+    )
+    expect(container.querySelector('[data-side="away"]')).toHaveTextContent('5MIA')
+    expect(
+      screen.getByText(/^No\. 5 Miami Hurricanes 33, Wake Forest Demon Deacons 20/),
+    ).toHaveClass('sr-only')
+  })
+
   test('halftime', () => {
     renderRow('LV', 'LAC')
     expect(screen.getByText('Halftime')).toBeInTheDocument()

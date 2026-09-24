@@ -9,6 +9,12 @@ test('each league has its own Worker path', () => {
   expect(scoreboardUrl('ncaaf')).toMatch(/\/ncaaf\/scoreboard$/)
 })
 
+test('college views map to ESPN groups', () => {
+  expect(scoreboardUrl('ncaaf', 'top25')).toMatch(/\/ncaaf\/scoreboard$/)
+  expect(scoreboardUrl('ncaaf', 'fbs')).toMatch(/\/ncaaf\/scoreboard\?groups=80$/)
+  expect(scoreboardUrl('nfl', 'fbs')).toMatch(/\/nfl\/scoreboard$/) // NFL ignores the view
+})
+
 test('college fixture maps with Top 25 ranks', () => {
   const games = mapScoreboard(ncaaf)
   expect(games).toHaveLength(22)

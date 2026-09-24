@@ -54,7 +54,14 @@ function Side({
     >
       <img src={team.logo} alt="" width={20} height={20} className="size-5 shrink-0" />
       <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
-        <span className="truncate text-[13px] leading-none font-bold">{team.abbr}</span>
+        <span className="truncate text-[13px] leading-none font-bold">
+          {team.rank !== null && (
+            <span className="mr-1 font-mono text-[10px] font-normal text-slate-400">
+              {team.rank}
+            </span>
+          )}
+          {team.abbr}
+        </span>
         {timeouts !== null && <Timeouts left={timeouts} />}
       </span>
       {ball && <Ball />}
@@ -69,8 +76,10 @@ function downText(down: NonNullable<Game['down']>): string {
 /** What a screen reader hears, in reading order: both teams, then the status. */
 function summary(game: Game, mode: TimeMode): string {
   const { away, home } = game
+  // "No. 5 Miami Hurricanes" for ranked college teams.
+  const name = (t: Team) => (t.rank === null ? t.name : `No. ${t.rank} ${t.name}`)
   if (game.state === 'pre')
-    return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
+    return `${name(away)} at ${name(home)}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
@@ -79,7 +88,7 @@ function summary(game: Game, mode: TimeMode): string {
     ? `, timeouts left: ${away.name} ${left(game.timeouts.away)}, ${home.name} ${left(game.timeouts.home)}`
     : ''
   const play = game.lastPlay ? `. Last play: ${game.lastPlay}` : ''
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}${play}`
+  return `${name(away)} ${away.score ?? '-'}, ${name(home)} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}${play}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
