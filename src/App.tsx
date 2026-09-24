@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { LoadError } from './components/LoadError'
 import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
@@ -8,12 +9,17 @@ import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
+import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
   const { games, status, lastUpdated, live, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
   const changes = useScoreChanges(games)
+  const title = documentTitle(games)
+  useEffect(() => {
+    document.title = title
+  }, [title])
   const empty = games.length === 0
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
