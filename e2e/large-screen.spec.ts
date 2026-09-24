@@ -7,6 +7,7 @@ test.describe('panel size by screen', () => {
   for (const [name, viewport, width] of [
     ['laptop (MacBook)', { width: 1512, height: 982 }, 560],
     ['large monitor', { width: 2560, height: 1300 }, 700],
+    ['4K at 100%', { width: 3840, height: 2000 }, 840],
   ] as const) {
     test(`${name}: panel is ${width}px wide`, async ({ page }) => {
       await page.setViewportSize(viewport)
@@ -31,5 +32,16 @@ test.describe('panel size by screen', () => {
     const block = await page.getByTestId('pinned-header').boundingBox()
     const heading = await sunday.boundingBox()
     expect(Math.abs((heading?.y ?? 0) - ((block?.y ?? 0) + (block?.height ?? 0)))).toBeLessThan(0.5)
+  })
+
+  test('4K at 100%: the scaled NFL week still fits without scrolling', async ({ page }) => {
+    await page.setViewportSize({ width: 3840, height: 2000 })
+    await mockEspn(page)
+    await page.goto('./')
+    await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollHeight - window.innerHeight,
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
   })
 })
