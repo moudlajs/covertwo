@@ -32,7 +32,7 @@ describe('GameRow', () => {
     renderRow('JAX', 'DEN')
     expect(
       screen.getByText(
-        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball, timeouts left: Jacksonville Jaguars 2 timeouts, Denver Broncos 3 timeouts',
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball, timeouts left: Jacksonville Jaguars 2 timeouts, Denver Broncos 3 timeouts. Last play: T.Etienne run up the middle to DEN 34 for 3 yards.',
       ),
     ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
@@ -100,7 +100,7 @@ describe('GameRow', () => {
     expect(filled(sides[2])).toBe(1) // DAL
     expect(
       screen.getByText(
-        /timeouts left: Washington Commanders 0 timeouts, Dallas Cowboys 1 timeout$/,
+        /timeouts left: Washington Commanders 0 timeouts, Dallas Cowboys 1 timeout\./,
       ),
     ).toHaveClass('sr-only')
   })
@@ -108,6 +108,17 @@ describe('GameRow', () => {
   test('no timeouts outside live games', () => {
     const { container } = renderRow('DET', 'BUF')
     expect(container.querySelector('span.rounded-full.bg-slate-700')).toBeNull()
+  })
+
+  test('last play: one truncated line with the full text on hover', () => {
+    renderRow('JAX', 'DEN')
+    const line = screen.getByTitle('T.Etienne run up the middle to DEN 34 for 3 yards.')
+    expect(line).toHaveClass('truncate', 'col-span-3')
+  })
+
+  test('no last-play line outside live games', () => {
+    const { container } = renderRow('DET', 'BUF')
+    expect(container.querySelector('p[title]')).toBeNull()
   })
 
   test('halftime', () => {

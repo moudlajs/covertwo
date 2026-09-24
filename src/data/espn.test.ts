@@ -99,6 +99,14 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').timeouts).toBeNull()
   })
 
+  test('last play while live only', () => {
+    expect(byMatchup('JAX', 'DEN').lastPlay).toBe(
+      'T.Etienne run up the middle to DEN 34 for 3 yards.',
+    )
+    expect(byMatchup('DET', 'BUF').lastPlay).toBeNull()
+    expect(byMatchup('LV', 'LAC').lastPlay).toBeNull() // halftime
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })
