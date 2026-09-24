@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { mapScoreboard, SCOREBOARD_URL } from './espn'
+import { mapScoreboard } from './espn'
 import type { Game } from './game'
 
 /** How often to refetch while a game is live, or while retrying after a failure. */
@@ -20,9 +20,7 @@ export type Scoreboard = {
  * failed, it also refetches every 30s (skipped while the tab is hidden). A
  * failed load keeps the last good games. A newer request aborts an older one.
  */
-export function useScoreboard(
-  url = SCOREBOARD_URL,
-): Scoreboard & { live: boolean; retry: () => void } {
+export function useScoreboard(url: string): Scoreboard & { live: boolean; retry: () => void } {
   const [board, setBoard] = useState<Scoreboard>({
     games: [],
     status: 'loading',

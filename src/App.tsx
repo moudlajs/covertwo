@@ -7,13 +7,14 @@ import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
+import { scoreboardUrl } from './data/leagues'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status, lastUpdated, live, retry } = useScoreboard()
+  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl('nfl'))
   const [mode, setMode] = useTimeMode()
   const changes = useScoreChanges(games)
   const title = documentTitle(games)

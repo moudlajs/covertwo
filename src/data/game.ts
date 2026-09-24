@@ -8,6 +8,8 @@ export type Team = {
   /** `null` before kickoff. */
   score: number | null
   winner: boolean
+  /** College football Top 25 rank; always null in the NFL. */
+  rank: number | null
 }
 
 export type Leader = {
