@@ -14,9 +14,7 @@ test('renders the title, landmarks, controls and footer', () => {
   expect(screen.getByRole('contentinfo')).toHaveTextContent('ESPN')
 })
 
-test('reserves a hidden league slot in the header', () => {
-  const { container } = render(<Shell>x</Shell>)
-  const slot = container.querySelector('[data-slot="league"]')
-  expect(slot).not.toBeNull()
-  expect(slot).not.toBeVisible()
+test('renders the league switch in its header slot', () => {
+  render(<Shell league={<button type="button">NFL</button>}>x</Shell>)
+  expect(screen.getByRole('banner')).toContainElement(screen.getByRole('button', { name: 'NFL' }))
 })

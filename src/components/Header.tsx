@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
 
 /**
- * Title on the left, controls on the right. The league slot is reserved for
- * the NFL/NCAA toggle (M3) and stays hidden until then; it sits in the same
+ * Title, then the league switch, then the other controls on the right. The
+ * league slot was reserved in the layout from the start; it sits in the same
  * row, so showing it needs no layout change.
  */
-export function Header({ controls }: { controls?: ReactNode }) {
+export function Header({ league, controls }: { league?: ReactNode; controls?: ReactNode }) {
   return (
     <header className="flex h-11 items-center gap-3 px-3">
       <h1 className="font-mono text-sm font-bold tracking-tight">
@@ -14,7 +14,7 @@ export function Header({ controls }: { controls?: ReactNode }) {
           _
         </span>
       </h1>
-      <div data-slot="league" hidden />
+      <div data-slot="league">{league}</div>
       <div className="ml-auto flex items-center gap-2">{controls}</div>
     </header>
   )

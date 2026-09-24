@@ -73,6 +73,20 @@ test('keeps previous games and logs context when a refetch fails', async () => {
   )
 })
 
+test('a new URL clears the old games and loads the new ones', async () => {
+  const { result, rerender } = renderHook(({ url }) => useScoreboard(url), {
+    initialProps: { url: URL },
+  })
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  let resolve: (r: Response) => void = () => {}
+  fetchMock.mockImplementationOnce(() => new Promise<Response>((r) => (resolve = r)))
+  rerender({ url: 'http://api.test/ncaaf/scoreboard' })
+  expect(result.current).toMatchObject({ games: [], status: 'loading', lastUpdated: null })
+  expect(fetchMock).toHaveBeenLastCalledWith('http://api.test/ncaaf/scoreboard', expect.anything())
+  resolve(new Response(JSON.stringify(fixture)))
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+})
+
 test('retry() fetches again', async () => {
   const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
