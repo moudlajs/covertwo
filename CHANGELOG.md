@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/moudlajs/covertwo/compare/v1.4.0...v1.5.0) (2026-09-24)
+
+
+### Features
+
+* two-row header with the league row for both leagues; drop the conference picker ([#130](https://github.com/moudlajs/covertwo/issues/130)) ([a18bf13](https://github.com/moudlajs/covertwo/commit/a18bf13a8672315130556bf51a920d7f4feb2205))
+
 ## [1.4.0](https://github.com/moudlajs/covertwo/compare/v1.3.1...v1.4.0) (2026-09-24)
 
 
