@@ -32,7 +32,7 @@ describe('GameRow', () => {
     renderRow('JAX', 'DEN')
     expect(
       screen.getByText(
-        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball',
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball, timeouts left: Jacksonville Jaguars 2 timeouts, Denver Broncos 3 timeouts',
       ),
     ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
@@ -67,7 +67,7 @@ describe('GameRow', () => {
     renderRow('WSH', 'DAL')
     expect(screen.getByText('RZ')).toBeInTheDocument()
     expect(screen.getByRole('listitem')).toHaveClass('shadow-rose-500')
-    expect(screen.getByText(/, red zone, Dallas Cowboys ball$/)).toHaveClass('sr-only')
+    expect(screen.getByText(/, red zone, Dallas Cowboys ball,/)).toHaveClass('sr-only')
   })
 
   test('no red zone marking outside it', () => {
@@ -87,6 +87,27 @@ describe('GameRow', () => {
     const home = screen.getByText('20')
     expect(home).toHaveClass('animate-score-flash', 'motion-reduce:animate-none')
     expect(screen.getByText('23')).not.toHaveClass('animate-score-flash')
+  })
+
+  test('timeouts: filled pips per side, spoken with correct plural', () => {
+    const { container } = renderRow('WSH', 'DAL')
+    const sides = [...container.querySelectorAll('li > div[aria-hidden="true"]')]
+    const filled = (side: Element | undefined) =>
+      [...(side?.querySelectorAll('span.rounded-full') ?? [])].filter((pip) =>
+        pip.className.includes('bg-amber-400'),
+      ).length
+    expect(filled(sides[0])).toBe(0) // WSH
+    expect(filled(sides[2])).toBe(1) // DAL
+    expect(
+      screen.getByText(
+        /timeouts left: Washington Commanders 0 timeouts, Dallas Cowboys 1 timeout$/,
+      ),
+    ).toHaveClass('sr-only')
+  })
+
+  test('no timeouts outside live games', () => {
+    const { container } = renderRow('DET', 'BUF')
+    expect(container.querySelector('span.rounded-full.bg-slate-700')).toBeNull()
   })
 
   test('halftime', () => {

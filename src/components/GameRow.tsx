@@ -18,16 +18,32 @@ function Ball() {
   )
 }
 
+/** Three pips, filled for each timeout left. */
+function Timeouts({ left }: { left: number }) {
+  return (
+    <span className="flex gap-0.5">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className={`h-0.5 w-2 rounded-full ${i < left ? 'bg-amber-400/80' : 'bg-slate-700'}`}
+        />
+      ))}
+    </span>
+  )
+}
+
 function Side({
   team,
   dim,
   align,
   ball,
+  timeouts,
 }: {
   team: Team
   dim: boolean
   align: 'start' | 'end'
   ball: boolean
+  timeouts: number | null
 }) {
   return (
     <div
@@ -35,7 +51,10 @@ function Side({
       className={`flex min-w-0 items-center gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
     >
       <img src={team.logo} alt="" width={20} height={20} className="size-5 shrink-0" />
-      <span className="truncate text-[13px] font-bold">{team.abbr}</span>
+      <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
+        <span className="truncate text-[13px] leading-none font-bold">{team.abbr}</span>
+        {timeouts !== null && <Timeouts left={timeouts} />}
+      </span>
       {ball && <Ball />}
     </div>
   )
@@ -53,7 +72,11 @@ function summary(game: Game, mode: TimeMode): string {
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}`
+  const left = (n: number) => `${n} ${n === 1 ? 'timeout' : 'timeouts'}`
+  const tos = game.timeouts
+    ? `, timeouts left: ${away.name} ${left(game.timeouts.away)}, ${home.name} ${left(game.timeouts.home)}`
+    : ''
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -80,7 +103,13 @@ export function GameRow({
       className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''} ${game.redZone ? 'shadow-[inset_2px_0_0_0] shadow-rose-500' : ''}`}
     >
       <span className="sr-only">{summary(game, mode)}</span>
-      <Side team={game.away} dim={dim(game.away)} align="start" ball={game.possession === 'away'} />
+      <Side
+        team={game.away}
+        dim={dim(game.away)}
+        align="start"
+        ball={game.possession === 'away'}
+        timeouts={game.timeouts?.away ?? null}
+      />
       <div aria-hidden="true" className="flex w-40 flex-col items-center leading-none sm:w-52">
         {game.state === 'pre' ? (
           <time
@@ -132,7 +161,13 @@ export function GameRow({
           )}
         </span>
       </div>
-      <Side team={game.home} dim={dim(game.home)} align="end" ball={game.possession === 'home'} />
+      <Side
+        team={game.home}
+        dim={dim(game.home)}
+        align="end"
+        ball={game.possession === 'home'}
+        timeouts={game.timeouts?.home ?? null}
+      />
     </li>
   )
 }
