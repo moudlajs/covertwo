@@ -33,6 +33,7 @@ type EspnEvent = {
       isRedZone?: boolean
       homeTimeouts?: number
       awayTimeouts?: number
+      lastPlay?: { text?: string }
     }
   }[]
 }
@@ -99,6 +100,8 @@ function mapEvent(e: EspnEvent | null): Game | null {
     down,
     redZone: inPlay && comp?.situation?.isRedZone === true,
     timeouts: timeouts(state, comp?.situation),
+    // At halftime it only repeats "END OF 2ND QUARTER".
+    lastPlay: (state === 'in' && !halftime && comp?.situation?.lastPlay?.text?.trim()) || null,
     home,
     away,
   }

@@ -76,7 +76,8 @@ function summary(game: Game, mode: TimeMode): string {
   const tos = game.timeouts
     ? `, timeouts left: ${away.name} ${left(game.timeouts.away)}, ${home.name} ${left(game.timeouts.home)}`
     : ''
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}`
+  const play = game.lastPlay ? `. Last play: ${game.lastPlay}` : ''
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}${play}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -168,6 +169,15 @@ export function GameRow({
         ball={game.possession === 'home'}
         timeouts={game.timeouts?.home ?? null}
       />
+      {game.lastPlay && (
+        <p
+          aria-hidden="true"
+          title={game.lastPlay}
+          className="col-span-3 -mt-1 truncate text-center font-mono text-[10px] text-slate-500"
+        >
+          {game.lastPlay}
+        </p>
+      )}
     </li>
   )
 }
