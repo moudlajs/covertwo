@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/moudlajs/covertwo/compare/v1.13.0...v1.13.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* dark-background logo variants ([#168](https://github.com/moudlajs/covertwo/issues/168)) ([4d97a4c](https://github.com/moudlajs/covertwo/commit/4d97a4c3ff2cc4bc4567951ddadc8d4198cb9795))
+
 ## [1.13.0](https://github.com/moudlajs/covertwo/compare/v1.12.1...v1.13.0) (2026-09-24)
 
 
