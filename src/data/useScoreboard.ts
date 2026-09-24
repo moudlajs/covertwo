@@ -20,7 +20,9 @@ export type Scoreboard = {
  * failed, it also refetches every 30s (skipped while the tab is hidden). A
  * failed load keeps the last good games. A newer request aborts an older one.
  */
-export function useScoreboard(url = SCOREBOARD_URL): Scoreboard & { retry: () => void } {
+export function useScoreboard(
+  url = SCOREBOARD_URL,
+): Scoreboard & { live: boolean; retry: () => void } {
   const [board, setBoard] = useState<Scoreboard>({
     games: [],
     status: 'loading',
@@ -75,5 +77,5 @@ export function useScoreboard(url = SCOREBOARD_URL): Scoreboard & { retry: () =>
   }, [live, failed, load])
 
   const retry = useCallback(() => void load(), [load])
-  return { ...board, retry }
+  return { ...board, live, retry }
 }

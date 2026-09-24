@@ -10,7 +10,7 @@ import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status, lastUpdated, retry } = useScoreboard()
+  const { games, status, lastUpdated, live, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
   const empty = games.length === 0
   // Nothing has loaded yet (as opposed to a genuinely empty week).
@@ -23,7 +23,7 @@ export default function App() {
           <span>ESPN</span>
           <span className="flex items-center gap-2">
             <Retrying active={status === 'error' && !never} />
-            <UpdatedAgo at={lastUpdated} live={games.some((g) => g.state === 'in')} />
+            <UpdatedAgo at={lastUpdated} live={live} />
           </span>
         </>
       }
