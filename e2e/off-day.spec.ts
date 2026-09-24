@@ -14,8 +14,8 @@ const nothingLive = {
 }
 
 test('a day without games shows the next kickoff over a resting board', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-09-19T12:00:00Z')) // Saturday, no NFL games
   await mockEspn(page)
+  await page.clock.setFixedTime(new Date('2026-09-19T12:00:00Z')) // Saturday, no NFL games
   await page.route(SCOREBOARD_API, (route) => route.fulfill({ json: nothingLive }))
   await page.goto('./')
   const card = page.getByRole('region', { name: 'No games today' })
@@ -25,8 +25,8 @@ test('a day without games shows the next kickoff over a resting board', async ({
 })
 
 test('game day before kickoff (nothing live) shows "Up next"', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-09-20T20:00:00Z')) // Sunday 22:00 Prague
   await mockEspn(page)
+  await page.clock.setFixedTime(new Date('2026-09-20T20:00:00Z')) // Sunday 22:00 Prague
   await page.route(SCOREBOARD_API, (route) => route.fulfill({ json: nothingLive }))
   await page.goto('./')
   const card = page.getByRole('region', { name: 'Up next' })
@@ -35,8 +35,8 @@ test('game day before kickoff (nothing live) shows "Up next"', async ({ page }) 
 })
 
 test('while a game is live there is no card', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-09-20T20:00:00Z'))
   await mockEspn(page)
+  await page.clock.setFixedTime(new Date('2026-09-20T20:00:00Z'))
   await page.goto('./')
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
   await expect(page.getByRole('region', { name: /Up next|No games today/ })).toHaveCount(0)
