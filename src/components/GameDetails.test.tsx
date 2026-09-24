@@ -11,6 +11,15 @@ const game = (away: string) => {
   return g
 }
 
+/** The <dd> value next to a <dt> label. */
+const value = (label: string) => screen.getByText(label, { selector: 'dt' }).nextElementSibling
+
+test('labels and values share one list, in order', () => {
+  render(<GameDetails id="d" game={game('JAX')} hidden={false} />)
+  const labels = screen.getAllByRole('term').map((dt) => dt.textContent)
+  expect(labels).toEqual(['PLAY', 'TO', 'PASS', 'RUSH', 'REC'])
+})
+
 test('quarter table with totals', () => {
   render(<GameDetails id="d" game={game('DET')} hidden={false} />)
   const table = screen.getByRole('table', { name: 'Score by quarter' })
@@ -26,22 +35,18 @@ test('overtime gets an OT column', () => {
 
 test('leaders with team', () => {
   render(<GameDetails id="d" game={game('DET')} hidden={false} />)
-  expect(screen.getByText('PASS').closest('li')).toHaveTextContent(
-    'J. Goff DET26/38, 327 YDS, 4 TD',
-  )
-  expect(screen.getByText('RUSH').closest('li')).toHaveTextContent('J. Cook III BUF')
+  expect(value('PASS')).toHaveTextContent('J. Goff DET 26/38, 327 YDS, 4 TD')
+  expect(value('RUSH')).toHaveTextContent('J. Cook III BUF')
 })
 
 test('live game: labelled last play and timeouts', () => {
   render(<GameDetails id="d" game={game('JAX')} hidden={false} />)
-  expect(screen.getByText('Last play:').parentElement).toHaveTextContent(
-    'Last play: T.Etienne run up the middle to DEN 34 for 3 yards.',
-  )
-  expect(screen.getByText('Timeouts:').parentElement).toHaveTextContent('Timeouts: JAX 2 · DEN 3')
+  expect(value('PLAY')).toHaveTextContent('T.Etienne run up the middle to DEN 34 for 3 yards.')
+  expect(value('TO')).toHaveTextContent('JAX 2 · DEN 3')
 })
 
 test('finished game: no last play or timeouts', () => {
   render(<GameDetails id="d" game={game('DET')} hidden={false} />)
-  expect(screen.queryByText('Last play:')).not.toBeInTheDocument()
-  expect(screen.queryByText('Timeouts:')).not.toBeInTheDocument()
+  expect(screen.queryByText('PLAY')).not.toBeInTheDocument()
+  expect(screen.queryByText('TO')).not.toBeInTheDocument()
 })

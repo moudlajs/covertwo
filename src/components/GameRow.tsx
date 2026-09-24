@@ -153,7 +153,7 @@ export function GameRow({
         <div
           aria-hidden="true"
           data-centre
-          className="flex w-40 flex-col items-center leading-none sm:w-52"
+          className="flex w-40 flex-col items-center leading-none sm:w-60"
         >
           {game.state === 'pre' ? (
             <time
