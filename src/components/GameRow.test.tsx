@@ -40,8 +40,8 @@ describe('GameRow', () => {
 
   test('possession: football next to the team with the ball only', () => {
     const { container } = renderRow('WSH', 'DAL')
-    const sides = container.querySelectorAll('li > div[aria-hidden="true"]')
-    const [away, , home] = [...sides]
+    const sides = container.querySelectorAll('[data-side]')
+    const [away, home] = [...sides]
     expect(away?.querySelector('svg')).toBeNull()
     expect(home?.querySelector('svg')).not.toBeNull()
   })
@@ -91,13 +91,13 @@ describe('GameRow', () => {
 
   test('timeouts: filled pips per side, spoken with correct plural', () => {
     const { container } = renderRow('WSH', 'DAL')
-    const sides = [...container.querySelectorAll('li > div[aria-hidden="true"]')]
+    const sides = [...container.querySelectorAll('[data-side]')]
     const filled = (side: Element | undefined) =>
       [...(side?.querySelectorAll('span.rounded-full') ?? [])].filter((pip) =>
         pip.className.includes('bg-amber-400'),
       ).length
     expect(filled(sides[0])).toBe(0) // WSH
-    expect(filled(sides[2])).toBe(1) // DAL
+    expect(filled(sides[1])).toBe(1) // DAL
     expect(
       screen.getByText(
         /timeouts left: Washington Commanders 0 timeouts, Dallas Cowboys 1 timeout\./,

@@ -107,6 +107,22 @@ describe('mapScoreboard', () => {
     expect(byMatchup('LV', 'LAC').lastPlay).toBeNull() // halftime
   })
 
+  test('quarter scores for finals, live games and overtime', () => {
+    expect(byMatchup('DET', 'BUF').quarters).toEqual({ home: [14, 13, 7, 7], away: [0, 10, 7, 14] })
+    expect(byMatchup('JAX', 'DEN').quarters).toEqual({ home: [3, 7, 0], away: [7, 3, 7] })
+    expect(byMatchup('GB', 'NYJ').quarters?.home).toHaveLength(5) // OT
+    expect(byMatchup('MIA', 'SF').quarters).toBeNull()
+  })
+
+  test('game leaders with their side', () => {
+    expect(byMatchup('DET', 'BUF').leaders).toEqual({
+      passing: { name: 'J. Goff', side: 'away', line: '26/38, 327 YDS, 4 TD' },
+      rushing: { name: 'J. Cook III', side: 'home', line: '21 CAR, 135 YDS, 1 TD' },
+      receiving: { name: 'A. St. Brown', side: 'away', line: '9 REC, 142 YDS, 2 TD' },
+    })
+    expect(byMatchup('MIA', 'SF').leaders).toEqual({})
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

@@ -10,6 +10,7 @@ export const SCOREBOARD_URL = `${import.meta.env.VITE_API_BASE}/nfl/scoreboard`
 // so the mapper checks each field instead of trusting the shape.
 type EspnCompetitor = {
   homeAway?: string
+  linescores?: { value?: number }[]
   score?: string
   winner?: boolean
   team?: { id?: string; abbreviation?: string; displayName?: string; logo?: string }
@@ -26,6 +27,14 @@ type EspnEvent = {
   competitions?: {
     competitors?: EspnCompetitor[]
     broadcast?: string
+    leaders?: {
+      name?: string
+      leaders?: {
+        displayValue?: string
+        athlete?: { shortName?: string }
+        team?: { id?: string }
+      }[]
+    }[]
     situation?: {
       possession?: string
       shortDownDistanceText?: string
@@ -52,6 +61,36 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     score: state === 'pre' || c.score === undefined || Number.isNaN(score) ? null : score,
     winner: c.winner === true,
   }
+}
+
+const LEADER_STATS = {
+  passing: 'passingYards',
+  rushing: 'rushingYards',
+  receiving: 'receivingYards',
+} as const
+
+function leaders(
+  list: NonNullable<NonNullable<EspnEvent['competitions']>[number]['leaders']> | undefined,
+  homeId: string,
+  awayId: string,
+): Game['leaders'] {
+  const out: Game['leaders'] = {}
+  for (const [key, stat] of Object.entries(LEADER_STATS) as [keyof Game['leaders'], string][]) {
+    const top = list?.find((l) => l.name === stat)?.leaders?.[0]
+    const teamId = top?.team?.id
+    const side = teamId === homeId ? 'home' : teamId === awayId ? 'away' : null
+    if (top?.athlete?.shortName && top.displayValue && side)
+      out[key] = { name: top.athlete.shortName, side, line: top.displayValue }
+  }
+  return out
+}
+
+function quarters(home: EspnCompetitor | undefined, away: EspnCompetitor | undefined) {
+  const points = (c: EspnCompetitor | undefined) =>
+    (c?.linescores ?? []).map((l) => l.value).filter((v): v is number => typeof v === 'number')
+  const h = points(home)
+  const a = points(away)
+  return h.length > 0 && h.length === a.length ? { home: h, away: a } : null
 }
 
 function timeouts(
@@ -101,6 +140,8 @@ function mapEvent(e: EspnEvent | null): Game | null {
     redZone: inPlay && comp?.situation?.isRedZone === true,
     timeouts: timeouts(state, comp?.situation),
     // At halftime it only repeats "END OF 2ND QUARTER".
+    quarters: state === 'pre' ? null : quarters(side('home'), side('away')),
+    leaders: state === 'pre' ? {} : leaders(comp?.leaders, home.id, away.id),
     lastPlay: (state === 'in' && !halftime && comp?.situation?.lastPlay?.text?.trim()) || null,
     home,
     away,

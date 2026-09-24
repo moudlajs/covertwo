@@ -108,7 +108,7 @@ test('rows keep aligned columns whatever the status line says', async ({ page })
   await expect(rows).toHaveCount(16)
   const centres = await rows.evaluateAll((lis) =>
     lis.map((li) => {
-      const r = li.children[2]?.getBoundingClientRect() // [sr-only, away, centre, home]
+      const r = li.querySelector('[data-centre]')?.getBoundingClientRect()
       return r ? [Math.round(r.x), Math.round(r.width)] : null
     }),
   )
