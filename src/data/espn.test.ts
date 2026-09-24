@@ -92,6 +92,13 @@ describe('mapScoreboard', () => {
     expect(mapScoreboard({ events: [e] })[0]?.redZone).toBe(false)
   })
 
+  test('timeouts while live only', () => {
+    expect(byMatchup('WSH', 'DAL').timeouts).toEqual({ home: 1, away: 0 })
+    expect(byMatchup('LV', 'LAC').timeouts).toEqual({ home: 3, away: 3 })
+    expect(byMatchup('DET', 'BUF').timeouts).toBeNull()
+    expect(byMatchup('MIA', 'SF').timeouts).toBeNull()
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

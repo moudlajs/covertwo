@@ -31,6 +31,8 @@ type EspnEvent = {
       shortDownDistanceText?: string
       possessionText?: string
       isRedZone?: boolean
+      homeTimeouts?: number
+      awayTimeouts?: number
     }
   }[]
 }
@@ -49,6 +51,15 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     score: state === 'pre' || c.score === undefined || Number.isNaN(score) ? null : score,
     winner: c.winner === true,
   }
+}
+
+function timeouts(
+  state: string,
+  s: { homeTimeouts?: number; awayTimeouts?: number } | undefined,
+): Game['timeouts'] {
+  const ok = (n: unknown): n is number => typeof n === 'number' && n >= 0 && n <= 3
+  if (state !== 'in' || !ok(s?.homeTimeouts) || !ok(s?.awayTimeouts)) return null
+  return { home: s.homeTimeouts, away: s.awayTimeouts }
 }
 
 function mapEvent(e: EspnEvent | null): Game | null {
@@ -87,6 +98,7 @@ function mapEvent(e: EspnEvent | null): Game | null {
     possession,
     down,
     redZone: inPlay && comp?.situation?.isRedZone === true,
+    timeouts: timeouts(state, comp?.situation),
     home,
     away,
   }

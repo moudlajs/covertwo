@@ -23,6 +23,8 @@ export type Game = {
   network: string | null
   /** "2nd & 7" and "DEN 34"; only while the ball is in play. */
   down: { distance: string; spot: string | null } | null
+  /** Timeouts left per side, while live (ESPN resets them at halftime). */
+  timeouts: { home: number; away: number } | null
   /** Ball inside the opponent's 20, while in play. */
   redZone: boolean
   /** Which side has the ball; only while live and ESPN reports it. */
