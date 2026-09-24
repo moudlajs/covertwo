@@ -23,3 +23,7 @@ test('shows final, live and scheduled states', async ({ page }) => {
   await expect(games.getByText('Halftime', { exact: true })).toBeVisible()
   await expect(games.getByText('22:25', { exact: true })).toBeVisible()
 })
+
+test('footer shows when the data was last updated', async ({ page }) => {
+  await expect(page.getByRole('contentinfo')).toContainText('updated just now')
+})

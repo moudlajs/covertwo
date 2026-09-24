@@ -5,6 +5,7 @@ import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
+import { UpdatedAgo } from './components/UpdatedAgo'
 import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
@@ -20,7 +21,10 @@ export default function App() {
       footer={
         <>
           <span>ESPN</span>
-          <Retrying active={status === 'error' && !never} />
+          <span className="flex items-center gap-2">
+            <Retrying active={status === 'error' && !never} />
+            <UpdatedAgo at={lastUpdated} live={games.some((g) => g.state === 'in')} />
+          </span>
         </>
       }
       controls={
