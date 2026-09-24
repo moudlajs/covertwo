@@ -45,6 +45,22 @@ describe('mapScoreboard', () => {
     })
   })
 
+  test('possession: side with the ball, only while live', () => {
+    expect(byMatchup('JAX', 'DEN').possession).toBe('away')
+    expect(byMatchup('WSH', 'DAL').possession).toBe('home')
+    expect(byMatchup('LV', 'LAC').possession).toBeNull() // halftime: no possession reported
+    expect(byMatchup('DET', 'BUF').possession).toBeNull() // final
+  })
+
+  test('possession ignores an unknown team id', () => {
+    type Live = { competitions: { situation: { possession: string } }[] }
+    const e = structuredClone(fixture.events.find((x) => x.shortName === 'JAX @ DEN')) as Live
+    const situation = e.competitions[0]?.situation
+    if (!situation) throw new Error('fixture changed')
+    situation.possession = '999'
+    expect(mapScoreboard({ events: [e] })[0]?.possession).toBeNull()
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })
