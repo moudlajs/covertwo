@@ -7,11 +7,13 @@ import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
 import { useScoreboard } from './data/useScoreboard'
+import { useScoreChanges } from './data/useScoreChanges'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
   const { games, status, lastUpdated, live, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
+  const changes = useScoreChanges(games)
   const empty = games.length === 0
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
@@ -21,6 +23,10 @@ export default function App() {
       footer={
         <>
           <span>ESPN</span>
+          {/* Always mounted so screen readers announce score changes. */}
+          <span aria-live="polite" className="sr-only">
+            {changes.announcement}
+          </span>
           <span className="flex items-center gap-2">
             <Retrying active={status === 'error' && !never} />
             <UpdatedAgo at={lastUpdated} live={live} />
@@ -52,7 +58,7 @@ export default function App() {
           No games scheduled.
         </p>
       ) : (
-        <ScoreList games={games} mode={mode} />
+        <ScoreList games={games} mode={mode} flashing={changes.flashing} />
       )}
     </Shell>
   )

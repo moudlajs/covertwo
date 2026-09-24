@@ -4,7 +4,15 @@ import type { TimeMode } from '../time/format'
 import { GameRow } from './GameRow'
 
 /** Games grouped under day headings, in the selected time zone. */
-export function ScoreList({ games, mode }: { games: Game[]; mode: TimeMode }) {
+export function ScoreList({
+  games,
+  mode,
+  flashing,
+}: {
+  games: Game[]
+  mode: TimeMode
+  flashing?: Map<string, ('home' | 'away')[]>
+}) {
   return groupByDay(games, mode).map((day) => (
     <section key={day.key} aria-labelledby={`day-${day.key}`}>
       <h2
@@ -18,7 +26,7 @@ export function ScoreList({ games, mode }: { games: Game[]; mode: TimeMode }) {
       </h2>
       <ul className="divide-y divide-slate-800/70">
         {day.games.map((g) => (
-          <GameRow key={g.id} game={g} mode={mode} />
+          <GameRow key={g.id} game={g} mode={mode} flashing={flashing?.get(g.id)} />
         ))}
       </ul>
     </section>

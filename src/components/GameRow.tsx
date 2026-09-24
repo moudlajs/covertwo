@@ -57,7 +57,20 @@ function summary(game: Game, mode: TimeMode): string {
 }
 
 /** One compact row: away | score or kickoff + status | home. */
-export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
+/** A changed score glows briefly; under reduced motion it gets a static marker instead. */
+const FLASH =
+  'rounded-sm animate-score-flash motion-reduce:animate-none motion-reduce:bg-amber-400/25'
+
+export function GameRow({
+  game,
+  mode,
+  flashing = [],
+}: {
+  game: Game
+  mode: TimeMode
+  /** Sides whose score just changed. */
+  flashing?: ('home' | 'away')[]
+}) {
   const live = game.state === 'in'
   // Dim the loser only when there is a winner; a tie dims neither side.
   const decided = game.state === 'post' && (game.home.winner || game.away.winner)
@@ -78,9 +91,17 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
           </time>
         ) : (
           <span className="font-mono text-[15px] font-bold tabular-nums">
-            <span className={dim(game.away) ? 'text-slate-500' : ''}>{game.away.score ?? '-'}</span>
+            <span
+              className={`${dim(game.away) ? 'text-slate-500' : ''} ${flashing.includes('away') ? FLASH : ''}`}
+            >
+              {game.away.score ?? '-'}
+            </span>
             <span className="px-1 text-slate-600">-</span>
-            <span className={dim(game.home) ? 'text-slate-500' : ''}>{game.home.score ?? '-'}</span>
+            <span
+              className={`${dim(game.home) ? 'text-slate-500' : ''} ${flashing.includes('home') ? FLASH : ''}`}
+            >
+              {game.home.score ?? '-'}
+            </span>
           </span>
         )}
         <span
