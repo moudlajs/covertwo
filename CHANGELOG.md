@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0](https://github.com/moudlajs/covertwo/compare/v1.3.1...v1.4.0) (2026-09-24)
+
+
+### Features
+
+* conference filter for college ([#128](https://github.com/moudlajs/covertwo/issues/128)) ([0164a79](https://github.com/moudlajs/covertwo/commit/0164a7987cf97def114e60acc25b78e2fa863081))
+* NFL / NCAA league switch ([#126](https://github.com/moudlajs/covertwo/issues/126)) ([f3f6d07](https://github.com/moudlajs/covertwo/commit/f3f6d07d37f5bccc069ae5a69a9cfd6f428ef6b5))
+* Top 25 filter for college ([#127](https://github.com/moudlajs/covertwo/issues/127)) ([b8033b7](https://github.com/moudlajs/covertwo/commit/b8033b777c7b3e2c229282178deabc02acaf71a1))
+
+
+### Refactoring
+
+* per-league data source ([#124](https://github.com/moudlajs/covertwo/issues/124)) ([2c34a56](https://github.com/moudlajs/covertwo/commit/2c34a5619a2bf06a8bf2ecec9dcb56dc98326a84))
+
 ## [1.3.1](https://github.com/moudlajs/covertwo/compare/v1.3.0...v1.3.1) (2026-09-24)
 
 
