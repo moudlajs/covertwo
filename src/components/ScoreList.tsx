@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import type { Game } from '../data/game'
-import { groupByDay } from '../time/days'
-import { formatDay, type TimeMode } from '../time/format'
+import { groupByDay, type Day } from '../time/days'
+import { dayKey, formatDay, type TimeMode } from '../time/format'
+import { useSessionSet } from '../lib/useSessionSet'
 import { GameRow } from './GameRow'
 
 const HEADING =
@@ -27,6 +28,8 @@ export function ScoreList({
 }) {
   // One row open at a time.
   const [open, setOpen] = useState<string | null>(null)
+  // Finished days opened this session.
+  const [opened, toggleDay] = useSessionSet('covertwo:opened-days')
   const isFavorite = (g: Game) => g.home.id === favorite || g.away.id === favorite
   const pinned = favorite ? games.filter(isFavorite) : []
   const rest = pinned.length > 0 ? games.filter((g) => !isFavorite(g)) : games
@@ -56,6 +59,39 @@ export function ScoreList({
     </section>
   )
 
+  // Past days where every game is final fold to their heading (tap to open).
+  // Today never folds, nor does the most recent past day: on Monday morning
+  // Sunday's results stay open, and only older days fold.
+  const days = groupByDay(rest, mode)
+  const today = dayKey(new Date(now ?? Date.now()).toISOString(), mode)
+  const lastPast = days.filter((d) => d.key < today).at(-1)?.key
+  const finished = (day: Day) =>
+    day.key < today && day.key !== lastPast && day.games.every((g) => g.state === 'post')
+  const folded = (day: Day) => (
+    <section key={day.key} aria-labelledby={`day-${day.key}`}>
+      <h2 id={`day-${day.key}`} className={HEADING.replace(' px-3', '')}>
+        <button
+          type="button"
+          aria-expanded={opened.has(day.key)}
+          aria-controls={`games-${day.key}`}
+          onClick={() => toggleDay(day.key)}
+          className="flex w-full cursor-pointer items-center gap-2 px-3 text-left uppercase hover:text-amber-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
+        >
+          <span aria-hidden="true" className="w-2 text-slate-500">
+            {opened.has(day.key) ? '▾' : '▸'}
+          </span>
+          {day.label}
+          <span className="text-slate-600">
+            {day.games.length} {day.games.length === 1 ? 'game' : 'games'} · final
+          </span>
+        </button>
+      </h2>
+      <div id={`games-${day.key}`} hidden={!opened.has(day.key)}>
+        {rows(day.games)}
+      </div>
+    </section>
+  )
+
   const first = pinned[0]
   const team = first && (first.home.id === favorite ? first.home : first.away)
   return (
@@ -72,17 +108,19 @@ export function ScoreList({
           pinned,
           true,
         )}
-      {groupByDay(rest, mode).map((day) =>
-        section(
-          day.key,
-          <>
-            {day.label}
-            <span className="text-slate-600">
-              {day.games.length} {day.games.length === 1 ? 'game' : 'games'}
-            </span>
-          </>,
-          day.games,
-        ),
+      {days.map((day) =>
+        finished(day)
+          ? folded(day)
+          : section(
+              day.key,
+              <>
+                {day.label}
+                <span className="text-slate-600">
+                  {day.games.length} {day.games.length === 1 ? 'game' : 'games'}
+                </span>
+              </>,
+              day.games,
+            ),
       )}
     </>
   )

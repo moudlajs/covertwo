@@ -18,7 +18,15 @@ export const SCOREBOARD_API = /^http:\/\/api\.test\/nfl\/scoreboard/
  * Route every ESPN request to local fixtures. CI must never hit the real API;
  * any other ESPN URL fails the request loudly instead of reaching the network.
  */
+/**
+ * The fixture's moment: Sunday 20 Sep 2026, 22:00 in Prague (same as demo
+ * mode). Every e2e test sees the same "now", whatever day the suite runs.
+ * Tests that need another moment call page.clock.setFixedTime after this.
+ */
+export const FIXTURE_NOW = new Date('2026-09-20T20:00:00Z')
+
 export async function mockEspn(page: Page) {
+  await page.clock.setFixedTime(FIXTURE_NOW)
   // Playwright tries the most recently registered route first, so the
   // catch-all abort goes first and the specific routes after it.
   await page.route(/espn\.com|api\.test/, (route) => route.abort())
