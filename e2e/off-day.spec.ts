@@ -6,7 +6,7 @@ test('a day without games shows the next kickoff over a resting board', async ({
   await mockEspn(page)
   await page.goto('./')
   const card = page.getByRole('region', { name: 'No games today' })
-  await expect(card).toContainText('Sunday 20 Sept')
+  await expect(card).toContainText(/Sunday 20 Sept?/) // Safari: "Sep", Chromium: "Sept"
   await expect(card).toContainText('in 1d 8h')
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16) // board still there
 })
