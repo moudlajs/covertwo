@@ -3,3 +3,17 @@
 :root {
   color-scheme: dark;
 }
+
+@theme {
+  /* Score change: brief amber glow behind the number. */
+  --animate-score-flash: score-flash 2.5s ease-out;
+  @keyframes score-flash {
+    0%,
+    30% {
+      background-color: rgb(251 191 36 / 0.45);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+}

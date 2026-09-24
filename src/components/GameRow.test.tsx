@@ -76,6 +76,19 @@ describe('GameRow', () => {
     expect(screen.getByRole('listitem')).not.toHaveClass('shadow-rose-500')
   })
 
+  test('a changed score gets the flash, with a static fallback under reduced motion', () => {
+    const game = games.find((g) => g.home.abbr === 'DAL')
+    if (!game) throw new Error('no DAL game')
+    render(
+      <ul>
+        <GameRow game={game} mode="eu" flashing={['home']} />
+      </ul>,
+    )
+    const home = screen.getByText('20')
+    expect(home).toHaveClass('animate-score-flash', 'motion-reduce:animate-none')
+    expect(screen.getByText('23')).not.toHaveClass('animate-score-flash')
+  })
+
   test('halftime', () => {
     renderRow('LV', 'LAC')
     expect(screen.getByText('Halftime')).toBeInTheDocument()
