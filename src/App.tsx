@@ -10,6 +10,9 @@ import { UpdatedAgo } from './components/UpdatedAgo'
 import { LEAGUES, scoreboardUrl, type League } from './data/leagues'
 import { useLeague } from './data/useLeague'
 import { useNcaaView } from './data/useNcaaView'
+import { useFavorites } from './data/useFavorites'
+import { NFL_TEAMS, teamsIn } from './data/teams'
+import { FavoriteSelect } from './components/FavoriteSelect'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
@@ -20,8 +23,10 @@ export default function App() {
   const [ncaaView, setNcaaView] = useNcaaView()
   const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league, ncaaView))
   const [mode, setMode] = useTimeMode()
+  const [favorites, setFavorite] = useFavorites()
+  const favorite = favorites[league]
   const changes = useScoreChanges(games)
-  const title = documentTitle(games)
+  const title = documentTitle(games, favorite?.id)
   useEffect(() => {
     document.title = title
   }, [title])
@@ -82,7 +87,13 @@ export default function App() {
               { value: 'us', label: 'US' },
             ]}
           />
-          <Menu />
+          <Menu>
+            <FavoriteSelect
+              teams={league === 'nfl' ? NFL_TEAMS : teamsIn(games)}
+              value={favorite}
+              onChange={(f) => setFavorite(league, f)}
+            />
+          </Menu>
         </>
       }
     >
@@ -95,7 +106,7 @@ export default function App() {
           No games scheduled.
         </p>
       ) : (
-        <ScoreList games={games} mode={mode} flashing={changes.flashing} />
+        <ScoreList games={games} mode={mode} flashing={changes.flashing} favorite={favorite?.id} />
       )}
     </Shell>
   )

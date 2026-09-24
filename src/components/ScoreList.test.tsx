@@ -41,3 +41,22 @@ test('Enter on a focused row expands it', async () => {
   await user.keyboard('{Enter}')
   expect(row(/^Detroit Lions 31/)).toHaveAttribute('aria-expanded', 'true')
 })
+
+test('the favourite team is pinned on top, highlighted, and not repeated in its day', () => {
+  render(<ScoreList games={games} mode="eu" favorite="33" />)
+  const headings = screen.getAllByRole('heading', { level: 2 })
+  expect(headings[0]).toHaveTextContent('Your team: Baltimore Ravens')
+  expect(headings[0]).toHaveTextContent('Sunday 20 Sept')
+  const pinned = screen.getAllByRole('list')[0]
+  expect(pinned?.children).toHaveLength(1)
+  expect(pinned?.firstElementChild).toHaveClass('bg-amber-400/[0.07]')
+  expect(screen.getAllByRole('button', { name: /Baltimore Ravens/ })).toHaveLength(1)
+  expect(screen.getByRole('heading', { name: /^Sunday 20 Sept\s*12 games/ })).toBeInTheDocument()
+})
+
+test('no pinned section when the favourite is not playing or none is set', () => {
+  const { rerender } = render(<ScoreList games={games} mode="eu" favorite="999" />)
+  expect(screen.queryByText(/Your team/)).not.toBeInTheDocument()
+  rerender(<ScoreList games={games} mode="eu" />)
+  expect(screen.queryByText(/Your team/)).not.toBeInTheDocument()
+})
