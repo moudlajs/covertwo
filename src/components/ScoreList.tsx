@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import type { Game } from '../data/game'
+import type { League } from '../data/leagues'
 import { groupByDay, type Day } from '../time/days'
 import { dayKey, formatDay, type TimeMode } from '../time/format'
 import { useSessionSet } from '../lib/useSessionSet'
@@ -18,6 +19,7 @@ export function ScoreList({
   flashing,
   favorite = null,
   now,
+  league = 'nfl',
 }: {
   games: Game[]
   mode: TimeMode
@@ -25,10 +27,12 @@ export function ScoreList({
   /** Favourite team id. */
   favorite?: string | null
   now?: number
+  /** Scopes the remembered open days, so NFL and college don't share them. */
+  league?: League
 }) {
   // One row open at a time.
   const [open, setOpen] = useState<string | null>(null)
-  // Finished days opened this session.
+  // Finished days opened this session, per league.
   const [opened, toggleDay] = useSessionSet('covertwo:opened-days')
   const isFavorite = (g: Game) => g.home.id === favorite || g.away.id === favorite
   const pinned = favorite ? games.filter(isFavorite) : []
@@ -72,13 +76,13 @@ export function ScoreList({
       <h2 id={`day-${day.key}`} className={HEADING.replace(' px-3', '')}>
         <button
           type="button"
-          aria-expanded={opened.has(day.key)}
+          aria-expanded={opened.has(`${league}:${day.key}`)}
           aria-controls={`games-${day.key}`}
-          onClick={() => toggleDay(day.key)}
+          onClick={() => toggleDay(`${league}:${day.key}`)}
           className="flex w-full cursor-pointer items-center gap-2 px-3 text-left uppercase hover:text-amber-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
         >
           <span aria-hidden="true" className="w-2 text-slate-500">
-            {opened.has(day.key) ? '▾' : '▸'}
+            {opened.has(`${league}:${day.key}`) ? '▾' : '▸'}
           </span>
           {day.label}
           <span className="text-slate-600">
@@ -86,7 +90,7 @@ export function ScoreList({
           </span>
         </button>
       </h2>
-      <div id={`games-${day.key}`} hidden={!opened.has(day.key)}>
+      <div id={`games-${day.key}`} hidden={!opened.has(`${league}:${day.key}`)}>
         {rows(day.games)}
       </div>
     </section>

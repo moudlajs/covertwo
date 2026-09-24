@@ -140,6 +140,7 @@ export default function App() {
               flashing={changes.flashing}
               favorite={favorite?.id}
               now={now}
+              league={league}
             />
           </div>
         </>

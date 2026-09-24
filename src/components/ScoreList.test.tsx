@@ -83,13 +83,27 @@ test('an older past day with only finals folds; tap opens it and it stays open',
   sessionStorage.clear()
 })
 
+test('opened days are remembered per league', async () => {
+  const user = userEvent.setup()
+  sessionStorage.clear()
+  const { rerender } = render(<ScoreList games={games} mode="eu" now={TUESDAY} league="nfl" />)
+  await user.click(screen.getByRole('button', { name: /Friday 18/ }))
+  rerender(<ScoreList games={games} mode="eu" now={TUESDAY} league="ncaaf" />)
+  expect(screen.getByRole('button', { name: /Friday 18/ })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  sessionStorage.clear()
+})
+
 test('today and the most recent past day never fold; unfinished days never fold', () => {
   const allFinal = games.map((g) => ({ ...g, state: 'post' as const }))
   render(<ScoreList games={allFinal} mode="eu" now={TUESDAY} />)
+  // Fold buttons are the ones controlling a day's games container.
   const folded = screen
     .getAllByRole('button', { expanded: false })
+    .filter((b) => b.getAttribute('aria-controls')?.startsWith('games-'))
     .map((b) => b.textContent)
-    .filter((t) => /final/.test(t ?? ''))
   expect(folded).toHaveLength(2) // Friday and Sunday; Monday (last past) and Tuesday (today) stay open
   expect(folded.join()).toMatch(/Friday 18/)
   expect(folded.join()).toMatch(/Sunday 20/)
