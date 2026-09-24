@@ -34,8 +34,8 @@ export function Shell({
             the scroll container, so they can't stretch the page. */}
         {/* tabIndex: the list is the only scroll container and has no focusable
             children, so keyboard users need to focus it to scroll (WCAG SCR29). */}
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
         <main
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scroll container, see above
           tabIndex={0}
           className="relative min-h-0 overflow-y-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60 overscroll-contain [scrollbar-color:var(--color-slate-700)_transparent] [scrollbar-width:thin]"
         >
