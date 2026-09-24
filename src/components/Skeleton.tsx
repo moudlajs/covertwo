@@ -16,7 +16,7 @@ export function Skeleton() {
               <div className="size-5 rounded-full bg-slate-800" />
               <div className="h-3 w-8 rounded bg-slate-800" />
             </div>
-            <div className="flex min-w-24 flex-col items-center leading-none">
+            <div className="flex w-40 flex-col items-center leading-none sm:w-52">
               <div className="h-[15px] w-12 rounded bg-slate-800" />
               <div className="mt-1 h-2.5 w-10 rounded bg-slate-800/60" />
             </div>
