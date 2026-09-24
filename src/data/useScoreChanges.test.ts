@@ -36,6 +36,24 @@ test('a changed score flashes that side and is announced', () => {
   expect(result.current.announcement).toBe('Score: Washington Commanders 23, Dallas Cowboys 27')
 })
 
+test('kickoff (no score → 0) flashes nothing', () => {
+  const scheduled = games.map((g) =>
+    g.state === 'pre'
+      ? g
+      : { ...g, home: { ...g.home, score: null }, away: { ...g.away, score: null } },
+  )
+  const { result, rerender } = setup(scheduled)
+  rerender({
+    list: scheduled.map((g) =>
+      g.home.score === null
+        ? { ...g, home: { ...g.home, score: 0 }, away: { ...g.away, score: 0 } }
+        : g,
+    ),
+  })
+  expect(result.current.flashing.size).toBe(0)
+  expect(result.current.announcement).toBe('')
+})
+
 test('an unchanged refetch flashes nothing', () => {
   const { result, rerender } = setup(games)
   rerender({ list: games.map((g) => ({ ...g })) })

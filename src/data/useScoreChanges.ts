@@ -32,7 +32,10 @@ export function useScoreChanges(games: Game[]): ScoreChanges {
     for (const g of games) {
       const old = before.get(g.id)
       if (!old) continue // new to the board, e.g. the first load
-      const sides = (['away', 'home'] as const).filter((s) => g[s].score !== old[s].score)
+      // null → 0 is kickoff, not a score.
+      const sides = (['away', 'home'] as const).filter(
+        (s) => old[s].score !== null && g[s].score !== old[s].score,
+      )
       if (sides.length === 0) continue
       flashing.set(g.id, sides)
       lines.push(
