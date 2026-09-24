@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/moudlajs/covertwo/compare/v1.0.0...v1.1.0) (2026-09-24)
+
+
+### Features
+
+* fit the panel to the screen, scroll the list inside ([#111](https://github.com/moudlajs/covertwo/issues/111)) ([922d1c1](https://github.com/moudlajs/covertwo/commit/922d1c196aa2a0f7555a07497eb126a19bf90f2f))
+* possession indicator ([#109](https://github.com/moudlajs/covertwo/issues/109)) ([29e51fd](https://github.com/moudlajs/covertwo/commit/29e51fdd5bf3d6f75618366b8444921b9dea6d6c))
+
 ## [1.0.0](https://github.com/moudlajs/covertwo/compare/v0.3.0...v1.0.0) (2026-09-24)
 
 
