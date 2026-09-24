@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { LoadError } from './components/LoadError'
 import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
@@ -7,11 +7,11 @@ import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
-import { LEAGUES, scoreboardUrl, type League } from './data/leagues'
+import { LEAGUES, scoreboardUrl, top25With, type League } from './data/leagues'
 import { useLeague } from './data/useLeague'
 import { useNcaaView } from './data/useNcaaView'
 import { useFavorites } from './data/useFavorites'
-import { NFL_TEAMS, teamsIn } from './data/teams'
+import { FBS_TEAMS, NFL_TEAMS } from './data/teams'
 import { FavoriteSelect } from './components/FavoriteSelect'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
@@ -24,11 +24,22 @@ import { isOffDay } from './time/days'
 export default function App() {
   const [league, setLeague] = useLeague()
   const [ncaaView, setNcaaView] = useNcaaView()
-  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league, ncaaView))
-  const [mode, setMode] = useTimeMode()
-  const now = useNow(60_000) // kickoff countdowns tick by the minute
   const [favorites, setFavorite] = useFavorites()
   const favorite = favorites[league]
+  // A college favourite may be unranked, so their game needs the full FBS slate.
+  const collegeFavorite = league === 'ncaaf' ? (favorite?.id ?? null) : null
+  const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null))
+  const { status, lastUpdated, live, retry } = board
+  // Memoized: useScoreChanges detects new data by array identity.
+  const games = useMemo(
+    () =>
+      collegeFavorite && ncaaView === 'top25'
+        ? top25With(board.games, collegeFavorite)
+        : board.games,
+    [board.games, collegeFavorite, ncaaView],
+  )
+  const [mode, setMode] = useTimeMode()
+  const now = useNow(60_000) // kickoff countdowns tick by the minute
   const changes = useScoreChanges(games)
   const title = documentTitle(games, favorite?.id)
   useEffect(() => {
@@ -94,7 +105,7 @@ export default function App() {
           />
           <Menu>
             <FavoriteSelect
-              teams={league === 'nfl' ? NFL_TEAMS : teamsIn(games)}
+              teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
               value={favorite}
               onChange={(f) => setFavorite(league, f)}
             />
