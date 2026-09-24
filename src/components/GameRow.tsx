@@ -41,13 +41,18 @@ function Side({
   )
 }
 
+function downText(down: NonNullable<Game['down']>): string {
+  return down.spot ? `${down.distance} at ${down.spot}` : down.distance
+}
+
 /** What a screen reader hears, in reading order: both teams, then the status. */
 function summary(game: Game, mode: TimeMode): string {
   const { away, home } = game
   if (game.state === 'pre')
     return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${ball}`
+  const down = game.down ? `, ${downText(game.down)}` : ''
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${ball}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -62,7 +67,7 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
     >
       <span className="sr-only">{summary(game, mode)}</span>
       <Side team={game.away} dim={dim(game.away)} align="start" ball={game.possession === 'away'} />
-      <div aria-hidden="true" className="flex min-w-24 flex-col items-center leading-none">
+      <div aria-hidden="true" className="flex w-40 flex-col items-center leading-none sm:w-52">
         {game.state === 'pre' ? (
           <time
             dateTime={game.startsAt}
@@ -78,15 +83,26 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
           </span>
         )}
         <span
-          className={`mt-1 flex items-center gap-1 font-mono text-[10px] ${live ? 'font-semibold text-rose-400' : 'text-slate-500'}`}
+          className={`mt-1 flex max-w-full items-center gap-1 font-mono text-[10px] whitespace-nowrap ${live ? 'font-semibold text-rose-400' : 'text-slate-500'}`}
         >
           {live && (
             <span
               aria-hidden="true"
-              className="size-1.5 animate-pulse rounded-full bg-rose-500 motion-reduce:animate-none"
+              className="size-1.5 shrink-0 animate-pulse rounded-full bg-rose-500 motion-reduce:animate-none"
             />
           )}
-          {status(game)}
+          <span className="shrink-0">{status(game)}</span>
+          {game.down && (
+            <>
+              <span className="shrink-0 font-normal text-slate-400">· {game.down.distance}</span>
+              {game.down.spot && (
+                // A half-cut "at D…" reads worse than nothing, so phones skip the spot.
+                <span className="hidden min-w-0 truncate font-normal text-slate-500 sm:inline">
+                  at {game.down.spot}
+                </span>
+              )}
+            </>
+          )}
         </span>
       </div>
       <Side team={game.home} dim={dim(game.home)} align="end" ball={game.possession === 'home'} />

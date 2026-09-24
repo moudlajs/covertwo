@@ -102,3 +102,15 @@ test('keyboard users can tab to the game list and scroll it', async ({ page }) =
   await page.keyboard.press('PageDown')
   await expect.poll(() => main.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
 })
+
+test('rows keep aligned columns whatever the status line says', async ({ page }) => {
+  const rows = page.getByRole('main').getByRole('listitem')
+  await expect(rows).toHaveCount(16)
+  const centres = await rows.evaluateAll((lis) =>
+    lis.map((li) => {
+      const r = li.children[2]?.getBoundingClientRect() // [sr-only, away, centre, home]
+      return r ? [Math.round(r.x), Math.round(r.width)] : null
+    }),
+  )
+  expect(new Set(centres.map((c) => JSON.stringify(c))).size).toBe(1)
+})

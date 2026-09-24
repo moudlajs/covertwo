@@ -32,7 +32,7 @@ describe('GameRow', () => {
     renderRow('JAX', 'DEN')
     expect(
       screen.getByText(
-        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, Jacksonville Jaguars ball',
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball',
       ),
     ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
@@ -55,6 +55,12 @@ describe('GameRow', () => {
       expect(container.querySelectorAll('svg')).toHaveLength(0)
       unmount()
     }
+  })
+
+  test('live: down & distance next to the clock', () => {
+    renderRow('JAX', 'DEN')
+    expect(screen.getByText('· 2nd & 7')).toBeInTheDocument()
+    expect(screen.getByText('at DEN 34')).toHaveClass('hidden', 'sm:inline') // phones skip the spot
   })
 
   test('halftime', () => {

@@ -70,6 +70,19 @@ describe('mapScoreboard', () => {
     expect(mapScoreboard({ events: [e] })[0]?.possession).toBeNull()
   })
 
+  test('down & distance while in play', () => {
+    expect(byMatchup('JAX', 'DEN').down).toEqual({ distance: '2nd & 7', spot: 'DEN 34' })
+    expect(byMatchup('LV', 'LAC').down).toBeNull() // halftime
+    expect(byMatchup('DET', 'BUF').down).toBeNull() // final
+  })
+
+  test('no down & distance between quarters even if ESPN keeps the situation', () => {
+    type Live = { status: { type: { name: string } } }
+    const e = structuredClone(fixture.events.find((x) => x.shortName === 'JAX @ DEN')) as Live
+    e.status.type.name = 'STATUS_END_PERIOD'
+    expect(mapScoreboard({ events: [e] })[0]?.down).toBeNull()
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

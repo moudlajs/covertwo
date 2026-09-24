@@ -21,6 +21,8 @@ export type Game = {
   clock: string
   halftime: boolean
   network: string | null
+  /** "2nd & 7" and "DEN 34"; only while the ball is in play. */
+  down: { distance: string; spot: string | null } | null
   /** Which side has the ball; only while live and ESPN reports it. */
   possession: 'home' | 'away' | null
   home: Team

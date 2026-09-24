@@ -26,7 +26,7 @@ type EspnEvent = {
   competitions?: {
     competitors?: EspnCompetitor[]
     broadcast?: string
-    situation?: { possession?: string }
+    situation?: { possession?: string; shortDownDistanceText?: string; possessionText?: string }
   }[]
 }
 
@@ -64,6 +64,11 @@ function mapEvent(e: EspnEvent | null): Game | null {
   const halftime = type.name === 'STATUS_HALFTIME'
   const ball = state === 'in' && !halftime ? comp?.situation?.possession : undefined
   const possession = ball === home.id ? 'home' : ball === away.id ? 'away' : null
+  // Down & distance only while the clock can run: not at halftime, between
+  // quarters (STATUS_END_PERIOD) or during other breaks.
+  const inPlay = type.name === 'STATUS_IN_PROGRESS'
+  const distance = inPlay ? comp?.situation?.shortDownDistanceText : undefined
+  const down = distance ? { distance, spot: comp?.situation?.possessionText || null } : null
 
   return {
     id: e.id,
@@ -75,6 +80,7 @@ function mapEvent(e: EspnEvent | null): Game | null {
     halftime,
     network: comp?.broadcast || null,
     possession,
+    down,
     home,
     away,
   }
