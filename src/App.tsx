@@ -9,6 +9,7 @@ import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
 import { LEAGUES, scoreboardUrl, type League } from './data/leagues'
 import { useLeague } from './data/useLeague'
+import { useNcaaView } from './data/useNcaaView'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
@@ -16,7 +17,8 @@ import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
   const [league, setLeague] = useLeague()
-  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league))
+  const [ncaaView, setNcaaView] = useNcaaView()
+  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league, ncaaView))
   const [mode, setMode] = useTimeMode()
   const changes = useScoreChanges(games)
   const title = documentTitle(games)
@@ -40,6 +42,20 @@ export default function App() {
             label: LEAGUES[id].label,
           }))}
         />
+      }
+      toolbar={
+        league === 'ncaaf' && (
+          <Segmented
+            label="College games"
+            name="ncaa-view"
+            value={ncaaView}
+            onChange={setNcaaView}
+            options={[
+              { value: 'top25', label: 'Top 25' },
+              { value: 'fbs', label: 'All FBS' },
+            ]}
+          />
+        )
       }
       footer={
         <>

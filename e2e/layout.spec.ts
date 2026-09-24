@@ -102,9 +102,8 @@ test('day headings stick just under the pinned header', async ({ page }) => {
   const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
   const top = await sunday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
   await page.evaluate((y) => window.scrollTo(0, y + 200), top) // well into Sunday
-  const header = await page.getByRole('banner').boundingBox()
+  // Flush against the pinned header block: no gap for rows to show through.
+  const block = await page.getByTestId('pinned-header').boundingBox()
   const heading = await sunday.boundingBox()
-  expect(
-    Math.abs((heading?.y ?? -99) - ((header?.y ?? 0) + (header?.height ?? 0))),
-  ).toBeLessThanOrEqual(1)
+  expect(heading?.y).toBe((block?.y ?? 0) + (block?.height ?? 0))
 })
