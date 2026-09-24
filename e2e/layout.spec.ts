@@ -99,7 +99,7 @@ test('the page scrolls; header and footer stay pinned, no nested scroll area', a
 
 test('day headings stick just under the pinned header', async ({ page }) => {
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
-  const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
+  const sunday = page.getByRole('heading', { level: 2, name: /^Sunday/ })
   const top = await sunday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
   await page.evaluate((y) => window.scrollTo(0, y + 200), top) // well into Sunday
   // Flush against the pinned header block: no gap for rows to show through.

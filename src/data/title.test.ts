@@ -27,6 +27,11 @@ test('a missing live score shows as a dash, not zero', () => {
   )
 })
 
+test("the favourite's live game wins over the count", () => {
+  expect(documentTitle(games, '6')).toBe('WSH 23-20 DAL · covertwo') // Dallas
+  expect(documentTitle(games, '33')).toBe('4 live · covertwo') // Ravens not live
+})
+
 test('nothing live: just the name', () => {
   expect(documentTitle(games.filter((g) => g.state !== 'in'))).toBe('covertwo')
   expect(documentTitle([])).toBe('covertwo')

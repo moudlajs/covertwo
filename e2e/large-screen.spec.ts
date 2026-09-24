@@ -25,7 +25,7 @@ test.describe('panel size by screen', () => {
     await mockEspn(page)
     await page.goto('./')
     await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
-    const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
+    const sunday = page.getByRole('heading', { level: 2, name: /^Sunday/ })
     const top = await sunday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
     await page.evaluate((y) => window.scrollTo(0, y + 200), top)
     expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0)

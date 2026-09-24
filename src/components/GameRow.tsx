@@ -100,6 +100,7 @@ export function GameRow({
   flashing = [],
   expanded = false,
   onToggle,
+  highlight = false,
 }: {
   game: Game
   mode: TimeMode
@@ -107,6 +108,8 @@ export function GameRow({
   flashing?: ('home' | 'away')[]
   expanded?: boolean
   onToggle?: () => void
+  /** The favourite team's game: a faint amber tint. */
+  highlight?: boolean
 }) {
   const live = game.state === 'in'
   // Started games open to quarter scores and leaders; scheduled ones have none.
@@ -117,7 +120,7 @@ export function GameRow({
   const dim = (t: Team) => decided && !t.winner
   return (
     <li
-      className={`${live ? 'bg-slate-800/40' : ''} ${game.redZone ? 'shadow-[inset_2px_0_0_0] shadow-rose-500' : ''}`}
+      className={`${highlight ? 'bg-amber-400/[0.07]' : live ? 'bg-slate-800/40' : ''} ${game.redZone ? 'shadow-[inset_2px_0_0_0] shadow-rose-500' : ''}`}
     >
       {expandable ? (
         <button

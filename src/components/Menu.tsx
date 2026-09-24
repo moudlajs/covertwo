@@ -1,11 +1,11 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 /**
  * Hamburger button with a small dropdown panel. A home for future settings;
  * for now it shows the version and a link to the repo. Escape closes it and
  * returns focus to the button; a click outside just closes it.
  */
-export function Menu() {
+export function Menu({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
@@ -54,9 +54,9 @@ export function Menu() {
       <div
         id={panelId}
         hidden={!open}
-        className="absolute top-full right-0 z-10 mt-2 w-48 rounded-lg bg-slate-950 p-3 font-mono text-[11px] text-slate-400 shadow-xl ring-1 ring-slate-700"
+        className="absolute top-full right-0 z-10 mt-2 w-56 rounded-lg bg-slate-950 p-3 font-mono text-[11px] text-slate-400 shadow-xl ring-1 ring-slate-700"
       >
-        <p className="text-slate-500">Settings coming soon.</p>
+        {children}
         <hr className="my-2 border-slate-800" />
         <p>
           covertwo <span className="text-amber-400">v{__APP_VERSION__}</span>
