@@ -40,6 +40,9 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
   over a VPN; server-side requests pass. `curl` checks are misleading
   (plain `curl` passes, `curl` with a browser User-Agent gets 403). Only a
   real browser on the deployed site proves anything.
+- Verified 2026-09-24 on the live site (v0.3.0) through the Worker: 6/6
+  loads in headless Chromium, the client ESPN blocked every time, returned
+  200 with all games.
 - The Worker forwards allow-listed paths only (not an open proxy), adds CORS
   for the Pages and localhost origins, and caches ~15s at the edge so all
   viewers share one upstream request. Deployed by `.github/workflows/worker.yml`.
