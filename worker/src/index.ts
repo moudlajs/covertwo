@@ -42,14 +42,15 @@ export async function handle(request: Request, upstream: Fetch = fetch): Promise
   try {
     const res = await upstream(UPSTREAM + path + url.search, {
       headers: { 'User-Agent': 'covertwo (+https://github.com/moudlajs/covertwo)' },
-      cf: { cacheTtl: CACHE_SECONDS, cacheEverything: true },
+      // Cache successes only, so a blocked or failing upstream is retried at once.
+      cf: { cacheTtlByStatus: { '200-299': CACHE_SECONDS, '300-599': 0 }, cacheEverything: true },
     })
     return new Response(res.body, {
       status: res.status,
       headers: {
         ...cors,
         'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': `public, max-age=${CACHE_SECONDS}`,
+        'Cache-Control': res.ok ? `public, max-age=${CACHE_SECONDS}` : 'no-store',
       },
     })
   } catch (error) {

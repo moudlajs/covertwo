@@ -15,7 +15,12 @@ describe('worker', () => {
     const res = await handle(get('/nfl/scoreboard?week=3&seasontype=2'), upstream)
     expect(upstream).toHaveBeenCalledWith(
       'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=3&seasontype=2',
-      expect.objectContaining({ cf: { cacheTtl: CACHE_SECONDS, cacheEverything: true } }),
+      expect.objectContaining({
+        cf: {
+          cacheTtlByStatus: { '200-299': CACHE_SECONDS, '300-599': 0 },
+          cacheEverything: true,
+        },
+      }),
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('{"events":[]}')
@@ -50,6 +55,7 @@ describe('worker', () => {
     )
     expect(res.status).toBe(403)
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://moudlajs.github.io')
+    expect(res.headers.get('Cache-Control')).toBe('no-store') // retries must reach upstream
   })
 
   test('network failure becomes 502 with CORS, so the app can see it', async () => {
