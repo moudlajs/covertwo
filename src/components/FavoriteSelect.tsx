@@ -9,8 +9,8 @@ export function FavoriteSelect({
   value: Favorite
   onChange: (favorite: Favorite) => void
 }) {
-  // Keep the current favourite selectable even if it isn't in the list
-  // (a college team outside the loaded slate).
+  // Keep a stored favourite selectable even if it's missing from the list
+  // (e.g. a team that left FBS).
   const options = value && !teams.some((t) => t.id === value.id) ? [value, ...teams] : teams
   return (
     <label className="block">

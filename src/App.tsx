@@ -18,6 +18,7 @@ import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 import { useNow } from './lib/useNow'
+import { DEMO, DEMO_NOW } from './lib/demo'
 import { OffDay } from './components/OffDay'
 import { isOffDay } from './time/days'
 
@@ -39,7 +40,8 @@ export default function App() {
     [board.games, collegeFavorite, ncaaView],
   )
   const [mode, setMode] = useTimeMode()
-  const now = useNow(60_000) // kickoff countdowns tick by the minute
+  const clock = useNow(60_000) // kickoff countdowns tick by the minute
+  const now = DEMO ? DEMO_NOW : clock
   const changes = useScoreChanges(games)
   const title = documentTitle(games, favorite?.id)
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function App() {
 
   return (
     <Shell
+      demo={DEMO}
       league={
         <Segmented
           label="League"
