@@ -39,7 +39,7 @@ test('open menu stays inside the viewport', async ({ page }) => {
 test('menu is not clipped by the panel while it is still loading', async ({ page }) => {
   await page.route(SCOREBOARD_API, () => {}) // never answers: stays in the loading state
   await page.reload()
-  await expect(page.getByText('Loading…')).toBeVisible()
+  await expect(page.getByTestId('skeleton')).toBeVisible()
   await page.getByRole('button', { name: 'Menu' }).click()
   const dropdown = page.getByRole('link', { name: 'Source on GitHub' }).locator('..')
   const box = await dropdown.boundingBox()
