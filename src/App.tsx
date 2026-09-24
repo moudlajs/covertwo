@@ -18,6 +18,8 @@ import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 import { useNow } from './lib/useNow'
+import { OffDay } from './components/OffDay'
+import { isOffDay } from './time/days'
 
 export default function App() {
   const [league, setLeague] = useLeague()
@@ -33,6 +35,7 @@ export default function App() {
     document.title = title
   }, [title])
   const empty = games.length === 0
+  const offDay = !empty && isOffDay(games, now, mode)
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
 
@@ -108,13 +111,19 @@ export default function App() {
           No games scheduled.
         </p>
       ) : (
-        <ScoreList
-          games={games}
-          mode={mode}
-          flashing={changes.flashing}
-          favorite={favorite?.id}
-          now={now}
-        />
+        <>
+          {offDay && <OffDay games={games} now={now} mode={mode} />}
+          {/* A resting board on days without games: still readable, just quieter. */}
+          <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
+            <ScoreList
+              games={games}
+              mode={mode}
+              flashing={changes.flashing}
+              favorite={favorite?.id}
+              now={now}
+            />
+          </div>
+        </>
       )}
     </Shell>
   )

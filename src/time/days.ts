@@ -17,3 +17,9 @@ export function groupByDay(games: Game[], mode: TimeMode): Day[] {
   }
   return days
 }
+
+/** True when none of the games fall on today's date in the selected time zone. */
+export function isOffDay(games: Game[], now: number, mode: TimeMode): boolean {
+  const today = dayKey(new Date(now).toISOString(), mode)
+  return !games.some((g) => dayKey(g.startsAt, mode) === today)
+}
