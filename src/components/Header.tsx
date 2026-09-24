@@ -4,11 +4,10 @@ import type { ReactNode } from 'react'
 export function Header({ controls }: { controls?: ReactNode }) {
   return (
     <header className="flex h-11 items-center gap-3 px-3">
-      <h1 className="font-mono text-sm font-bold tracking-tight">
-        covertwo
-        <span aria-hidden="true" className="text-amber-400">
-          _
-        </span>
+      {/* "two" in amber: the name is a football pun (Cover 2 defense). */}
+      <h1 className="font-mono text-base font-bold tracking-tight">
+        cover<span className="text-amber-400">two</span>
+        <span aria-hidden="true">_</span>
       </h1>
       <div className="ml-auto flex items-center gap-2">{controls}</div>
     </header>
