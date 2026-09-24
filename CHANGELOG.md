@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.0](https://github.com/moudlajs/covertwo/compare/v1.9.0...v1.10.0) (2026-09-24)
+
+
+### Features
+
+* demo mode with built-in live data (?demo) ([#155](https://github.com/moudlajs/covertwo/issues/155)) ([6db7c39](https://github.com/moudlajs/covertwo/commit/6db7c3942f0a031d849d51545dc544a22b207f9b))
+* pick any FBS team as college favourite; their game always shows ([#153](https://github.com/moudlajs/covertwo/issues/153)) ([9d4e229](https://github.com/moudlajs/covertwo/commit/9d4e2295c076b494a2df7d61819e0d4ec515dacb))
+
 ## [1.9.0](https://github.com/moudlajs/covertwo/compare/v1.8.0...v1.9.0) (2026-09-24)
 
 
