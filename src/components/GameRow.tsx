@@ -52,7 +52,8 @@ function summary(game: Game, mode: TimeMode): string {
     return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${ball}`
+  const zone = game.redZone ? ', red zone' : ''
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -63,7 +64,7 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
   const dim = (t: Team) => decided && !t.winner
   return (
     <li
-      className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''}`}
+      className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''} ${game.redZone ? 'shadow-[inset_2px_0_0_0] shadow-rose-500' : ''}`}
     >
       <span className="sr-only">{summary(game, mode)}</span>
       <Side team={game.away} dim={dim(game.away)} align="start" ball={game.possession === 'away'} />
@@ -92,6 +93,11 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
             />
           )}
           <span className="shrink-0">{status(game)}</span>
+          {game.redZone && (
+            <span className="shrink-0 rounded-sm bg-rose-500/20 px-1 font-bold text-rose-300">
+              RZ
+            </span>
+          )}
           {game.down && (
             <>
               <span className="shrink-0 font-normal text-slate-400">· {game.down.distance}</span>

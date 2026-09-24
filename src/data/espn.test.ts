@@ -83,6 +83,15 @@ describe('mapScoreboard', () => {
     expect(mapScoreboard({ events: [e] })[0]?.down).toBeNull()
   })
 
+  test('red zone only while in play', () => {
+    expect(byMatchup('WSH', 'DAL').redZone).toBe(true)
+    expect(byMatchup('JAX', 'DEN').redZone).toBe(false)
+    type Live = { status: { type: { name: string } } }
+    const e = structuredClone(fixture.events.find((x) => x.shortName === 'WSH @ DAL')) as Live
+    e.status.type.name = 'STATUS_END_PERIOD'
+    expect(mapScoreboard({ events: [e] })[0]?.redZone).toBe(false)
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

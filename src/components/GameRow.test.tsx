@@ -63,6 +63,19 @@ describe('GameRow', () => {
     expect(screen.getByText('at DEN 34')).toHaveClass('hidden', 'sm:inline') // phones skip the spot
   })
 
+  test('red zone: RZ tag, edge accent and spoken text', () => {
+    renderRow('WSH', 'DAL')
+    expect(screen.getByText('RZ')).toBeInTheDocument()
+    expect(screen.getByRole('listitem')).toHaveClass('shadow-rose-500')
+    expect(screen.getByText(/, red zone, Dallas Cowboys ball$/)).toHaveClass('sr-only')
+  })
+
+  test('no red zone marking outside it', () => {
+    renderRow('JAX', 'DEN')
+    expect(screen.queryByText('RZ')).not.toBeInTheDocument()
+    expect(screen.getByRole('listitem')).not.toHaveClass('shadow-rose-500')
+  })
+
   test('halftime', () => {
     renderRow('LV', 'LAC')
     expect(screen.getByText('Halftime')).toBeInTheDocument()
