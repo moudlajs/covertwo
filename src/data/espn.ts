@@ -26,7 +26,12 @@ type EspnEvent = {
   competitions?: {
     competitors?: EspnCompetitor[]
     broadcast?: string
-    situation?: { possession?: string; shortDownDistanceText?: string; possessionText?: string }
+    situation?: {
+      possession?: string
+      shortDownDistanceText?: string
+      possessionText?: string
+      isRedZone?: boolean
+    }
   }[]
 }
 
@@ -81,6 +86,7 @@ function mapEvent(e: EspnEvent | null): Game | null {
     network: comp?.broadcast || null,
     possession,
     down,
+    redZone: inPlay && comp?.situation?.isRedZone === true,
     home,
     away,
   }
