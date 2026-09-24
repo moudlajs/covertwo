@@ -27,3 +27,7 @@ test('shows final, live and scheduled states', async ({ page }) => {
 test('footer shows when the data was last updated', async ({ page }) => {
   await expect(page.getByRole('contentinfo')).toContainText('updated just now')
 })
+
+test('the tab title counts live games', async ({ page }) => {
+  await expect(page).toHaveTitle('4 live · covertwo')
+})
