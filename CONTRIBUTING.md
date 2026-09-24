@@ -24,6 +24,12 @@ minor version, `fix` the patch. release-please opens a release PR; merging it
 tags, releases and deploys. Milestones are for planning only. The one manual
 override is `Release-As: 1.0.0` when the MVP (M1) ships.
 
+## Dependencies
+
+No update bots. Dependencies are bumped by hand during maintenance passes,
+preferring releases that are at least a few weeks old (supply-chain safety).
+GitHub's vulnerability alerts stay on and show up in the Security tab.
+
 ## Checks
 
 ```sh
