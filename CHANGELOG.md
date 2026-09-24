@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/moudlajs/covertwo/compare/v1.12.0...v1.12.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* one aligned column in the expanded game view ([#163](https://github.com/moudlajs/covertwo/issues/163)) ([5ebb5ae](https://github.com/moudlajs/covertwo/commit/5ebb5aeee7514138c4add20d17eb413c4f61c135))
+
 ## [1.12.0](https://github.com/moudlajs/covertwo/compare/v1.11.0...v1.12.0) (2026-09-24)
 
 
