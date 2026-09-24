@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/moudlajs/covertwo/compare/v1.6.0...v1.7.0) (2026-09-24)
+
+
+### Features
+
+* 1.5x panel on 4K-class screens ([#141](https://github.com/moudlajs/covertwo/issues/141)) ([2feaa31](https://github.com/moudlajs/covertwo/commit/2feaa31ea726ac1ca1d39c08f8deaeefb2c1eca3))
+
+
+### Refactoring
+
+* panel scale as one readable table ([#138](https://github.com/moudlajs/covertwo/issues/138)) ([dfd7494](https://github.com/moudlajs/covertwo/commit/dfd74941e2f0c8bc33048a35ba392e267ba92401))
+
 ## [1.6.0](https://github.com/moudlajs/covertwo/compare/v1.5.0...v1.6.0) (2026-09-24)
 
 
