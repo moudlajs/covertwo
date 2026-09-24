@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import scoreboard from '../fixtures/espn-scoreboard.json' with { type: 'json' }
 import { mockEspn, SCOREBOARD_API } from './mock-espn'
 
 test.beforeEach(async ({ page }) => {
@@ -51,4 +52,53 @@ test('menu is not clipped by the panel while it is still loading', async ({ page
     [box.x + 8, box.y + box.height - 0.5] as const,
   )
   expect(inside).toBe(true)
+})
+
+test('the page never scrolls; the game list scrolls inside the panel', async ({ page }) => {
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
+  const { pageOverflow, listOverflow } = await page.evaluate(() => {
+    const main = document.querySelector('main')
+    const root = document.documentElement
+    return {
+      pageOverflow: root.scrollHeight - root.clientHeight,
+      listOverflow: main ? main.scrollHeight - main.clientHeight : 0,
+    }
+  })
+  expect(pageOverflow).toBe(0)
+  expect(listOverflow).toBeGreaterThan(0)
+  await expect(page.getByRole('banner')).toBeInViewport()
+  await expect(page.getByRole('contentinfo')).toBeInViewport()
+})
+
+test('day headings stick to the top of the list while scrolling', async ({ page }) => {
+  const main = page.getByRole('main')
+  await expect(main.getByRole('listitem')).toHaveCount(16)
+  await main.evaluate((el) => el.scrollBy(0, 300)) // well into Sunday's games
+  const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
+  const [mainBox, headingBox] = [await main.boundingBox(), await sunday.boundingBox()]
+  expect(Math.abs((headingBox?.y ?? -99) - (mainBox?.y ?? 0))).toBeLessThanOrEqual(1)
+})
+
+test('a short week keeps a short panel pinned at the top', async ({ page }) => {
+  const firstPanel = await page.getByTestId('panel').boundingBox()
+  await page.route(SCOREBOARD_API, (route) =>
+    route.fulfill({ json: { ...scoreboard, events: scoreboard.events.slice(0, 1) } }),
+  )
+  await page.reload()
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(1)
+  const panel = await page.getByTestId('panel').boundingBox()
+  const viewport = page.viewportSize()
+  if (!panel || !firstPanel || !viewport) throw new Error('no layout')
+  expect(panel.y).toBe(firstPanel.y) // same top margin as a full week
+  expect(panel.height).toBeLessThan(viewport.height / 2)
+})
+
+test('keyboard users can tab to the game list and scroll it', async ({ page }) => {
+  const main = page.getByRole('main')
+  await expect(main.getByRole('listitem')).toHaveCount(16)
+  for (let i = 0; i < 5 && !(await main.evaluate((el) => el === document.activeElement)); i++)
+    await page.keyboard.press('Tab')
+  await expect(main).toBeFocused()
+  await page.keyboard.press('PageDown')
+  await expect.poll(() => main.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
 })
