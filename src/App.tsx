@@ -48,6 +48,10 @@ export default function App() {
     document.title = title
   }, [title])
   const empty = games.length === 0
+  // Live on the board you see. `live` (from the hook) covers everything loaded,
+  // which with a college favourite includes games filtered out of Top 25; that
+  // one keeps driving polling, this one drives the next-up card.
+  const liveShown = games.some((g) => g.state === 'in')
   const offDay = !empty && isOffDay(games, now, mode)
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
@@ -127,7 +131,7 @@ export default function App() {
       ) : (
         <>
           {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}
-          {!live && <NextUp games={games} now={now} mode={mode} offDay={offDay} />}
+          {!liveShown && <NextUp games={games} now={now} mode={mode} offDay={offDay} />}
           {/* A resting board on days without games: still readable, just quieter. */}
           <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
             <ScoreList
