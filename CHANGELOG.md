@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/moudlajs/covertwo/compare/v1.11.0...v1.12.0) (2026-09-24)
+
+
+### Features
+
+* calmer live rows: last play and timeouts only in the expanded view ([#160](https://github.com/moudlajs/covertwo/issues/160)) ([0629e68](https://github.com/moudlajs/covertwo/commit/0629e6820cdd1746c2c6314fc9079e5c8863b817))
+
 ## [1.11.0](https://github.com/moudlajs/covertwo/compare/v1.10.0...v1.11.0) (2026-09-24)
 
 
