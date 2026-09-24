@@ -1,7 +1,10 @@
 import type { Game, GameState, Team } from './game'
 
-export const SCOREBOARD_URL =
-  'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard'
+/**
+ * Served by our Cloudflare Worker (`worker/`), which forwards to ESPN's
+ * scoreboard API. ESPN rejects browser requests from other sites.
+ */
+export const SCOREBOARD_URL = `${import.meta.env.VITE_API_BASE}/nfl/scoreboard`
 
 // Only the fields we read. Everything is optional: this is an unofficial API,
 // so the mapper checks each field instead of trusting the shape.

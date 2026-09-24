@@ -16,8 +16,9 @@ _Screenshot coming with v0.1.0._
 
 ## Architecture
 
-Target architecture; the data layer lands in M1. No backend: the browser talks to ESPN's public scoreboard API directly; GitHub
-Actions builds the static site and publishes it to GitHub Pages.
+A static site on GitHub Pages plus one tiny Cloudflare Worker. ESPN's API
+rejects browser requests from other sites, so the Worker fetches it
+server-side, caches it for ~15s and adds CORS headers.
 
 ```mermaid
 flowchart LR
@@ -25,13 +26,15 @@ flowchart LR
     App[covertwo<br/>React SPA]
     LS[(localStorage<br/>time mode)]
   end
+  Worker[Cloudflare Worker<br/>proxy + 15s cache]
   ESPN[ESPN scoreboard API<br/>site.api.espn.com]
   CDN[ESPN CDN<br/>team logos]
   subgraph GitHub
     Repo[main branch] --> Actions[GitHub Actions] --> Pages[GitHub Pages]
   end
   Pages -- static files --> App
-  App -- "GET scoreboard<br/>(30s while live)" --> ESPN
+  App -- "GET /nfl/scoreboard<br/>(30s while live)" --> Worker
+  Worker --> ESPN
   App -- img --> CDN
   App <--> LS
 ```
