@@ -56,9 +56,7 @@ function Side({
       <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
         <span className="truncate text-[13px] leading-none font-bold">
           {team.rank !== null && (
-            <span className="mr-1 font-mono text-[10px] font-normal text-slate-400">
-              {team.rank}
-            </span>
+            <span className="mr-1 font-mono text-[10px] font-normal opacity-70">{team.rank}</span>
           )}
           {team.abbr}
         </span>
