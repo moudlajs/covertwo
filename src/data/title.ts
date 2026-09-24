@@ -12,5 +12,5 @@ export function documentTitle(games: Game[]): string {
   if (live.length === 0) return APP
   if (live.length > 1) return `${live.length} live · ${APP}`
   const [g] = live as [Game]
-  return `${g.away.abbr} ${g.away.score ?? 0}-${g.home.score ?? 0} ${g.home.abbr} · ${APP}`
+  return `${g.away.abbr} ${g.away.score ?? '-'}-${g.home.score ?? '-'} ${g.home.abbr} · ${APP}`
 }
