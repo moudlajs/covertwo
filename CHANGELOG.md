@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/moudlajs/covertwo/compare/v1.2.0...v1.3.0) (2026-09-24)
+
+
+### Features
+
+* expandable row with quarter scores and leaders ([#120](https://github.com/moudlajs/covertwo/issues/120)) ([6545378](https://github.com/moudlajs/covertwo/commit/65453786bad1aa27312fe72c128c9e8b0adf8f93))
+* last play line ([#118](https://github.com/moudlajs/covertwo/issues/118)) ([29ab1e7](https://github.com/moudlajs/covertwo/commit/29ab1e70d4c4e426dc459effce6945cc8b524b12))
+* live score in the tab title ([#119](https://github.com/moudlajs/covertwo/issues/119)) ([1ea72cf](https://github.com/moudlajs/covertwo/commit/1ea72cfd7b697f9ba31338cc0a35c37c1cc3aa13))
+* timeouts remaining ([#116](https://github.com/moudlajs/covertwo/issues/116)) ([4225e62](https://github.com/moudlajs/covertwo/commit/4225e62e3d02214fdd83b1b6fcaa636680f97ce8))
+
 ## [1.2.0](https://github.com/moudlajs/covertwo/compare/v1.1.0...v1.2.0) (2026-09-24)
 
 
