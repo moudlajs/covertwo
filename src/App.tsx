@@ -19,7 +19,7 @@ import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 import { useNow } from './lib/useNow'
 import { DEMO, DEMO_NOW } from './lib/demo'
-import { OffDay } from './components/OffDay'
+import { NextUp } from './components/NextUp'
 import { isOffDay } from './time/days'
 
 export default function App() {
@@ -126,7 +126,8 @@ export default function App() {
         </p>
       ) : (
         <>
-          {offDay && <OffDay games={games} now={now} mode={mode} />}
+          {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}
+          {!live && <NextUp games={games} now={now} mode={mode} offDay={offDay} />}
           {/* A resting board on days without games: still readable, just quieter. */}
           <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
             <ScoreList

@@ -3,7 +3,7 @@ import { expect, test } from 'vitest'
 import fixture from '../../fixtures/espn-scoreboard.json'
 import { mapScoreboard } from '../data/espn'
 import { isOffDay } from '../time/days'
-import { OffDay } from './OffDay'
+import { NextUp } from './NextUp'
 
 const games = mapScoreboard(fixture)
 const at = (iso: string) => Date.parse(iso)
@@ -18,7 +18,7 @@ test('off day: no game on today’s date in the selected time zone', () => {
 })
 
 test('card shows the next kickoff and a countdown', () => {
-  render(<OffDay games={games} now={at('2026-09-19T12:00:00Z')} mode="eu" />)
+  render(<NextUp games={games} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
   expect(screen.getByRole('region', { name: 'No games today' })).toBeInTheDocument()
   expect(screen.getByText('Sunday 20 Sept')).toBeInTheDocument()
   expect(screen.getByText('22:25')).toHaveAttribute('datetime', '2026-09-20T20:25:00.000Z')
@@ -27,6 +27,30 @@ test('card shows the next kickoff and a countdown', () => {
 
 test('no upcoming game: the week is done', () => {
   const done = games.map((g) => ({ ...g, state: 'post' as const }))
-  render(<OffDay games={done} now={at('2026-09-23T12:00:00Z')} mode="eu" />)
+  render(<NextUp games={done} now={at('2026-09-23T12:00:00Z')} mode="eu" offDay />)
   expect(screen.getByText("This week's games are done.")).toBeInTheDocument()
+})
+
+test('game day before kickoff: "Up next" with how many games start together', () => {
+  const kickoff = '2026-09-27T17:00:00.000Z'
+  const sunday = games.slice(0, 9).map((g) => ({ ...g, state: 'pre' as const, startsAt: kickoff }))
+  render(<NextUp games={sunday} now={at('2026-09-27T15:00:00Z')} mode="eu" offDay={false} />)
+  const card = screen.getByRole('region', { name: 'Up next' })
+  expect(card).toHaveTextContent('Sunday 27')
+  expect(card).toHaveTextContent('19:00 · 9 games')
+  expect(card).toHaveTextContent('in 2h 0m')
+  expect(card).not.toHaveTextContent('Next ')
+})
+
+test('a single game at the next kickoff has no count', () => {
+  render(<NextUp games={games} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
+  expect(screen.getByRole('region', { name: 'No games today' })).not.toHaveTextContent(/\d+ games/)
+})
+
+test('game day with no kickoff left: nothing', () => {
+  const done = games.map((g) => ({ ...g, state: 'post' as const }))
+  const { container } = render(
+    <NextUp games={done} now={at('2026-09-20T23:00:00Z')} mode="eu" offDay={false} />,
+  )
+  expect(container).toBeEmptyDOMElement()
 })
