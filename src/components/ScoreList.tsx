@@ -16,12 +16,14 @@ export function ScoreList({
   mode,
   flashing,
   favorite = null,
+  now,
 }: {
   games: Game[]
   mode: TimeMode
   flashing?: Map<string, ('home' | 'away')[]>
   /** Favourite team id. */
   favorite?: string | null
+  now?: number
 }) {
   // One row open at a time.
   const [open, setOpen] = useState<string | null>(null)
@@ -40,6 +42,7 @@ export function ScoreList({
           expanded={open === g.id}
           onToggle={() => setOpen((o) => (o === g.id ? null : g.id))}
           highlight={highlight}
+          now={now}
         />
       ))}
     </ul>

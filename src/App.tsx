@@ -17,12 +17,14 @@ import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
+import { useNow } from './lib/useNow'
 
 export default function App() {
   const [league, setLeague] = useLeague()
   const [ncaaView, setNcaaView] = useNcaaView()
   const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league, ncaaView))
   const [mode, setMode] = useTimeMode()
+  const now = useNow(60_000) // kickoff countdowns tick by the minute
   const [favorites, setFavorite] = useFavorites()
   const favorite = favorites[league]
   const changes = useScoreChanges(games)
@@ -106,7 +108,13 @@ export default function App() {
           No games scheduled.
         </p>
       ) : (
-        <ScoreList games={games} mode={mode} flashing={changes.flashing} favorite={favorite?.id} />
+        <ScoreList
+          games={games}
+          mode={mode}
+          flashing={changes.flashing}
+          favorite={favorite?.id}
+          now={now}
+        />
       )}
     </Shell>
   )

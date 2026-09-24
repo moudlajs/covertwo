@@ -1,10 +1,15 @@
 import type { Game, Team } from '../data/game'
+import { COUNTDOWN_WINDOW_MS, formatCountdown } from '../time/countdown'
 import { formatTime, type TimeMode } from '../time/format'
 import { GameDetails } from './GameDetails'
 
-function status(game: Game): string {
+function status(game: Game, now?: number): string {
   if (game.state === 'post') return game.detail
-  if (game.state === 'pre') return game.network ?? 'Scheduled'
+  if (game.state === 'pre') {
+    const network = game.network ?? 'Scheduled'
+    const until = now === undefined ? Infinity : Date.parse(game.startsAt) - now
+    return until <= COUNTDOWN_WINDOW_MS ? `${network} · ${formatCountdown(until)}` : network
+  }
   if (game.halftime) return 'Halftime'
   const period = game.period > 4 ? 'OT' : `Q${game.period}`
   return `${period} · ${game.clock}`
@@ -72,12 +77,12 @@ function downText(down: NonNullable<Game['down']>): string {
 }
 
 /** What a screen reader hears, in reading order: both teams, then the status. */
-function summary(game: Game, mode: TimeMode): string {
+function summary(game: Game, mode: TimeMode, now?: number): string {
   const { away, home } = game
   // "No. 5 Miami Hurricanes" for ranked college teams.
   const name = (t: Team) => (t.rank === null ? t.name : `No. ${t.rank} ${t.name}`)
   if (game.state === 'pre')
-    return `${name(away)} at ${name(home)}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
+    return `${name(away)} at ${name(home)}, ${formatTime(game.startsAt, mode)}, ${status(game, now)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
@@ -101,6 +106,7 @@ export function GameRow({
   expanded = false,
   onToggle,
   highlight = false,
+  now,
 }: {
   game: Game
   mode: TimeMode
@@ -110,6 +116,8 @@ export function GameRow({
   onToggle?: () => void
   /** The favourite team's game: a faint amber tint. */
   highlight?: boolean
+  /** Current time, for kickoff countdowns. */
+  now?: number
 }) {
   const live = game.state === 'in'
   // Started games open to quarter scores and leaders; scheduled ones have none.
@@ -142,7 +150,7 @@ export function GameRow({
   function grid() {
     return (
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5">
-        <span className="sr-only">{summary(game, mode)}</span>
+        <span className="sr-only">{summary(game, mode, now)}</span>
         <Side
           team={game.away}
           dim={dim(game.away)}
@@ -186,7 +194,7 @@ export function GameRow({
                 className="size-1.5 shrink-0 animate-pulse rounded-full bg-rose-500 motion-reduce:animate-none"
               />
             )}
-            <span className="shrink-0">{status(game)}</span>
+            <span className="shrink-0">{status(game, now)}</span>
             {game.redZone && (
               <span className="shrink-0 rounded-sm bg-rose-500/20 px-1 font-bold text-rose-300">
                 RZ

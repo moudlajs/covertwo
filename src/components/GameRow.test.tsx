@@ -137,6 +137,23 @@ describe('GameRow', () => {
     ).toHaveClass('sr-only')
   })
 
+  test('countdown within 12 hours of kickoff, next to the network', () => {
+    const game = games.find((g) => g.away.abbr === 'MIA')
+    if (!game) throw new Error('no MIA game')
+    const kickoff = Date.parse(game.startsAt)
+    const row = (now: number) => (
+      <ul>
+        <GameRow game={game} mode="eu" now={now} />
+      </ul>
+    )
+    const { rerender } = render(row(kickoff - (2 * 60 + 14) * 60_000))
+    expect(screen.getByText('FOX · in 2h 14m')).toBeInTheDocument()
+    rerender(row(kickoff - 13 * 3_600_000))
+    expect(screen.getByText('FOX')).toBeInTheDocument() // more than 12h away: no countdown
+    rerender(row(kickoff + 60_000))
+    expect(screen.getByText('FOX · starting')).toBeInTheDocument() // live comes from ESPN
+  })
+
   test('halftime', () => {
     renderRow('LV', 'LAC')
     expect(screen.getByText('Halftime')).toBeInTheDocument()
