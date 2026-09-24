@@ -50,6 +50,17 @@ export function GameDetails({ id, game, hidden }: { id: string; game: Game; hidd
           </tbody>
         </table>
       )}
+      {game.lastPlay && (
+        <p className="mx-auto max-w-[46ch] text-center">
+          <span className="text-amber-400/80">Last play:</span> {game.lastPlay}
+        </p>
+      )}
+      {game.timeouts && (
+        <p className="text-center">
+          <span className="text-amber-400/80">Timeouts:</span> {game.away.abbr} {game.timeouts.away}{' '}
+          · {game.home.abbr} {game.timeouts.home}
+        </p>
+      )}
       {leaders.length > 0 && (
         <ul className="mx-auto w-fit space-y-0.5">
           {leaders.map(([key, leader]) => (

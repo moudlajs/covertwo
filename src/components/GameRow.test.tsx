@@ -32,7 +32,7 @@ describe('GameRow', () => {
     renderRow('JAX', 'DEN')
     expect(
       screen.getByText(
-        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball, timeouts left: Jacksonville Jaguars 2 timeouts, Denver Broncos 3 timeouts. Last play: T.Etienne run up the middle to DEN 34 for 3 yards.',
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball',
       ),
     ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
@@ -67,7 +67,11 @@ describe('GameRow', () => {
     renderRow('WSH', 'DAL')
     expect(screen.getByText('RZ')).toBeInTheDocument()
     expect(screen.getByRole('listitem')).toHaveClass('shadow-rose-500')
-    expect(screen.getByText(/, red zone, Dallas Cowboys ball,/)).toHaveClass('sr-only')
+    expect(
+      screen.getByText(
+        /, red zone, Dallas Cowboys ball, timeouts: Washington Commanders 0, Dallas Cowboys 1$/,
+      ),
+    ).toHaveClass('sr-only')
   })
 
   test('no red zone marking outside it', () => {
@@ -87,38 +91,6 @@ describe('GameRow', () => {
     const home = screen.getByText('20')
     expect(home).toHaveClass('animate-score-flash', 'motion-reduce:animate-none')
     expect(screen.getByText('23')).not.toHaveClass('animate-score-flash')
-  })
-
-  test('timeouts: filled pips per side, spoken with correct plural', () => {
-    const { container } = renderRow('WSH', 'DAL')
-    const sides = [...container.querySelectorAll('[data-side]')]
-    const filled = (side: Element | undefined) =>
-      [...(side?.querySelectorAll('span.rounded-full') ?? [])].filter((pip) =>
-        pip.className.includes('bg-amber-400'),
-      ).length
-    expect(filled(sides[0])).toBe(0) // WSH
-    expect(filled(sides[1])).toBe(1) // DAL
-    expect(
-      screen.getByText(
-        /timeouts left: Washington Commanders 0 timeouts, Dallas Cowboys 1 timeout\./,
-      ),
-    ).toHaveClass('sr-only')
-  })
-
-  test('no timeouts outside live games', () => {
-    const { container } = renderRow('DET', 'BUF')
-    expect(container.querySelector('span.rounded-full.bg-slate-700')).toBeNull()
-  })
-
-  test('last play: one truncated line with the full text on hover', () => {
-    renderRow('JAX', 'DEN')
-    const line = screen.getByTitle('T.Etienne run up the middle to DEN 34 for 3 yards.')
-    expect(line).toHaveClass('truncate', 'col-span-3')
-  })
-
-  test('no last-play line outside live games', () => {
-    const { container } = renderRow('DET', 'BUF')
-    expect(container.querySelector('p[title]')).toBeNull()
   })
 
   test('college ranks: number before the abbreviation, "No. 5" when spoken', async () => {
@@ -152,6 +124,23 @@ describe('GameRow', () => {
     expect(screen.getByText('FOX')).toBeInTheDocument() // more than 12h away: no countdown
     rerender(row(kickoff + 60_000))
     expect(screen.getByText('FOX · starting')).toBeInTheDocument() // live comes from ESPN
+  })
+
+  test('rows stay calm: no last play or timeouts (they are in the expanded view)', () => {
+    const { container } = renderRow('JAX', 'DEN')
+    expect(container).not.toHaveTextContent('T.Etienne')
+    expect(container.querySelector('p[title]')).toBeNull()
+  })
+
+  test('crunch time (Q4 1:54, 3-point game): "TO" under each team', () => {
+    const { container } = renderRow('WSH', 'DAL')
+    expect(container.querySelector('[data-side="away"]')).toHaveTextContent('TO 0')
+    expect(container.querySelector('[data-side="home"]')).toHaveTextContent('TO 1')
+  })
+
+  test('outside crunch time: no "TO" in the row', () => {
+    const { container } = renderRow('JAX', 'DEN') // Q3
+    expect(container).not.toHaveTextContent(/TO \d/)
   })
 
   test('halftime', () => {

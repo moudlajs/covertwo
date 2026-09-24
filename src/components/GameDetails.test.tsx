@@ -31,3 +31,17 @@ test('leaders with team', () => {
   )
   expect(screen.getByText('RUSH').closest('li')).toHaveTextContent('J. Cook III BUF')
 })
+
+test('live game: labelled last play and timeouts', () => {
+  render(<GameDetails id="d" game={game('JAX')} hidden={false} />)
+  expect(screen.getByText('Last play:').parentElement).toHaveTextContent(
+    'Last play: T.Etienne run up the middle to DEN 34 for 3 yards.',
+  )
+  expect(screen.getByText('Timeouts:').parentElement).toHaveTextContent('Timeouts: JAX 2 · DEN 3')
+})
+
+test('finished game: no last play or timeouts', () => {
+  render(<GameDetails id="d" game={game('DET')} hidden={false} />)
+  expect(screen.queryByText('Last play:')).not.toBeInTheDocument()
+  expect(screen.queryByText('Timeouts:')).not.toBeInTheDocument()
+})
