@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.0](https://github.com/moudlajs/covertwo/compare/v1.1.0...v1.2.0) (2026-09-24)
+
+
+### Features
+
+* down & distance in the status line ([#112](https://github.com/moudlajs/covertwo/issues/112)) ([87b0648](https://github.com/moudlajs/covertwo/commit/87b0648ea2047c6404d2701b1ccfe0537f625392))
+* flash on score change ([#115](https://github.com/moudlajs/covertwo/issues/115)) ([95a483a](https://github.com/moudlajs/covertwo/commit/95a483a91066938202e544f0fb6b8442cf6624be))
+* red zone highlight ([#114](https://github.com/moudlajs/covertwo/issues/114)) ([ba4a049](https://github.com/moudlajs/covertwo/commit/ba4a049b9423d5bdf42eabbf3ce4b677d48d7a74))
+
 ## [1.1.0](https://github.com/moudlajs/covertwo/compare/v1.0.0...v1.1.0) (2026-09-24)
 
 
