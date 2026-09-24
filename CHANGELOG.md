@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/moudlajs/covertwo/compare/v0.2.0...v0.3.0) (2026-09-24)
+
+
+### Features
+
+* Cloudflare Worker proxy for the ESPN API ([#97](https://github.com/moudlajs/covertwo/issues/97)) ([a69aa7e](https://github.com/moudlajs/covertwo/commit/a69aa7ef1a9ed49e3798d6a6093d004154fdb87a))
+
+
+### Bug Fixes
+
+* point the app at the deployed Worker ([#99](https://github.com/moudlajs/covertwo/issues/99)) ([0641ab5](https://github.com/moudlajs/covertwo/commit/0641ab521ab705b915a8277e369bbdd0bc3d2ca9))
+
 ## [0.2.0](https://github.com/moudlajs/covertwo/compare/v0.1.0...v0.2.0) (2026-09-24)
 
 
