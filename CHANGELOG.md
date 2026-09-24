@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0](https://github.com/moudlajs/covertwo/compare/v1.5.0...v1.6.0) (2026-09-24)
+
+
+### Features
+
+* scale the panel up on large screens ([#136](https://github.com/moudlajs/covertwo/issues/136)) ([fa612f4](https://github.com/moudlajs/covertwo/commit/fa612f44d888e6207b11777b7922b062efba6191))
+* two-tone title, slightly bigger ([#133](https://github.com/moudlajs/covertwo/issues/133)) ([ed5d399](https://github.com/moudlajs/covertwo/commit/ed5d399631b452c9eaf0a6b04698ed9044e2b78d))
+
 ## [1.5.0](https://github.com/moudlajs/covertwo/compare/v1.4.0...v1.5.0) (2026-09-24)
 
 
