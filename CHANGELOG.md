@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/moudlajs/covertwo/compare/v1.7.0...v1.8.0) (2026-09-24)
+
+
+### Features
+
+* favourite team pinned and highlighted ([#142](https://github.com/moudlajs/covertwo/issues/142)) ([b62b6e9](https://github.com/moudlajs/covertwo/commit/b62b6e9aee142b04b01cb5461626dae5e4bd9429))
+
 ## [1.7.0](https://github.com/moudlajs/covertwo/compare/v1.6.0...v1.7.0) (2026-09-24)
 
 
