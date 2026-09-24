@@ -54,31 +54,6 @@ test('menu is not clipped by the panel while it is still loading', async ({ page
   expect(inside).toBe(true)
 })
 
-test('the page never scrolls; the game list scrolls inside the panel', async ({ page }) => {
-  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
-  const { pageOverflow, listOverflow } = await page.evaluate(() => {
-    const main = document.querySelector('main')
-    const root = document.documentElement
-    return {
-      pageOverflow: root.scrollHeight - root.clientHeight,
-      listOverflow: main ? main.scrollHeight - main.clientHeight : 0,
-    }
-  })
-  expect(pageOverflow).toBe(0)
-  expect(listOverflow).toBeGreaterThan(0)
-  await expect(page.getByRole('banner')).toBeInViewport()
-  await expect(page.getByRole('contentinfo')).toBeInViewport()
-})
-
-test('day headings stick to the top of the list while scrolling', async ({ page }) => {
-  const main = page.getByRole('main')
-  await expect(main.getByRole('listitem')).toHaveCount(16)
-  await main.evaluate((el) => el.scrollBy(0, 300)) // well into Sunday's games
-  const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
-  const [mainBox, headingBox] = [await main.boundingBox(), await sunday.boundingBox()]
-  expect(Math.abs((headingBox?.y ?? -99) - (mainBox?.y ?? 0))).toBeLessThanOrEqual(1)
-})
-
 test('a short week keeps a short panel pinned at the top', async ({ page }) => {
   const firstPanel = await page.getByTestId('panel').boundingBox()
   await page.route(SCOREBOARD_API, (route) =>
@@ -93,16 +68,6 @@ test('a short week keeps a short panel pinned at the top', async ({ page }) => {
   expect(panel.height).toBeLessThan(viewport.height / 2)
 })
 
-test('keyboard users can tab to the game list and scroll it', async ({ page }) => {
-  const main = page.getByRole('main')
-  await expect(main.getByRole('listitem')).toHaveCount(16)
-  for (let i = 0; i < 5 && !(await main.evaluate((el) => el === document.activeElement)); i++)
-    await page.keyboard.press('Tab')
-  await expect(main).toBeFocused()
-  await page.keyboard.press('PageDown')
-  await expect.poll(() => main.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
-})
-
 test('rows keep aligned columns whatever the status line says', async ({ page }) => {
   const rows = page.getByRole('main').getByRole('listitem')
   await expect(rows).toHaveCount(16)
@@ -113,4 +78,33 @@ test('rows keep aligned columns whatever the status line says', async ({ page })
     }),
   )
   expect(new Set(centres.map((c) => JSON.stringify(c))).size).toBe(1)
+})
+
+test('the page scrolls; header and footer stay pinned, no nested scroll area', async ({ page }) => {
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
+  const main = page.getByRole('main')
+  expect(await main.evaluate((el) => getComputedStyle(el).overflowY)).toBe('visible')
+  // Halfway down the page: past the panel's top, well before its end.
+  await page.evaluate(() =>
+    window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) / 2),
+  )
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  const header = await page.getByRole('banner').boundingBox()
+  const footer = await page.getByRole('contentinfo').boundingBox()
+  const viewport = page.viewportSize()
+  if (!header || !footer || !viewport) throw new Error('no layout')
+  expect(header.y).toBeLessThanOrEqual(2) // pinned to the top edge
+  expect(Math.round(footer.y + footer.height)).toBe(viewport.height) // pinned to the bottom
+})
+
+test('day headings stick just under the pinned header', async ({ page }) => {
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
+  const sunday = page.getByRole('heading', { level: 2, name: /Sunday/ })
+  const top = await sunday.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
+  await page.evaluate((y) => window.scrollTo(0, y + 200), top) // well into Sunday
+  const header = await page.getByRole('banner').boundingBox()
+  const heading = await sunday.boundingBox()
+  expect(
+    Math.abs((heading?.y ?? -99) - ((header?.y ?? 0) + (header?.height ?? 0))),
+  ).toBeLessThanOrEqual(1)
 })

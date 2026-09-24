@@ -3,9 +3,9 @@ import { Backdrop } from './Backdrop'
 import { Header } from './Header'
 
 /**
- * Background plus the single elevated panel everything lives in. The panel is
- * at most the viewport's height: header and footer stay put and only the main
- * content scrolls. Short content keeps a short panel, pinned at the top.
+ * Background plus the single elevated panel everything lives in. The page
+ * itself scrolls (no nested scroll area); the header sticks to the top of the
+ * viewport and the footer to the bottom, both opaque so rows pass under them.
  */
 export function Shell({
   controls,
@@ -17,32 +17,25 @@ export function Shell({
   children: ReactNode
 }) {
   return (
-    <div className="flex h-dvh flex-col bg-[#0b1020] px-2 py-6 text-slate-100 sm:py-12">
+    <div className="min-h-dvh bg-[#0b1020] px-2 py-6 text-slate-100 sm:py-12">
       <Backdrop />
+      {/* No overflow-hidden anywhere up the tree: it would break the sticky
+          header/footer and clip the menu dropdown. */}
       <div
         data-testid="panel"
-        className="relative mx-auto flex max-h-full min-h-0 w-full max-w-[560px] flex-col rounded-xl bg-slate-900 shadow-[0_0_0_1px_rgb(51_65_85/0.7),0_24px_48px_-12px_rgb(0_0_0/0.85),0_4px_12px_-2px_rgb(0_0_0/0.5)]"
+        className="relative mx-auto w-full max-w-[560px] rounded-xl bg-slate-900 shadow-[0_0_0_1px_rgb(51_65_85/0.7),0_24px_48px_-12px_rgb(0_0_0/0.85),0_4px_12px_-2px_rgb(0_0_0/0.5)]"
       >
-        {/* No overflow-hidden on the panel, so the menu dropdown is never clipped.
-            The edge is inset to stay inside the rounded corners instead. */}
-        <div
-          aria-hidden="true"
-          className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
-        />
-        <Header controls={controls} />
-        {/* relative: keeps absolutely positioned descendants (sr-only text) inside
-            the scroll container, so they can't stretch the page. */}
-        {/* tabIndex: the list is the only scroll container and has no focusable
-            children, so keyboard users need to focus it to scroll (WCAG SCR29). */}
-        <main
-          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scroll container, see above
-          tabIndex={0}
-          className="relative min-h-0 overflow-y-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60 overscroll-contain [scrollbar-color:var(--color-slate-700)_transparent] [scrollbar-width:thin]"
-        >
-          {children}
-        </main>
+        {/* 46px tall (2px edge + h-11 header); day headings stick right below it. */}
+        <div className="sticky top-0 z-20 rounded-t-xl bg-[#070d1f]">
+          <div
+            aria-hidden="true"
+            className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
+          />
+          <Header controls={controls} />
+        </div>
+        <main>{children}</main>
         {footer && (
-          <footer className="flex justify-between border-t border-slate-800 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+          <footer className="sticky bottom-0 z-20 flex justify-between rounded-b-xl border-t border-slate-800 bg-slate-900 px-3 py-1.5 font-mono text-[10px] text-slate-500">
             {footer}
           </footer>
         )}
