@@ -14,6 +14,8 @@ export type Scoreboard = {
   lastUpdated: number | null
 }
 
+const INITIAL: Scoreboard = { games: [], status: 'loading', lastUpdated: null }
+
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
  * focus or the tab becomes visible. While any game is live, or the last load
@@ -21,11 +23,14 @@ export type Scoreboard = {
  * failed load keeps the last good games. A newer request aborts an older one.
  */
 export function useScoreboard(url: string): Scoreboard & { live: boolean; retry: () => void } {
-  const [board, setBoard] = useState<Scoreboard>({
-    games: [],
-    status: 'loading',
-    lastUpdated: null,
-  })
+  const [board, setBoard] = useState<Scoreboard>(INITIAL)
+  // A new URL (league switch) starts from scratch instead of showing the old
+  // league's games while the new ones load.
+  const [boardUrl, setBoardUrl] = useState(url)
+  if (url !== boardUrl) {
+    setBoardUrl(url)
+    setBoard(INITIAL)
+  }
   const inFlight = useRef<AbortController | null>(null)
 
   const load = useCallback(async () => {

@@ -8,10 +8,12 @@ import { Header } from './Header'
  * viewport and the footer to the bottom, both opaque so rows pass under them.
  */
 export function Shell({
+  league,
   controls,
   footer,
   children,
 }: {
+  league?: ReactNode
   controls?: ReactNode
   footer?: ReactNode
   children: ReactNode
@@ -31,7 +33,7 @@ export function Shell({
             aria-hidden="true"
             className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
           />
-          <Header controls={controls} />
+          <Header league={league} controls={controls} />
         </div>
         <main>{children}</main>
         {footer && (

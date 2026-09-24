@@ -7,14 +7,16 @@ import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
 import { UpdatedAgo } from './components/UpdatedAgo'
-import { scoreboardUrl } from './data/leagues'
+import { LEAGUES, scoreboardUrl, type League } from './data/leagues'
+import { useLeague } from './data/useLeague'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl('nfl'))
+  const [league, setLeague] = useLeague()
+  const { games, status, lastUpdated, live, retry } = useScoreboard(scoreboardUrl(league))
   const [mode, setMode] = useTimeMode()
   const changes = useScoreChanges(games)
   const title = documentTitle(games)
@@ -27,6 +29,18 @@ export default function App() {
 
   return (
     <Shell
+      league={
+        <Segmented
+          label="League"
+          name="league"
+          value={league}
+          onChange={setLeague}
+          options={(Object.keys(LEAGUES) as League[]).map((id) => ({
+            value: id,
+            label: LEAGUES[id].label,
+          }))}
+        />
+      }
       footer={
         <>
           <span>ESPN</span>
