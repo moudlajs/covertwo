@@ -10,9 +10,7 @@ day, with a Europe/US time toggle. A widget, not a website.
 
 **Live:** https://moudlajs.github.io/covertwo/
 
-<!-- Screenshot added once the M1 scoreboard ships. -->
-
-_Screenshot coming with v0.1.0._
+<img src="docs/screenshot.png" alt="covertwo showing a week of NFL games grouped by day, with kickoff times in Prague time" width="560">
 
 ## Architecture
 
