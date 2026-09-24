@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, test, vi } from 'vitest'
-import { NFL_TEAMS } from '../data/teams'
+import { FBS_TEAMS, NFL_TEAMS } from '../data/teams'
 import { FavoriteSelect } from './FavoriteSelect'
 
 test('all NFL teams plus None; picking one reports id and name', async () => {
@@ -25,4 +25,11 @@ test('keeps a favourite that is not in the list selectable', () => {
     />,
   )
   expect(screen.getByLabelText('Favourite team')).toHaveValue('2390')
+})
+
+test('college lists every FBS team, including unranked Maryland', () => {
+  render(<FavoriteSelect teams={FBS_TEAMS} value={null} onChange={vi.fn()} />)
+  expect(screen.getAllByRole('option')).toHaveLength(FBS_TEAMS.length + 1)
+  expect(FBS_TEAMS).toHaveLength(138)
+  expect(screen.getByRole('option', { name: 'Maryland Terrapins' })).toHaveValue('120')
 })

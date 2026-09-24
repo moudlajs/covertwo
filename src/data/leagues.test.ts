@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import ncaaf from '../../fixtures/espn-ncaaf-scoreboard.json'
 import nfl from '../../fixtures/espn-scoreboard.json'
 import { mapScoreboard } from './espn'
-import { scoreboardUrl } from './leagues'
+import { scoreboardUrl, top25With } from './leagues'
 
 test('each league has its own Worker path', () => {
   expect(scoreboardUrl('nfl')).toMatch(/\/nfl\/scoreboard$/)
@@ -13,6 +13,25 @@ test('college views map to ESPN groups', () => {
   expect(scoreboardUrl('ncaaf', 'top25')).toMatch(/\/ncaaf\/scoreboard$/)
   expect(scoreboardUrl('ncaaf', 'fbs')).toMatch(/\/ncaaf\/scoreboard\?groups=80$/)
   expect(scoreboardUrl('nfl', 'fbs')).toMatch(/\/nfl\/scoreboard$/) // NFL ignores the view
+})
+
+test('a college favourite loads all FBS; NFL ignores it', () => {
+  expect(scoreboardUrl('ncaaf', 'top25', true)).toMatch(/\/ncaaf\/scoreboard\?groups=80$/)
+  expect(scoreboardUrl('ncaaf', 'top25', false)).toMatch(/\/ncaaf\/scoreboard$/)
+  expect(scoreboardUrl('nfl', 'top25', true)).toMatch(/\/nfl\/scoreboard$/)
+})
+
+test('top25With keeps ranked games plus the favourite, even unranked', () => {
+  const games = mapScoreboard(ncaaf)
+  const unranked = games.map((g) => ({
+    ...g,
+    home: { ...g.home, rank: null },
+    away: { ...g.away, rank: null },
+  }))
+  const target = unranked[3]
+  if (!target) throw new Error('fixture changed')
+  expect(top25With(unranked, target.home.id)).toEqual([target])
+  expect(top25With(games, 'none').length).toBe(games.length) // all fixture games have a ranked team
 })
 
 test('college fixture maps with Top 25 ranks', () => {
