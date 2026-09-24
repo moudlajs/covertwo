@@ -23,7 +23,11 @@ type EspnEvent = {
     displayClock?: string
     type?: { name?: string; state?: string; shortDetail?: string }
   }
-  competitions?: { competitors?: EspnCompetitor[]; broadcast?: string }[]
+  competitions?: {
+    competitors?: EspnCompetitor[]
+    broadcast?: string
+    situation?: { possession?: string }
+  }[]
 }
 
 const STATES: readonly string[] = ['pre', 'in', 'post'] satisfies GameState[]
@@ -56,6 +60,11 @@ function mapEvent(e: EspnEvent | null): Game | null {
   const away = mapTeam(side('away'), state as GameState)
   if (!home || !away) return null
 
+  // ESPN may keep the last situation around at halftime, so exclude it explicitly.
+  const halftime = type.name === 'STATUS_HALFTIME'
+  const ball = state === 'in' && !halftime ? comp?.situation?.possession : undefined
+  const possession = ball === home.id ? 'home' : ball === away.id ? 'away' : null
+
   return {
     id: e.id,
     startsAt: startsAt.toISOString(),
@@ -63,8 +72,9 @@ function mapEvent(e: EspnEvent | null): Game | null {
     detail: type.shortDetail ?? '',
     period: e.status?.period ?? 0,
     clock: e.status?.displayClock ?? '',
-    halftime: type.name === 'STATUS_HALFTIME',
+    halftime,
     network: comp?.broadcast || null,
+    possession,
     home,
     away,
   }

@@ -30,10 +30,31 @@ describe('GameRow', () => {
 
   test('live: score and quarter clock', () => {
     renderRow('JAX', 'DEN')
-    expect(screen.getByText('Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42')).toHaveClass(
-      'sr-only',
-    )
+    expect(
+      screen.getByText(
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, Jacksonville Jaguars ball',
+      ),
+    ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
+  })
+
+  test('possession: football next to the team with the ball only', () => {
+    const { container } = renderRow('WSH', 'DAL')
+    const sides = container.querySelectorAll('li > div[aria-hidden="true"]')
+    const [away, , home] = [...sides]
+    expect(away?.querySelector('svg')).toBeNull()
+    expect(home?.querySelector('svg')).not.toBeNull()
+  })
+
+  test('no football at halftime or in finals', () => {
+    for (const [a, h] of [
+      ['LV', 'LAC'],
+      ['DET', 'BUF'],
+    ] as const) {
+      const { container, unmount } = renderRow(a, h)
+      expect(container.querySelectorAll('svg')).toHaveLength(0)
+      unmount()
+    }
   })
 
   test('halftime', () => {

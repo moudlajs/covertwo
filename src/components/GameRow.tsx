@@ -9,7 +9,26 @@ function status(game: Game): string {
   return `${period} · ${game.clock}`
 }
 
-function Side({ team, dim, align }: { team: Team; dim: boolean; align: 'start' | 'end' }) {
+function Ball() {
+  return (
+    <svg viewBox="0 0 16 10" className="h-1.5 w-3 shrink-0 text-amber-500" aria-hidden="true">
+      <ellipse cx="8" cy="5" rx="7.5" ry="4.5" fill="currentColor" />
+      <path d="M5 5h6M6.5 3.8v2.4M8 3.8v2.4M9.5 3.8v2.4" stroke="#000" strokeOpacity=".5" />
+    </svg>
+  )
+}
+
+function Side({
+  team,
+  dim,
+  align,
+  ball,
+}: {
+  team: Team
+  dim: boolean
+  align: 'start' | 'end'
+  ball: boolean
+}) {
   return (
     <div
       aria-hidden="true"
@@ -17,6 +36,7 @@ function Side({ team, dim, align }: { team: Team; dim: boolean; align: 'start' |
     >
       <img src={team.logo} alt="" width={20} height={20} className="size-5 shrink-0" />
       <span className="truncate text-[13px] font-bold">{team.abbr}</span>
+      {ball && <Ball />}
     </div>
   )
 }
@@ -26,7 +46,8 @@ function summary(game: Game, mode: TimeMode): string {
   const { away, home } = game
   if (game.state === 'pre')
     return `${away.name} at ${home.name}, ${formatTime(game.startsAt, mode)}, ${status(game)}`
-  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}`
+  const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
+  return `${away.name} ${away.score ?? '-'}, ${home.name} ${home.score ?? '-'}, ${status(game)}${ball}`
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -40,7 +61,7 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
       className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-1.5 ${live ? 'bg-slate-800/40' : ''}`}
     >
       <span className="sr-only">{summary(game, mode)}</span>
-      <Side team={game.away} dim={dim(game.away)} align="start" />
+      <Side team={game.away} dim={dim(game.away)} align="start" ball={game.possession === 'away'} />
       <div aria-hidden="true" className="flex min-w-24 flex-col items-center leading-none">
         {game.state === 'pre' ? (
           <time
@@ -68,7 +89,7 @@ export function GameRow({ game, mode }: { game: Game; mode: TimeMode }) {
           {status(game)}
         </span>
       </div>
-      <Side team={game.home} dim={dim(game.home)} align="end" />
+      <Side team={game.home} dim={dim(game.home)} align="end" ball={game.possession === 'home'} />
     </li>
   )
 }
