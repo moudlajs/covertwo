@@ -17,3 +17,21 @@
     }
   }
 }
+
+/*
+ * Panel scale by screen size, a lookup table. CSS zoom scales the whole panel
+ * (text, logos, spacing, sticky header) so the design keeps its proportions.
+ * Add a row only after checking a real screen.
+ *
+ *   screen            scale   verified on
+ *   default           1       iPhone 15 (393x852), MacBook (1470x956)
+ *   >= 1600 x 1000    1.25    ultrawide 3440x1440
+ */
+:root {
+  --panel-scale: 1;
+}
+@media (min-width: 1600px) and (min-height: 1000px) {
+  :root {
+    --panel-scale: 1.25;
+  }
+}
