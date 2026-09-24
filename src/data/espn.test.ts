@@ -52,6 +52,15 @@ describe('mapScoreboard', () => {
     expect(byMatchup('DET', 'BUF').possession).toBeNull() // final
   })
 
+  test('no possession at halftime even if ESPN still reports one', () => {
+    type Live = { competitions: { situation: { possession?: string } }[] }
+    const e = structuredClone(fixture.events.find((x) => x.shortName === 'LV @ LAC')) as Live
+    const situation = e.competitions[0]?.situation
+    if (!situation) throw new Error('fixture changed')
+    situation.possession = '13' // LV
+    expect(mapScoreboard({ events: [e] })[0]?.possession).toBeNull()
+  })
+
   test('possession ignores an unknown team id', () => {
     type Live = { competitions: { situation: { possession: string } }[] }
     const e = structuredClone(fixture.events.find((x) => x.shortName === 'JAX @ DEN')) as Live

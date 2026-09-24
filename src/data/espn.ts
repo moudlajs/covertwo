@@ -60,7 +60,9 @@ function mapEvent(e: EspnEvent | null): Game | null {
   const away = mapTeam(side('away'), state as GameState)
   if (!home || !away) return null
 
-  const ball = state === 'in' ? comp?.situation?.possession : undefined
+  // ESPN may keep the last situation around at halftime, so exclude it explicitly.
+  const halftime = type.name === 'STATUS_HALFTIME'
+  const ball = state === 'in' && !halftime ? comp?.situation?.possession : undefined
   const possession = ball === home.id ? 'home' : ball === away.id ? 'away' : null
 
   return {
@@ -70,7 +72,7 @@ function mapEvent(e: EspnEvent | null): Game | null {
     detail: type.shortDetail ?? '',
     period: e.status?.period ?? 0,
     clock: e.status?.displayClock ?? '',
-    halftime: type.name === 'STATUS_HALFTIME',
+    halftime,
     network: comp?.broadcast || null,
     possession,
     home,
