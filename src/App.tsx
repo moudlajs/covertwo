@@ -5,11 +5,12 @@ import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
+import { UpdatedAgo } from './components/UpdatedAgo'
 import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status, lastUpdated, retry } = useScoreboard()
+  const { games, status, lastUpdated, live, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
   const empty = games.length === 0
   // Nothing has loaded yet (as opposed to a genuinely empty week).
@@ -20,7 +21,10 @@ export default function App() {
       footer={
         <>
           <span>ESPN</span>
-          <Retrying active={status === 'error' && !never} />
+          <span className="flex items-center gap-2">
+            <Retrying active={status === 'error' && !never} />
+            <UpdatedAgo at={lastUpdated} live={live} />
+          </span>
         </>
       }
       controls={

@@ -31,6 +31,7 @@ test('loads once on mount', async () => {
   expect(result.current.status).toBe('loading')
   await waitFor(() => expect(result.current.status).toBe('ready'))
   expect(result.current.games).toHaveLength(16)
+  expect(result.current.live).toBe(true)
   expect(result.current.lastUpdated).toEqual(expect.any(Number))
   expect(fetchMock).toHaveBeenCalledTimes(1)
 })
