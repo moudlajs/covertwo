@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/moudlajs/covertwo/compare/v1.10.0...v1.11.0) (2026-09-24)
+
+
+### Features
+
+* next-up card whenever nothing is live, with games per kickoff ([#156](https://github.com/moudlajs/covertwo/issues/156)) ([64434be](https://github.com/moudlajs/covertwo/commit/64434bebf6af8589d0b4a80438e589a5d1aca232))
+
 ## [1.10.0](https://github.com/moudlajs/covertwo/compare/v1.9.0...v1.10.0) (2026-09-24)
 
 
