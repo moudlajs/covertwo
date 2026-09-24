@@ -1,3 +1,5 @@
+import { DEMO, DEMO_DATA } from '../lib/demo'
+
 export type League = 'nfl' | 'ncaaf'
 
 /**
@@ -20,6 +22,7 @@ export const NCAA_VIEWS = ['top25', 'fbs'] as const satisfies readonly NcaaView[
  * favourite needs: their game may not involve a ranked team.
  */
 export function scoreboardUrl(league: League, view: NcaaView = 'top25', allFbs = false): string {
+  if (DEMO) return DEMO_DATA[league]
   const base = `${import.meta.env.VITE_API_BASE}${LEAGUES[league].path}`
   return league === 'ncaaf' && (view === 'fbs' || allFbs) ? `${base}?groups=80` : base
 }
