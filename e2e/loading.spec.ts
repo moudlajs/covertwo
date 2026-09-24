@@ -30,3 +30,18 @@ test('an empty week says so', async ({ page }) => {
   await page.goto('./')
   await expect(page.getByText('No games scheduled.')).toBeVisible()
 })
+
+test('a failed refetch of an empty week keeps the empty state and shows retrying', async ({
+  page,
+}) => {
+  await mockEspn(page)
+  await page.route(SCOREBOARD_API, (route) =>
+    route.fulfill({ json: { ...scoreboard, events: [] } }),
+  )
+  await page.goto('./')
+  await expect(page.getByText('No games scheduled.')).toBeVisible()
+  await page.route(SCOREBOARD_API, (route) => route.fulfill({ status: 500, body: '' }))
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect(page.getByRole('status')).toHaveText('retrying…')
+  await expect(page.getByText('No games scheduled.')).toBeVisible()
+})

@@ -9,16 +9,18 @@ import { useScoreboard } from './data/useScoreboard'
 import { useTimeMode } from './time/useTimeMode'
 
 export default function App() {
-  const { games, status, retry } = useScoreboard()
+  const { games, status, lastUpdated, retry } = useScoreboard()
   const [mode, setMode] = useTimeMode()
   const empty = games.length === 0
+  // Nothing has loaded yet (as opposed to a genuinely empty week).
+  const never = lastUpdated === null
 
   return (
     <Shell
       footer={
         <>
           <span>ESPN</span>
-          <Retrying active={status === 'error' && !empty} />
+          <Retrying active={status === 'error' && !never} />
         </>
       }
       controls={
@@ -37,9 +39,9 @@ export default function App() {
         </>
       }
     >
-      {status === 'error' && empty ? (
+      {status === 'error' && never ? (
         <LoadError onRetry={retry} />
-      ) : status === 'loading' && empty ? (
+      ) : status === 'loading' && never ? (
         <Skeleton />
       ) : empty ? (
         <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
