@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
  */
 export function Header({ controls }: { controls?: ReactNode }) {
   return (
-    <header className="flex items-center gap-3 rounded-t-xl bg-slate-950/60 px-3 py-2.5">
+    <header className="flex h-11 items-center gap-3 px-3">
       <h1 className="font-mono text-sm font-bold tracking-tight">
         covertwo
         <span aria-hidden="true" className="text-amber-400">

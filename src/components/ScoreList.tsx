@@ -20,7 +20,7 @@ export function ScoreList({
     <section key={day.key} aria-labelledby={`day-${day.key}`}>
       <h2
         id={`day-${day.key}`}
-        className="sticky top-0 z-[1] flex items-center gap-2 border-y border-slate-800 bg-[#0b1224] px-3 py-1 font-mono text-[10px] tracking-wider text-amber-400/80 uppercase"
+        className="sticky top-[46px] z-10 flex items-center gap-2 border-y border-slate-800 bg-[#0b1224] px-3 py-1 font-mono text-[10px] tracking-wider text-amber-400/80 uppercase"
       >
         {day.label}
         <span className="text-slate-600">
