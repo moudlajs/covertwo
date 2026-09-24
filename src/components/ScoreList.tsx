@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Game } from '../data/game'
 import { groupByDay } from '../time/days'
 import type { TimeMode } from '../time/format'
@@ -13,6 +14,8 @@ export function ScoreList({
   mode: TimeMode
   flashing?: Map<string, ('home' | 'away')[]>
 }) {
+  // One row open at a time.
+  const [open, setOpen] = useState<string | null>(null)
   return groupByDay(games, mode).map((day) => (
     <section key={day.key} aria-labelledby={`day-${day.key}`}>
       <h2
@@ -26,7 +29,14 @@ export function ScoreList({
       </h2>
       <ul className="divide-y divide-slate-800/70">
         {day.games.map((g) => (
-          <GameRow key={g.id} game={g} mode={mode} flashing={flashing?.get(g.id)} />
+          <GameRow
+            key={g.id}
+            game={g}
+            mode={mode}
+            flashing={flashing?.get(g.id)}
+            expanded={open === g.id}
+            onToggle={() => setOpen((o) => (o === g.id ? null : g.id))}
+          />
         ))}
       </ul>
     </section>

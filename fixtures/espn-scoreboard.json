@@ -3522,24 +3522,19 @@
        "score": "10",
        "linescores": [
         {
-         "value": 0.0,
-         "displayValue": "0",
+         "value": 3.0,
+         "displayValue": "3",
          "period": 1
         },
         {
-         "value": 3.0,
-         "displayValue": "3",
+         "value": 7.0,
+         "displayValue": "7",
          "period": 2
         },
         {
-         "value": 3.0,
-         "displayValue": "3",
+         "value": 0.0,
+         "displayValue": "0",
          "period": 3
-        },
-        {
-         "value": 14.0,
-         "displayValue": "14",
-         "period": 4
         }
        ],
        "statistics": [],
@@ -3590,24 +3585,19 @@
        "score": "17",
        "linescores": [
         {
-         "value": 0.0,
-         "displayValue": "0",
+         "value": 7.0,
+         "displayValue": "7",
          "period": 1
-        },
-        {
-         "value": 10.0,
-         "displayValue": "10",
-         "period": 2
         },
         {
          "value": 3.0,
          "displayValue": "3",
-         "period": 3
+         "period": 2
         },
         {
-         "value": 0.0,
-         "displayValue": "0",
-         "period": 4
+         "value": 7.0,
+         "displayValue": "7",
+         "period": 3
         }
        ],
        "statistics": [],
@@ -3883,24 +3873,14 @@
        "score": "13",
        "linescores": [
         {
-         "value": 0.0,
-         "displayValue": "0",
+         "value": 3.0,
+         "displayValue": "3",
          "period": 1
         },
         {
-         "value": 7.0,
-         "displayValue": "7",
+         "value": 10.0,
+         "displayValue": "10",
          "period": 2
-        },
-        {
-         "value": 7.0,
-         "displayValue": "7",
-         "period": 3
-        },
-        {
-         "value": 0.0,
-         "displayValue": "0",
-         "period": 4
         }
        ],
        "statistics": [],
@@ -3956,19 +3936,9 @@
          "period": 1
         },
         {
-         "value": 10.0,
-         "displayValue": "10",
-         "period": 2
-        },
-        {
          "value": 7.0,
          "displayValue": "7",
-         "period": 3
-        },
-        {
-         "value": 9.0,
-         "displayValue": "9",
-         "period": 4
+         "period": 2
         }
        ],
        "statistics": [],
@@ -4236,23 +4206,23 @@
        "score": "20",
        "linescores": [
         {
-         "value": 10.0,
-         "displayValue": "10",
+         "value": 7.0,
+         "displayValue": "7",
          "period": 1
+        },
+        {
+         "value": 3.0,
+         "displayValue": "3",
+         "period": 2
         },
         {
          "value": 7.0,
          "displayValue": "7",
-         "period": 2
-        },
-        {
-         "value": 10.0,
-         "displayValue": "10",
          "period": 3
         },
         {
-         "value": 10.0,
-         "displayValue": "10",
+         "value": 3.0,
+         "displayValue": "3",
          "period": 4
         }
        ],
@@ -4304,8 +4274,8 @@
        "score": "23",
        "linescores": [
         {
-         "value": 0.0,
-         "displayValue": "0",
+         "value": 3.0,
+         "displayValue": "3",
          "period": 1
         },
         {
@@ -4314,13 +4284,13 @@
          "period": 2
         },
         {
-         "value": 3.0,
-         "displayValue": "3",
+         "value": 7.0,
+         "displayValue": "7",
          "period": 3
         },
         {
-         "value": 7.0,
-         "displayValue": "7",
+         "value": 3.0,
+         "displayValue": "3",
          "period": 4
         }
        ],
@@ -4597,24 +4567,9 @@
        "score": "7",
        "linescores": [
         {
-         "value": 0.0,
-         "displayValue": "0",
-         "period": 1
-        },
-        {
          "value": 7.0,
          "displayValue": "7",
-         "period": 2
-        },
-        {
-         "value": 0.0,
-         "displayValue": "0",
-         "period": 3
-        },
-        {
-         "value": 0.0,
-         "displayValue": "0",
-         "period": 4
+         "period": 1
         }
        ],
        "statistics": [],
@@ -4665,24 +4620,9 @@
        "score": "0",
        "linescores": [
         {
-         "value": 7.0,
-         "displayValue": "7",
-         "period": 1
-        },
-        {
          "value": 0.0,
          "displayValue": "0",
-         "period": 2
-        },
-        {
-         "value": 10.0,
-         "displayValue": "10",
-         "period": 3
-        },
-        {
-         "value": 14.0,
-         "displayValue": "14",
-         "period": 4
+         "period": 1
         }
        ],
        "statistics": [],

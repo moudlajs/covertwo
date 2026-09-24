@@ -10,6 +10,14 @@ export type Team = {
   winner: boolean
 }
 
+export type Leader = {
+  /** e.g. "J. Goff" */
+  name: string
+  side: 'home' | 'away'
+  /** e.g. "26/38, 327 YDS, 4 TD" */
+  line: string
+}
+
 /** A game as the UI sees it. All times are UTC ISO strings. */
 export type Game = {
   id: string
@@ -31,6 +39,10 @@ export type Game = {
   redZone: boolean
   /** Which side has the ball; only while live and ESPN reports it. */
   possession: 'home' | 'away' | null
+  /** Points per period (index 4+ is overtime); once the game has started. */
+  quarters: { home: number[]; away: number[] } | null
+  /** Top passer / rusher / receiver of the game, when ESPN lists them. */
+  leaders: { passing?: Leader; rushing?: Leader; receiving?: Leader }
   home: Team
   away: Team
 }
