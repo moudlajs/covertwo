@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/moudlajs/covertwo/compare/v1.8.0...v1.9.0) (2026-09-24)
+
+
+### Features
+
+* kickoff countdown ([#145](https://github.com/moudlajs/covertwo/issues/145)) ([910d97e](https://github.com/moudlajs/covertwo/commit/910d97e77ea00ce237340ec30eae492d513aaaf3))
+* off-day view with a resting board and the next game day ([#147](https://github.com/moudlajs/covertwo/issues/147)) ([b4969a5](https://github.com/moudlajs/covertwo/commit/b4969a50d07a6f3863f6efd45a93148af0c039e6))
+
 ## [1.8.0](https://github.com/moudlajs/covertwo/compare/v1.7.0...v1.8.0) (2026-09-24)
 
 
