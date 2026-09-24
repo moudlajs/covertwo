@@ -4,9 +4,10 @@
 
 const UPSTREAM = 'https://site.api.espn.com/apis/site/v2/sports/'
 
-/** Public path → ESPN path. Add college football here in M3. */
+/** Public path → ESPN path. */
 const ROUTES: Record<string, string> = {
   '/nfl/scoreboard': 'football/nfl/scoreboard',
+  '/ncaaf/scoreboard': 'football/college-football/scoreboard',
 }
 
 const ORIGINS = new Set([

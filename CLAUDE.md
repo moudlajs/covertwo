@@ -46,6 +46,13 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 - The Worker forwards allow-listed paths only (not an open proxy), adds CORS
   for the Pages and localhost origins, and caches ~15s at the edge so all
   viewers share one upstream request. Deployed by `.github/workflows/worker.yml`.
+- College football: `VITE_API_BASE/ncaaf/scoreboard` → ESPN
+  `football/college-football/scoreboard`, same response shape. ESPN's
+  `groups` param picks the slate: none = games with a Top 25 team (~18,
+  ~330 KB), `80` = all FBS (~70, ~1.3 MB), a conference id = that conference
+  (ACC 1, Big 12 4, Big Ten 5, SEC 8, Pac-12 9, C-USA 12, MAC 15, Mountain
+  West 17, FBS Independents 18, Sun Belt 37, American 151). Ranks come from
+  `competitors[].curatedRank.current` (99 = unranked).
 - Map the response to a clean internal type at the edge; keep all times UTC
   and only format them in the UI (Europe/Prague 24h or America/New_York 12h).
 - Poll every 30s only while a game is live, or while retrying after a failed
@@ -53,6 +60,8 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
   focus. Polls are skipped while the tab is hidden.
 - On a fetch error keep the last good data, show a small "retrying"
   indicator, and `console.error` with context (URL, status).
+- `fixtures/espn-ncaaf-scoreboard.json` is real college week-3 2026 data
+  (Top 25 slate, all final).
 - `fixtures/espn-scoreboard.json` is real week-2 2026 data, with four games
   rewritten as live (3rd qtr, halftime, 4th qtr in the red zone, 1st qtr) and
   three as scheduled. The `situation` blocks on the live games are

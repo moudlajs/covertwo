@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import fixture from '../../fixtures/espn-scoreboard.json'
 import { POLL_MS, useScoreboard } from './useScoreboard'
 
+const URL = 'http://api.test/nfl/scoreboard'
+
 /** The fixture with every live game turned final. */
 const allFinal = {
   ...fixture,
@@ -27,7 +29,7 @@ afterEach(() => {
 })
 
 test('loads once on mount', async () => {
-  const { result } = renderHook(() => useScoreboard())
+  const { result } = renderHook(() => useScoreboard(URL))
   expect(result.current.status).toBe('loading')
   await waitFor(() => expect(result.current.status).toBe('ready'))
   expect(result.current.games).toHaveLength(16)
@@ -37,7 +39,7 @@ test('loads once on mount', async () => {
 })
 
 test('refetches when the window regains focus', async () => {
-  const { result } = renderHook(() => useScoreboard())
+  const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
   act(() => {
     window.dispatchEvent(new Event('focus'))
@@ -46,7 +48,7 @@ test('refetches when the window regains focus', async () => {
 })
 
 test('refetches when the tab becomes visible', async () => {
-  const { result } = renderHook(() => useScoreboard())
+  const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
   act(() => {
@@ -57,7 +59,7 @@ test('refetches when the tab becomes visible', async () => {
 
 test('keeps previous games and logs context when a refetch fails', async () => {
   const error = vi.spyOn(console, 'error').mockImplementation(() => {})
-  const { result } = renderHook(() => useScoreboard())
+  const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
   fetchMock.mockResolvedValueOnce(new Response('', { status: 503 }))
   act(() => {
@@ -72,7 +74,7 @@ test('keeps previous games and logs context when a refetch fails', async () => {
 })
 
 test('retry() fetches again', async () => {
-  const { result } = renderHook(() => useScoreboard())
+  const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
   act(() => result.current.retry())
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
@@ -94,7 +96,7 @@ describe('live polling', () => {
     })
 
   test('polls every 30s while a game is live', async () => {
-    const { result } = renderHook(() => useScoreboard())
+    const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     await tick()
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
@@ -104,7 +106,7 @@ describe('live polling', () => {
 
   test('does not poll when no game is live', async () => {
     fetchMock.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(allFinal))))
-    const { result } = renderHook(() => useScoreboard())
+    const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     await tick()
     await tick()
@@ -112,7 +114,7 @@ describe('live polling', () => {
   })
 
   test('stops polling once the last live game ends', async () => {
-    const { result } = renderHook(() => useScoreboard())
+    const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     fetchMock.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(allFinal))))
     await tick()
@@ -123,7 +125,7 @@ describe('live polling', () => {
   })
 
   test('skips polls while the tab is hidden', async () => {
-    const { result } = renderHook(() => useScoreboard())
+    const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     await tick()
@@ -133,7 +135,7 @@ describe('live polling', () => {
   test('keeps retrying every 30s after a failure, even with nothing live', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     fetchMock.mockImplementation(() => Promise.resolve(new Response('', { status: 500 })))
-    const { result } = renderHook(() => useScoreboard())
+    const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('error'))
     fetchMock.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(allFinal))))
     await tick()
@@ -144,7 +146,7 @@ describe('live polling', () => {
   })
 
   test('clears the interval on unmount', async () => {
-    const { result, unmount } = renderHook(() => useScoreboard())
+    const { result, unmount } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     unmount()
     await tick()

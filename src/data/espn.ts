@@ -1,11 +1,5 @@
 import type { Game, GameState, Team } from './game'
 
-/**
- * Served by our Cloudflare Worker (`worker/`), which forwards to ESPN's
- * scoreboard API. ESPN rejects browser requests from other sites.
- */
-export const SCOREBOARD_URL = `${import.meta.env.VITE_API_BASE}/nfl/scoreboard`
-
 // Only the fields we read. Everything is optional: this is an unofficial API,
 // so the mapper checks each field instead of trusting the shape.
 type EspnCompetitor = {
@@ -13,6 +7,8 @@ type EspnCompetitor = {
   linescores?: { value?: number }[]
   score?: string
   winner?: boolean
+  /** College football poll rank; 99 means unranked. */
+  curatedRank?: { current?: number }
   team?: { id?: string; abbreviation?: string; displayName?: string; logo?: string }
 }
 
@@ -49,6 +45,11 @@ type EspnEvent = {
 
 const STATES: readonly string[] = ['pre', 'in', 'post'] satisfies GameState[]
 
+/** A Top 25 rank, or null (ESPN uses 99 for unranked). */
+function rank(n: number | undefined): number | null {
+  return typeof n === 'number' && n >= 1 && n <= 25 ? n : null
+}
+
 function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
   const t = c?.team
   if (!c || !t?.id || !t.abbreviation) return null
@@ -60,6 +61,7 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     logo: t.logo ?? '',
     score: state === 'pre' || c.score === undefined || Number.isNaN(score) ? null : score,
     winner: c.winner === true,
+    rank: rank(c.curatedRank?.current),
   }
 }
 

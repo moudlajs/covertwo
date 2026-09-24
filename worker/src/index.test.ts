@@ -28,6 +28,15 @@ describe('worker', () => {
     expect(res.headers.get('Cache-Control')).toBe(`public, max-age=${CACHE_SECONDS}`)
   })
 
+  test('forwards college football, query string included', async () => {
+    const upstream = ok()
+    await handle(get('/ncaaf/scoreboard?groups=8'), upstream)
+    expect(upstream).toHaveBeenCalledWith(
+      'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=8',
+      expect.anything(),
+    )
+  })
+
   test('is not an open proxy: unknown paths are 404 and never fetched', async () => {
     const upstream = ok()
     const res = await handle(get('/../../../core/whatever'), upstream)
