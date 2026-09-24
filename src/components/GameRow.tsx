@@ -3,6 +3,7 @@ import { isCrunchTime } from '../data/crunch'
 import { COUNTDOWN_WINDOW_MS, formatCountdown } from '../time/countdown'
 import { formatTime, type TimeMode } from '../time/format'
 import { GameDetails } from './GameDetails'
+import { TeamLogo } from './TeamLogo'
 
 function status(game: Game, now?: number): string {
   if (game.state === 'post') return game.detail
@@ -45,7 +46,7 @@ function Side({
       data-side={align === 'start' ? 'away' : 'home'}
       className={`flex min-w-0 items-center gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
     >
-      <img src={team.logo} alt="" width={20} height={20} className="size-5 shrink-0" />
+      <TeamLogo src={team.logo} />
       <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
         <span className="truncate text-[13px] leading-none font-bold">
           {team.rank !== null && (
