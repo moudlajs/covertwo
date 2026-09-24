@@ -7,7 +7,7 @@ test('EU/US toggle changes times and day grouping, and survives a reload', async
   await page.goto('./')
   const main = page.getByRole('main')
   await expect(main.getByText('22:25', { exact: true })).toBeVisible()
-  await expect(page.getByRole('heading', { level: 2 }).nth(1)).toHaveText(/Friday 18 Sept/)
+  await expect(page.getByRole('heading', { level: 2 }).nth(1)).toHaveText(/Friday 18 Sept?/)
 
   await page.getByText('US', { exact: true }).click()
   await expect(main.getByText('4:25 PM', { exact: true })).toBeVisible()

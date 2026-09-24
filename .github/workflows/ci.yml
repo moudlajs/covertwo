@@ -62,7 +62,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       # ESPN is mocked from fixtures/ - see e2e/mock-espn.ts.
       - run: npm run e2e
       - if: failure()

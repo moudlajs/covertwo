@@ -10,10 +10,10 @@ test('renders one row per fixture game, grouped by day', async ({ page }) => {
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
   await expect(page.getByRole('heading', { level: 2 })).toHaveText([
     /Baltimore Ravens/, // the favourite (default) is pinned first
-    /Friday 18 Sept/,
-    /Sunday 20 Sept/,
-    /Monday 21 Sept/,
-    /Tuesday 22 Sept/,
+    /Friday 18 Sept?/,
+    /Sunday 20 Sept?/,
+    /Monday 21 Sept?/,
+    /Tuesday 22 Sept?/,
   ])
 })
 

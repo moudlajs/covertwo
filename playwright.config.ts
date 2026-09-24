@@ -12,7 +12,8 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
-    { name: 'mobile', use: { ...devices['iPhone 13'], browserName: 'chromium' } },
+    // The real Safari engine: iOS-only bugs (like #121's scrollbar) show up here.
+    { name: 'mobile', use: { ...devices['iPhone 15'] } },
     {
       name: 'desktop',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
