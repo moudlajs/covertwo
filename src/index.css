@@ -21,11 +21,17 @@
 /*
  * Panel scale by screen size, a lookup table. CSS zoom scales the whole panel
  * (text, logos, spacing, sticky header) so the design keeps its proportions.
- * Add a row only after checking a real screen.
+ * Rows come from common screen sizes (StatCounter); "verified" marks rows
+ * checked on a real screen.
  *
- *   screen            scale   verified on
- *   default           1       iPhone 15 (393x852), MacBook (1470x956)
- *   >= 1600 x 1000    1.25    ultrawide 3440x1440
+ * Sizes are logical (CSS) pixels, after OS scaling. A full NFL week needs
+ * ~870px of height at 1x, so rows are chosen so it still fits.
+ *
+ *   screen            scale   examples
+ *   default           1       phones, laptops, 1920x1080 (~950px usable),
+ *                             verified: iPhone 15, MacBook 1470x956
+ *   >= 1600 x 1000    1.25    2560x1440, verified: ultrawide 3440x1440
+ *   >= 2400 x 1500    1.5     4K at 100% scaling (3840x2160), not yet verified
  */
 :root {
   --panel-scale: 1;
@@ -33,5 +39,10 @@
 @media (min-width: 1600px) and (min-height: 1000px) {
   :root {
     --panel-scale: 1.25;
+  }
+}
+@media (min-width: 2400px) and (min-height: 1500px) {
+  :root {
+    --panel-scale: 1.5;
   }
 }
