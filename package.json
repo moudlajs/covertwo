@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

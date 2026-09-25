@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- covertwo small mark (favicon): C2 in the poster face. Font: Anton. Render: npm run icons -->
+  <defs><radialGradient id="glow" cx="0.12" cy="0" r="0.95"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.28"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0"/></radialGradient></defs>
+  <rect width="512" height="512" fill="#0b1020"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <text x="256" y="452" text-anchor="middle" textLength="440" lengthAdjust="spacingAndGlyphs" font-family="Anton" font-size="420"><tspan fill="#f8fafc">C</tspan><tspan fill="#fbbf24">2</tspan></text>
+</svg>
