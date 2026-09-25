@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/moudlajs/covertwo/compare/v1.20.0...v1.21.0) (2026-09-25)
+
+
+### Features
+
+* works offline after the first visit, with the last scores marked offline ([#199](https://github.com/moudlajs/covertwo/issues/199)) ([5bcabdf](https://github.com/moudlajs/covertwo/commit/5bcabdf5a3a849d3ef602343f17bc4c004bc80e8))
+
 ## [1.20.0](https://github.com/moudlajs/covertwo/compare/v1.19.0...v1.20.0) (2026-09-25)
 
 
