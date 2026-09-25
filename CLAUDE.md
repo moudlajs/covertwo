@@ -106,6 +106,13 @@ and `text-label` instead of hard-coded colours. Light uses normal team logos
 without the glow. An inline script in `index.html` sets the theme before first
 paint. Every light text colour meets WCAG AA.
 
+**App icon** (#52): "Poster" (COVER / TWO_ in Anton, the amber-to-rose bar as
+the underscore) for the home screen and install, and the plain "C2" small mark
+for favicons. Sources are SVGs in `design/icons/`; `npm run icons` renders the
+PNGs in `public/icons/` (commit both). The manifest is
+`public/manifest.webmanifest`, scoped to `/covertwo/`. The other concepts from
+the design round (Varsity, Cursor, Jersey) live on the design canvas only.
+
 Implemented in `src/components/` (`Shell`, `Backdrop`, `Header`, `GameRow`).
 
 ## Milestones
