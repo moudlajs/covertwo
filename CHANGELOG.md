@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.0](https://github.com/moudlajs/covertwo/compare/v1.13.1...v1.14.0) (2026-09-25)
+
+
+### Features
+
+* Cloudflare Web Analytics beacon ([#171](https://github.com/moudlajs/covertwo/issues/171)) ([5315615](https://github.com/moudlajs/covertwo/commit/53156151074a6755678767ad0ce8345c0e9da8e0))
+* team colour glow behind logos ([#172](https://github.com/moudlajs/covertwo/issues/172)) ([10c61e2](https://github.com/moudlajs/covertwo/commit/10c61e2c2cea5ab3b86021c82601809d266f80fc))
+
 ## [1.13.1](https://github.com/moudlajs/covertwo/compare/v1.13.0...v1.13.1) (2026-09-24)
 
 
