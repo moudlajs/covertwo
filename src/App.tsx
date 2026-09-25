@@ -133,13 +133,8 @@ export default function App() {
               {changes.announcement}
             </span>
             <span className="flex items-center gap-2">
-              {/* A saved copy served without a network: "updated" then says how old it is. */}
-              {board.offline && (
-                <span className="rounded-sm bg-slate-800 px-1.5 font-bold text-slate-300 uppercase">
-                  offline
-                </span>
-              )}
-              <Retrying active={status === 'error' && !never} />
+              {/* offline: a saved copy with no network; "updated" then says how old it is. */}
+              <Retrying active={status === 'error' && !never} offline={board.offline} />
               <UpdatedAgo at={lastUpdated} live={live} />
             </span>
           </>

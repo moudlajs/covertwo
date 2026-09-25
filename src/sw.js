@@ -43,6 +43,26 @@ self.addEventListener('fetch', (event) => {
   else if (url.origin === self.location.origin) event.respondWith(file(request))
 })
 
+// The first visit's logos loaded before this worker existed: the page sends their URLs.
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'save-logos') return
+  event.waitUntil(
+    caches.open(LOGOS).then((cache) =>
+      Promise.all(
+        event.data.urls.map(async (url) => {
+          if (!new URL(url).hostname.endsWith('espncdn.com') || (await cache.match(url))) return
+          try {
+            const response = await fetch(url, { mode: 'no-cors' })
+            if (response.ok || response.type === 'opaque') await cache.put(url, response)
+          } catch {
+            // Offline already: it gets saved next time it loads.
+          }
+        }),
+      ),
+    ),
+  )
+})
+
 /** The page: always the newest when online, the saved one offline. */
 async function page(request) {
   try {

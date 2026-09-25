@@ -26,13 +26,16 @@ test('offline after a first visit: the app and the last scores still show, marke
   await context.route(/espncdn\.com/, (route) =>
     route.fulfill({ contentType: 'image/png', body: PIXEL }),
   )
+  // One visit, no reload: the worker takes charge after the page has loaded
+  // and must still end up with the scores and the logos.
   await page.goto('./')
-  await page.evaluate(() => navigator.serviceWorker.ready)
-  // Controlled now: this load goes through the worker, which saves the scores.
-  await page.reload()
   const rows = page.getByRole('main').getByRole('listitem')
   await expect(rows).toHaveCount(16)
   await expect(page.getByRole('contentinfo')).not.toContainText('offline')
+  const saved = (name: string) =>
+    page.evaluate(async (n) => (await (await caches.open(n)).keys()).length, name)
+  await expect.poll(() => saved('covertwo-data')).toBeGreaterThan(0)
+  await expect.poll(() => saved('covertwo-logos')).toBeGreaterThan(20)
 
   await context.unroute(API)
   await context.route(API, (route) => route.abort('internetdisconnected'))

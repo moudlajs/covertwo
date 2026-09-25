@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapScoreboard } from './espn'
 import { mapSeason, type Season } from './season'
 import type { Game } from './game'
+import { OFFLINE_READY } from '../lib/offline'
 
 /** How often to refetch while a game is live, or while retrying after a failure. */
 export const POLL_MS = 30_000
@@ -82,9 +83,12 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
     }
     const onFocus = () => void load()
     window.addEventListener('focus', onFocus)
+    // Once more through the new service worker, so the first visit is saved for offline.
+    window.addEventListener(OFFLINE_READY, onFocus)
     document.addEventListener('visibilitychange', onVisible)
     return () => {
       window.removeEventListener('focus', onFocus)
+      window.removeEventListener(OFFLINE_READY, onFocus)
       document.removeEventListener('visibilitychange', onVisible)
       inFlight.current?.abort()
     }
