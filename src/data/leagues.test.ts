@@ -34,6 +34,14 @@ test('top25With keeps ranked games plus the favourite, even unranked', () => {
   expect(top25With(games, 'none').length).toBe(games.length) // all fixture games have a ranked team
 })
 
+test('a picked week adds seasontype and week; none means the current week', () => {
+  expect(scoreboardUrl('nfl', 'top25', false, '3:1')).toMatch(
+    /\/nfl\/scoreboard\?seasontype=3&week=1$/,
+  )
+  expect(scoreboardUrl('ncaaf', 'fbs', false, '2:5')).toMatch(/\?groups=80&seasontype=2&week=5$/)
+  expect(scoreboardUrl('nfl')).toMatch(/\/nfl\/scoreboard$/)
+})
+
 test('college fixture maps with Top 25 ranks', () => {
   const games = mapScoreboard(ncaaf)
   expect(games).toHaveLength(22)

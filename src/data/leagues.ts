@@ -21,10 +21,23 @@ export const NCAA_VIEWS = ['top25', 'fbs'] as const satisfies readonly NcaaView[
  * unless `allFbs` asks for every FBS game (groups=80), which a college
  * favourite needs: their game may not involve a ranked team.
  */
-export function scoreboardUrl(league: League, view: NcaaView = 'top25', allFbs = false): string {
+export function scoreboardUrl(
+  league: League,
+  view: NcaaView = 'top25',
+  allFbs = false,
+  week: string | null = null,
+): string {
   if (DEMO) return DEMO_DATA[league]
-  const base = `${import.meta.env.VITE_API_BASE}${LEAGUES[league].path}`
-  return league === 'ncaaf' && (view === 'fbs' || allFbs) ? `${base}?groups=80` : base
+  const params = new URLSearchParams()
+  if (league === 'ncaaf' && (view === 'fbs' || allFbs)) params.set('groups', '80')
+  if (week) {
+    // "seasonType:week", e.g. "3:1" for the Wild Card round.
+    const [seasonType = '', number = ''] = week.split(':')
+    params.set('seasontype', seasonType)
+    params.set('week', number)
+  }
+  const query = params.toString()
+  return `${import.meta.env.VITE_API_BASE}${LEAGUES[league].path}${query ? `?${query}` : ''}`
 }
 
 /** Client-side Top 25: games with a ranked team, plus the given team's games. */

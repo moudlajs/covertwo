@@ -20,6 +20,7 @@ export function ScoreList({
   favorite = null,
   now,
   league = 'nfl',
+  foldPast = true,
 }: {
   games: Game[]
   mode: TimeMode
@@ -29,6 +30,8 @@ export function ScoreList({
   now?: number
   /** Scopes the remembered open days, so NFL and college don't share them. */
   league?: League
+  /** Fold finished past days; off when browsing another week (you went there to see it). */
+  foldPast?: boolean
 }) {
   // One row open at a time.
   const [open, setOpen] = useState<string | null>(null)
@@ -70,7 +73,10 @@ export function ScoreList({
   const today = dayKey(new Date(now ?? Date.now()).toISOString(), mode)
   const lastPast = days.filter((d) => d.key < today).at(-1)?.key
   const finished = (day: Day) =>
-    day.key < today && day.key !== lastPast && day.games.every((g) => g.state === 'post')
+    foldPast &&
+    day.key < today &&
+    day.key !== lastPast &&
+    day.games.every((g) => g.state === 'post')
   const folded = (day: Day) => (
     <section key={day.key} aria-labelledby={`day-${day.key}`}>
       <h2 id={`day-${day.key}`} className={HEADING.replace(' px-3', '')}>

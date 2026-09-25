@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { LoadError } from './components/LoadError'
 import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
@@ -18,6 +18,8 @@ import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
 import { useTimeMode } from './time/useTimeMode'
 import { useNow } from './lib/useNow'
+import { WeekPicker } from './components/WeekPicker'
+import type { Season } from './data/season'
 import { DEMO, DEMO_NOW } from './lib/demo'
 import { NextUp } from './components/NextUp'
 import { isOffDay } from './time/days'
@@ -29,7 +31,9 @@ export default function App() {
   const favorite = favorites[league]
   // A college favourite may be unranked, so their game needs the full FBS slate.
   const collegeFavorite = league === 'ncaaf' ? (favorite?.id ?? null) : null
-  const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null))
+  // The week being viewed: null = ESPN's current week. Resets on league switch.
+  const [week, setWeek] = useState<string | null>(null)
+  const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null, week))
   const { status, lastUpdated, live, retry } = board
   // Memoized: useScoreChanges detects new data by array identity.
   const games = useMemo(
@@ -39,6 +43,14 @@ export default function App() {
         : board.games,
     [board.games, collegeFavorite, ncaaView],
   )
+  // The season calendar, remembered from a current-week response (only those
+  // know which week is current), per league.
+  const [known, setKnown] = useState<{ league: League; season: Season } | null>(null)
+  if (week === null && board.season && (known?.league !== league || known.season !== board.season))
+    setKnown({ league, season: board.season })
+  const season = known?.league === league ? known.season : null
+  const isCurrentWeek = week === null || week === season?.current
+  const shownWeek = week ?? season?.current ?? null
   const [mode, setMode] = useTimeMode()
   const clock = useNow(60_000) // kickoff countdowns tick by the minute
   const now = DEMO ? DEMO_NOW : clock
@@ -52,7 +64,8 @@ export default function App() {
   // which with a college favourite includes games filtered out of Top 25; that
   // one keeps driving polling, this one drives the next-up card.
   const liveShown = games.some((g) => g.state === 'in')
-  const offDay = !empty && isOffDay(games, now, mode)
+  // The next-up card, the resting board and folding are about "now": current week only.
+  const offDay = isCurrentWeek && !empty && isOffDay(games, now, mode)
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
 
@@ -60,16 +73,28 @@ export default function App() {
     <Shell
       demo={DEMO}
       league={
-        <Segmented
-          label="League"
-          name="league"
-          value={league}
-          onChange={setLeague}
-          options={(Object.keys(LEAGUES) as League[]).map((id) => ({
-            value: id,
-            label: LEAGUES[id].label,
-          }))}
-        />
+        <div className="flex items-center gap-2">
+          <Segmented
+            label="League"
+            name="league"
+            value={league}
+            onChange={(l) => {
+              setLeague(l)
+              setWeek(null) // another league, another calendar: back to its current week
+            }}
+            options={(Object.keys(LEAGUES) as League[]).map((id) => ({
+              value: id,
+              label: LEAGUES[id].label,
+            }))}
+          />
+          {season && shownWeek && (
+            <WeekPicker
+              season={season}
+              value={shownWeek}
+              onChange={(id) => setWeek(id === season.current ? null : id)}
+            />
+          )}
+        </div>
       }
       view={
         league === 'ncaaf' && (
@@ -131,7 +156,9 @@ export default function App() {
       ) : (
         <>
           {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}
-          {!liveShown && <NextUp games={games} now={now} mode={mode} offDay={offDay} />}
+          {isCurrentWeek && !liveShown && (
+            <NextUp games={games} now={now} mode={mode} offDay={offDay} />
+          )}
           {/* A resting board on days without games: still readable, just quieter. */}
           <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
             <ScoreList
@@ -141,6 +168,7 @@ export default function App() {
               favorite={favorite?.id}
               now={now}
               league={league}
+              foldPast={isCurrentWeek}
             />
           </div>
         </>

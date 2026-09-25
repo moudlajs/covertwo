@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapScoreboard } from './espn'
+import { mapSeason, type Season } from './season'
 import type { Game } from './game'
 
 /** How often to refetch while a game is live, or while retrying after a failure. */
@@ -12,9 +13,11 @@ export type Scoreboard = {
   status: ScoreboardStatus
   /** Epoch ms of the last successful load, `null` until the first one. */
   lastUpdated: number | null
+  /** ESPN's season calendar from the last successful load. */
+  season: Season | null
 }
 
-const INITIAL: Scoreboard = { games: [], status: 'loading', lastUpdated: null }
+const INITIAL: Scoreboard = { games: [], status: 'loading', lastUpdated: null, season: null }
 
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
@@ -42,8 +45,13 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
       const res = await fetch(url, { signal: controller.signal })
       status = res.status
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const games = mapScoreboard(await res.json())
-      setBoard({ games, status: 'ready', lastUpdated: Date.now() })
+      const json: unknown = await res.json()
+      setBoard({
+        games: mapScoreboard(json),
+        season: mapSeason(json),
+        status: 'ready',
+        lastUpdated: Date.now(),
+      })
     } catch (error) {
       if (controller.signal.aborted) return
       console.error('[scoreboard] load failed', { url, status, error })
