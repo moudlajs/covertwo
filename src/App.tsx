@@ -23,6 +23,8 @@ import type { Season } from './data/season'
 import { DEMO, DEMO_NOW } from './lib/demo'
 import { NextUp } from './components/NextUp'
 import { isOffDay } from './time/days'
+import { RoundAhead } from './components/RoundAhead'
+import { undecided } from './data/game'
 
 export default function App() {
   const [league, setLeague] = useLeague()
@@ -66,6 +68,9 @@ export default function App() {
   const liveShown = games.some((g) => g.state === 'in')
   // The next-up card, the resting board and folding are about "now": current week only.
   const offDay = isCurrentWeek && !empty && isOffDay(games, now, mode)
+  // A future playoff round: no team in it is known yet.
+  const roundAhead = !empty && games.every((g) => undecided(g.home) && undecided(g.away))
+  const round = season?.weeks.find((w) => w.id === shownWeek)?.label ?? 'Playoffs'
   // Nothing has loaded yet (as opposed to a genuinely empty week).
   const never = lastUpdated === null
 
@@ -154,6 +159,8 @@ export default function App() {
         <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
           No games scheduled.
         </p>
+      ) : roundAhead ? (
+        <RoundAhead games={games} round={round} mode={mode} />
       ) : (
         <>
           {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}

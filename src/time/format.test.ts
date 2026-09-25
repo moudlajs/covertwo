@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { formatTime } from './format'
+import { formatDayRange, formatTime } from './format'
 
 test('EU is Prague time, 24h', () => {
   expect(formatTime('2026-09-20T20:25:00Z', 'eu')).toBe('22:25')
@@ -9,4 +9,11 @@ test('EU is Prague time, 24h', () => {
 test('US is New York time, 12h', () => {
   expect(formatTime('2026-09-20T20:25:00Z', 'us')).toBe('4:25 PM')
   expect(formatTime('2026-09-21T00:20:00Z', 'us')).toBe('8:20 PM')
+})
+
+test('day ranges', () => {
+  expect(formatDayRange('2027-01-16T05:00:00Z', '2027-01-18T05:00:00Z', 'eu')).toMatch(
+    /^Sat 16( Jan)?\s–\sMon 18 Jan$/,
+  )
+  expect(formatDayRange('2027-01-16T05:00:00Z', '2027-01-16T21:00:00Z', 'eu')).toBe('Sat 16 Jan')
 })

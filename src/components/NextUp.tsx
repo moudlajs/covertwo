@@ -38,12 +38,19 @@ export function NextUp({
             {offDay && 'Next '}
             <span className="font-bold text-slate-100">
               {formatDay(next.startsAt, mode)}
-            </span> · <time dateTime={next.startsAt}>{formatTime(next.startsAt, mode)}</time>
+            </span> ·{' '}
+            {next.timeTbd ? (
+              'time TBD'
+            ) : (
+              <time dateTime={next.startsAt}>{formatTime(next.startsAt, mode)}</time>
+            )}
             {together > 1 && <span className="text-slate-400"> · {together} games</span>}
           </p>
-          <p className="mt-1 text-2xl font-bold text-amber-400 tabular-nums">
-            {formatCountdown(Date.parse(next.startsAt) - now)}
-          </p>
+          {!next.timeTbd && (
+            <p className="mt-1 text-2xl font-bold text-amber-400 tabular-nums">
+              {formatCountdown(Date.parse(next.startsAt) - now)}
+            </p>
+          )}
         </>
       ) : (
         <p className="mt-2 text-sm text-slate-400">This week's games are done.</p>
