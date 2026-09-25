@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/moudlajs/covertwo/compare/v1.15.1...v1.16.0) (2026-09-25)
+
+
+### Features
+
+* friendly card for playoff rounds whose matchups aren't set yet ([#185](https://github.com/moudlajs/covertwo/issues/185)) ([3a901ea](https://github.com/moudlajs/covertwo/commit/3a901ea48d2833fd42fb99b86d840af55f1190a5))
+
 ## [1.15.1](https://github.com/moudlajs/covertwo/compare/v1.15.0...v1.15.1) (2026-09-25)
 
 
