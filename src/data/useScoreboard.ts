@@ -15,9 +15,20 @@ export type Scoreboard = {
   lastUpdated: number | null
   /** ESPN's season calendar from the last successful load. */
   season: Season | null
+  /** The data is a saved copy from the service worker (no network): `lastUpdated` is when it was saved. */
+  offline: boolean
 }
 
-const INITIAL: Scoreboard = { games: [], status: 'loading', lastUpdated: null, season: null }
+const INITIAL: Scoreboard = {
+  games: [],
+  status: 'loading',
+  lastUpdated: null,
+  season: null,
+  offline: false,
+}
+
+/** Set by the service worker (src/sw.js) on a saved copy served offline. */
+const SAVED_AT = 'x-covertwo-saved-at'
 
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
@@ -46,11 +57,13 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
       status = res.status
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json: unknown = await res.json()
+      const savedAt = Number(res.headers.get(SAVED_AT)) || null
       setBoard({
         games: mapScoreboard(json),
         season: mapSeason(json),
         status: 'ready',
-        lastUpdated: Date.now(),
+        lastUpdated: savedAt ?? Date.now(),
+        offline: savedAt !== null,
       })
     } catch (error) {
       if (controller.signal.aborted) return
