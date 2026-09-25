@@ -43,14 +43,18 @@ self.addEventListener('fetch', (event) => {
   else if (url.origin === self.location.origin) event.respondWith(file(request))
 })
 
-// The first visit's logos loaded before this worker existed: the page sends their URLs.
+// Logos the page shows, sent by the app (saveLogos): saves those loaded before this worker took charge.
 self.addEventListener('message', (event) => {
   if (event.data?.type !== 'save-logos') return
   event.waitUntil(
     caches.open(LOGOS).then((cache) =>
       Promise.all(
         event.data.urls.map(async (url) => {
-          if (!new URL(url).hostname.endsWith('espncdn.com') || (await cache.match(url))) return
+          if (
+            !new URL(url).hostname.endsWith('espncdn.com') ||
+            (await cache.match(url, { ignoreVary: true }))
+          )
+            return
           try {
             const response = await fetch(url, { mode: 'no-cors' })
             if (response.ok || response.type === 'opaque') await cache.put(url, response)
@@ -101,7 +105,9 @@ async function scores(request) {
 /** Team logos: saved as they load, so they show offline too. */
 async function logo(request) {
   const cache = await caches.open(LOGOS)
-  const hit = await cache.match(request)
+  // ignoreVary: logos saved via the page's message were fetched without the
+  // headers an <img> sends, and the CDN may vary on Accept.
+  const hit = await cache.match(request, { ignoreVary: true })
   if (hit) return hit
   const response = await fetch(request)
   if (response.ok || response.type === 'opaque') await cache.put(request, response.clone())
