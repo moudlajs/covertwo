@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/moudlajs/covertwo/compare/v1.16.0...v1.17.0) (2026-09-25)
+
+
+### Features
+
+* light theme following the system, with a menu override ([#187](https://github.com/moudlajs/covertwo/issues/187)) ([8c4bb59](https://github.com/moudlajs/covertwo/commit/8c4bb596b9206e6913b671ed460134717cd5b2e3))
+
 ## [1.16.0](https://github.com/moudlajs/covertwo/compare/v1.15.1...v1.16.0) (2026-09-25)
 
 
