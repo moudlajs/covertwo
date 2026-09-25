@@ -42,3 +42,18 @@ test('the week picker sits at the right end of the league row', async ({ page })
   // Right-aligned: its right edge sits within the row's right padding.
   expect(header.x + header.width - (next.x + next.width)).toBeLessThan(20)
 })
+
+test('on college the picker and the Top 25 toggle fit in one row', async ({ page }) => {
+  await mockEspn(page)
+  await page.goto('./')
+  await page.getByText('NCAA', { exact: true }).click()
+  const row = await page.getByRole('group', { name: 'League' }).boundingBox()
+  const prev = await page.getByRole('button', { name: 'Previous week' }).boundingBox()
+  const view = await page.getByRole('group', { name: 'College games' }).boundingBox()
+  const header = await page.getByTestId('pinned-header').boundingBox()
+  if (!row || !prev || !view || !header) throw new Error('no layout')
+  // Same line, in order, nothing past the panel's edge.
+  expect(Math.abs(prev.y + prev.height / 2 - (view.y + view.height / 2))).toBeLessThan(4)
+  expect(prev.x).toBeGreaterThan(row.x + row.width)
+  expect(view.x + view.width).toBeLessThanOrEqual(header.x + header.width)
+})

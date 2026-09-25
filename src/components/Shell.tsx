@@ -19,7 +19,7 @@ export function Shell({
   demo?: boolean
   /** Second header row, left: which league. */
   league?: ReactNode
-  /** Second header row, right: which games (college Top 25 / All FBS). */
+  /** Second header row, right: the week picker, and on college which games (Top 25 / All FBS). */
   view?: ReactNode
   controls?: ReactNode
   footer?: ReactNode
