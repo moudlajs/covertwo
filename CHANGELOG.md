@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/moudlajs/covertwo/compare/v1.21.0...v1.21.1) (2026-09-25)
+
+
+### Bug Fixes
+
+* wake at kickoff and keep checking until the game goes live ([#202](https://github.com/moudlajs/covertwo/issues/202)) ([c07639e](https://github.com/moudlajs/covertwo/commit/c07639e3f4265b78470fd877f0dfe931217d3891))
+
 ## [1.21.0](https://github.com/moudlajs/covertwo/compare/v1.20.0...v1.21.0) (2026-09-25)
 
 
