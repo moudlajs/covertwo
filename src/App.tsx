@@ -13,6 +13,8 @@ import { useNcaaView } from './data/useNcaaView'
 import { useFavorites } from './data/useFavorites'
 import { FBS_TEAMS, NFL_TEAMS } from './data/teams'
 import { FavoriteSelect } from './components/FavoriteSelect'
+import { KeepAwakeToggle } from './components/KeepAwakeToggle'
+import { useKeepAwake, useWakeLock, wakeLockSupported } from './lib/useWakeLock'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
 import { documentTitle } from './data/title'
@@ -39,6 +41,9 @@ export default function App() {
   const [week, setWeek] = useState<string | null>(null)
   const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null, week))
   const { status, lastUpdated, live, retry } = board
+  const [keepAwake, setKeepAwake] = useKeepAwake()
+  // Only while something is live: the scoreboard on the table during the game.
+  useWakeLock(keepAwake && live)
   // Memoized: useScoreChanges detects new data by array identity.
   const games = useMemo(
     () =>
@@ -152,6 +157,7 @@ export default function App() {
                 value={favorite}
                 onChange={(f) => setFavorite(league, f)}
               />
+              {wakeLockSupported() && <KeepAwakeToggle value={keepAwake} onChange={setKeepAwake} />}
             </Menu>
           </>
         }
