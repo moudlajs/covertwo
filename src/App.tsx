@@ -24,7 +24,8 @@ import { DEMO, DEMO_NOW } from './lib/demo'
 import { NextUp } from './components/NextUp'
 import { isOffDay } from './time/days'
 import { RoundAhead } from './components/RoundAhead'
-import { ThemeContext, useTheme, type ThemeChoice } from './lib/theme'
+import { ThemeContext, useTheme } from './lib/theme'
+import { ThemeToggle } from './components/ThemeToggle'
 import { undecided } from './data/game'
 
 export default function App() {
@@ -55,7 +56,7 @@ export default function App() {
   const isCurrentWeek = week === null || week === season?.current
   const shownWeek = week ?? season?.current ?? null
   const [mode, setMode] = useTimeMode()
-  const { choice: themeChoice, setChoice: setThemeChoice, theme } = useTheme()
+  const [theme, setTheme] = useTheme()
   const clock = useNow(60_000) // kickoff countdowns tick by the minute
   const now = DEMO ? DEMO_NOW : clock
   const changes = useScoreChanges(games)
@@ -144,28 +145,13 @@ export default function App() {
                 { value: 'us', label: 'US' },
               ]}
             />
+            <ThemeToggle theme={theme} onChange={setTheme} />
             <Menu>
               <FavoriteSelect
                 teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
                 value={favorite}
                 onChange={(f) => setFavorite(league, f)}
               />
-              <div className="mt-3">
-                <span aria-hidden="true" className="mb-1 block text-slate-500">
-                  Theme
-                </span>
-                <Segmented<ThemeChoice>
-                  label="Theme"
-                  name="theme"
-                  value={themeChoice}
-                  onChange={setThemeChoice}
-                  options={[
-                    { value: 'system', label: 'System' },
-                    { value: 'light', label: 'Light' },
-                    { value: 'dark', label: 'Dark' },
-                  ]}
-                />
-              </div>
             </Menu>
           </>
         }

@@ -27,13 +27,14 @@ test('follows a dark system', async ({ page }, info) => {
   await info.attach('dark', { body: await page.screenshot(), contentType: 'image/png' })
 })
 
-test('the menu choice overrides the system and survives a reload', async ({ page }) => {
+test('the sun/moon button switches and the choice survives a reload', async ({ page }) => {
   await page.goto('./')
-  await page.getByRole('button', { name: 'Menu' }).click()
-  await page.getByRole('group', { name: 'Theme' }).getByText('Light', { exact: true }).click()
+  await page.getByRole('button', { name: 'Switch to light theme' }).click()
   await expect(html(page)).toHaveAttribute('data-theme', 'light')
   await page.reload()
   await expect(html(page)).toHaveAttribute('data-theme', 'light')
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+  await expect(html(page)).toHaveAttribute('data-theme', 'dark')
 })
 
 test('no flash: the theme is set before the app script runs', async ({ page }) => {

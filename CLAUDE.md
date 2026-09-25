@@ -97,8 +97,8 @@ title (the slot was reserved from the start). No NFL shield logo.
   lighter background; red zone adds a rose left edge and an "RZ" tag.
 - Footer: monospace source and "updated Xs ago".
 
-**Light theme** (#48, variant A "warm paper"): follows the system, with a
-System / Light / Dark switch in the menu (`src/lib/theme.ts`, persisted). It
+**Light theme** (#48, variant A "warm paper"): the first visit follows the
+system; a sun/moon button next to EU/US switches it (`src/lib/theme.ts`, persisted). It
 is one CSS block in `src/index.css` that inverts the slate scale and deepens
 the accents under `html[data-theme=light]`, so components keep their dark
 class names. Use `bg-page`/`bg-chrome`/`bg-heading`, `bg-accent`/`text-on-accent`
