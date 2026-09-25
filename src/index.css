@@ -1,5 +1,24 @@
 @import 'tailwindcss';
 
+/*
+ * app: launched from the home screen (index.html sets data-display="app") on a
+ * phone. The panel then fills the screen like a native app; browser tabs and
+ * tablets keep the floating panel.
+ */
+@custom-variant app {
+  :root[data-display='app'] & {
+    @media (max-width: 639px) {
+      @slot;
+    }
+  }
+}
+
+/* As an app, no rubber-band bounce dragging the whole page. */
+:root[data-display='app'],
+:root[data-display='app'] body {
+  overscroll-behavior-y: none;
+}
+
 :root {
   color-scheme: dark;
   --panel-shadow:

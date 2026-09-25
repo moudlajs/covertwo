@@ -26,19 +26,23 @@ export function Shell({
   children: ReactNode
 }) {
   return (
-    <div className="min-h-dvh bg-page px-2 py-6 text-slate-100 sm:py-12">
+    <div className="min-h-dvh bg-page px-2 py-6 text-slate-100 app:p-0 sm:py-12">
       <Backdrop />
       {/* No overflow-hidden anywhere up the tree: it would break the sticky
           header/footer and clip the menu dropdown. */}
       <div
         data-testid="panel"
-        // Height of the pinned header block; day headings stick right below it.
-        // Scaled per screen size by --panel-scale (see index.css).
-        style={{ '--header-h': '86px' } as CSSProperties}
-        className="relative mx-auto w-full max-w-[560px] rounded-xl [zoom:var(--panel-scale)] bg-slate-900 shadow-[var(--panel-shadow)]"
+        // Height of the pinned header block (plus the status bar in the app);
+        // day headings stick right below it. Scaled per screen size by
+        // --panel-scale (see index.css).
+        style={{ '--header-h': 'calc(86px + env(safe-area-inset-top, 0px))' } as CSSProperties}
+        className="relative mx-auto w-full max-w-[560px] rounded-xl [zoom:var(--panel-scale)] bg-slate-900 shadow-[var(--panel-shadow)] app:flex app:min-h-dvh app:max-w-none app:flex-col app:rounded-none app:shadow-none"
       >
-        {/* 2px edge + h-11 header + h-10 league row (border included) = --header-h above. */}
-        <div data-testid="pinned-header" className="sticky top-0 z-20 rounded-t-xl bg-chrome">
+        {/* Status bar inset + 2px edge + h-11 header + h-10 league row (border included) = --header-h above. */}
+        <div
+          data-testid="pinned-header"
+          className="sticky top-0 z-20 rounded-t-xl bg-chrome pt-[env(safe-area-inset-top)] app:rounded-none"
+        >
           <div
             aria-hidden="true"
             className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
@@ -49,9 +53,9 @@ export function Shell({
             {view}
           </div>
         </div>
-        <main>{children}</main>
+        <main className="app:flex-1">{children}</main>
         {footer && (
-          <footer className="sticky bottom-0 z-20 flex justify-between rounded-b-xl border-t border-slate-800 bg-slate-900 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+          <footer className="sticky bottom-0 z-20 flex justify-between rounded-b-xl border-t border-slate-800 bg-slate-900 px-3 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] font-mono text-[10px] text-slate-500 app:rounded-none">
             {footer}
           </footer>
         )}

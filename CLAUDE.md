@@ -119,6 +119,12 @@ PNGs in `public/icons/` (commit both). The manifest is
 `public/manifest.webmanifest`, scoped to `/covertwo/`. The other concepts from
 the design round (Varsity, Cursor, Jersey) live on the design canvas only.
 
+**App mode** (#204): launched from the home screen, the inline script in
+`index.html` sets `html[data-display=app]`, and the `app:` Tailwind variant
+(phones only, under 640px) makes the panel full-screen: no card, corners or
+margins, no overscroll bounce, safe-area padding for the status bar and home
+indicator. Browser tabs and tablets keep the floating panel.
+
 Implemented in `src/components/` (`Shell`, `Backdrop`, `Header`, `GameRow`).
 
 ## Milestones
