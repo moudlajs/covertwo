@@ -4,7 +4,7 @@
   <rect width="512" height="512" fill="#0b1020"/>
   <rect width="512" height="512" fill="url(#glow)"/>
   <rect width="512" height="512" fill="url(#sky)"/>
-  <g transform="translate(256 256) scale(0.76) translate(-256 -256)">
+  <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
     <circle cx="432" cy="92" r="24" fill="#f43f5e" fill-opacity="0.22"/>
     <circle cx="432" cy="92" r="11" fill="#f43f5e"/>
     <text x="64" y="240" textLength="384" lengthAdjust="spacingAndGlyphs" font-family="Anton" font-size="150" fill="#f8fafc">COVER</text>
