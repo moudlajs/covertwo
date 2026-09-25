@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/moudlajs/covertwo/compare/v1.19.0...v1.20.0) (2026-09-25)
+
+
+### Features
+
+* keep the screen on during live games (opt-in) ([#197](https://github.com/moudlajs/covertwo/issues/197)) ([6a702b1](https://github.com/moudlajs/covertwo/commit/6a702b14f7aed11ad123853c7d9360ab15d281fb))
+
 ## [1.19.0](https://github.com/moudlajs/covertwo/compare/v1.18.1...v1.19.0) (2026-09-25)
 
 
