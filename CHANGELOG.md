@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/moudlajs/covertwo/compare/v1.17.0...v1.18.0) (2026-09-25)
+
+
+### Features
+
+* sun/moon theme toggle in the header; menu closes after picking a favourite ([#190](https://github.com/moudlajs/covertwo/issues/190)) ([4d821a6](https://github.com/moudlajs/covertwo/commit/4d821a68d5108a217eac5635caa9a398bc4f5a08))
+
 ## [1.17.0](https://github.com/moudlajs/covertwo/compare/v1.16.0...v1.17.0) (2026-09-25)
 
 
