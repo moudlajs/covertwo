@@ -30,7 +30,7 @@ test('another week shows no next-up card or resting board', async ({ page }) => 
   await page.goto('./')
   await page.getByRole('button', { name: 'Previous week' }).click()
   await expect(page.getByRole('combobox', { name: 'Week' })).toHaveValue('2:1')
-  await expect(page.getByRole('region', { name: /No games today|Up next/ })).toHaveCount(0)
+  await expect(page.getByRole('region', { name: 'Up next' })).toHaveCount(0)
 })
 
 test('the week picker sits at the right end of the league row', async ({ page }) => {

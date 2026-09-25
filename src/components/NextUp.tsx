@@ -3,9 +3,9 @@ import { formatCountdown } from '../time/countdown'
 import { formatDay, formatTime, type TimeMode } from '../time/format'
 
 /**
- * The next kickoff, shown whenever nothing is live: "UP NEXT" on a game day,
- * "NO GAMES TODAY" on a day without games (when it also covers an empty rest
- * of the week). Renders nothing on a game day with no kickoff left.
+ * The next kickoff, shown whenever nothing is live, always as "UP NEXT". On a
+ * day without games it also covers a finished week; on a game day with no
+ * kickoff left it renders nothing.
  */
 export function NextUp({
   games,
@@ -23,7 +23,9 @@ export function NextUp({
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
   const next = upcoming[0]
   if (!next && !offDay) return null
-  const heading = offDay ? 'No games today' : 'Up next'
+  // One wording everywhere: whether today has games depends on league and
+  // time zone, so "No games today" / "Next …" flipped with EU/US and NFL/NCAA.
+  const heading = 'Up next'
   const together = next ? upcoming.filter((g) => g.startsAt === next.startsAt).length : 0
 
   return (
@@ -35,10 +37,7 @@ export function NextUp({
       {next ? (
         <>
           <p className="mt-2 text-sm text-slate-300">
-            {offDay && 'Next '}
-            <span className="font-bold text-slate-100">
-              {formatDay(next.startsAt, mode)}
-            </span> ·{' '}
+            <span className="font-bold text-slate-100">{formatDay(next.startsAt, mode)}</span> ·{' '}
             {next.timeTbd ? (
               'time TBD'
             ) : (
