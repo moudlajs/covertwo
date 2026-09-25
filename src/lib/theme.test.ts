@@ -4,11 +4,6 @@ import { THEME_KEY, useTheme } from './theme'
 
 // A controllable prefers-color-scheme (jsdom has no matchMedia).
 let systemLight = false
-const listeners = new Set<() => void>()
-function setSystem(light: boolean) {
-  systemLight = light
-  listeners.forEach((l) => l())
-}
 
 beforeEach(() => {
   localStorage.clear()
@@ -18,36 +13,33 @@ beforeEach(() => {
     get matches() {
       return systemLight
     },
-    addEventListener: (_: string, l: () => void) => listeners.add(l),
-    removeEventListener: (_: string, l: () => void) => listeners.delete(l),
   }))
 })
 afterEach(() => {
   vi.unstubAllGlobals()
-  listeners.clear()
   delete document.documentElement.dataset.theme
 })
 
-test('follows the system by default, live', () => {
-  const { result } = renderHook(() => useTheme())
-  expect(result.current).toMatchObject({ choice: 'system', theme: 'dark' })
-  expect(document.documentElement.dataset.theme).toBe('dark')
-  act(() => setSystem(true))
-  expect(result.current.theme).toBe('light')
+test('the first visit follows the system', () => {
+  systemLight = true
+  expect(renderHook(() => useTheme()).result.current[0]).toBe('light')
   expect(document.documentElement.dataset.theme).toBe('light')
 })
 
-test('a manual choice overrides the system and is remembered', () => {
+test('a choice overrides the system and is remembered', () => {
   systemLight = true
   const { result, unmount } = renderHook(() => useTheme())
-  act(() => result.current.setChoice('dark'))
-  expect(result.current.theme).toBe('dark')
+  act(() => result.current[1]('dark'))
+  expect(result.current[0]).toBe('dark')
   expect(localStorage.getItem(THEME_KEY)).toBe('dark')
   unmount()
-  expect(renderHook(() => useTheme()).result.current).toMatchObject({
-    choice: 'dark',
-    theme: 'dark',
-  })
+  expect(renderHook(() => useTheme()).result.current[0]).toBe('dark')
+})
+
+test('an old "system" value falls back to the system', () => {
+  localStorage.setItem(THEME_KEY, 'system')
+  systemLight = true
+  expect(renderHook(() => useTheme()).result.current[0]).toBe('light')
 })
 
 test('sets the browser UI colour', () => {
@@ -55,7 +47,7 @@ test('sets the browser UI colour', () => {
   meta.name = 'theme-color'
   document.head.append(meta)
   const { result } = renderHook(() => useTheme())
-  act(() => result.current.setChoice('light'))
+  act(() => result.current[1]('light'))
   expect(meta.content).toBe('#f3efe6')
   meta.remove()
 })

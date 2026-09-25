@@ -37,7 +37,6 @@ test('an unranked college favourite (Maryland) shows, pinned, in the Top 25 view
   await page.getByRole('button', { name: 'Menu' }).click()
   await page.getByLabel('Favourite team').selectOption({ label: 'Maryland Terrapins' })
   await fbs
-  await page.keyboard.press('Escape')
 
   await expect(page.getByRole('radio', { name: 'Top 25' })).toBeChecked()
   await expect(page.getByRole('heading', { level: 2 }).first()).toContainText('Maryland Terrapins')

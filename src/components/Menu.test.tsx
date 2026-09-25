@@ -48,3 +48,20 @@ test('shows the app version', async () => {
   await user.click(button)
   expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument()
 })
+
+test('changing a setting closes it and returns focus to the button', async () => {
+  const user = userEvent.setup()
+  render(
+    <Menu>
+      <select aria-label="Pick">
+        <option>a</option>
+        <option>b</option>
+      </select>
+    </Menu>,
+  )
+  const button = screen.getByRole('button', { name: 'Menu' })
+  await user.click(button)
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Pick' }), 'b')
+  expect(button).toHaveAttribute('aria-expanded', 'false')
+  expect(button).toHaveFocus()
+})

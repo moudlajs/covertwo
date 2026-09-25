@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 /**
- * Hamburger button with a small dropdown panel. A home for future settings;
- * for now it shows the version and a link to the repo. Escape closes it and
- * returns focus to the button; a click outside just closes it.
+ * Hamburger button with a small dropdown panel: settings, the version and a
+ * link to the repo. Changing a setting applies it and closes the menu, as do
+ * Escape (which returns focus to the button) and a click outside.
  */
 export function Menu({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -54,6 +54,11 @@ export function Menu({ children }: { children?: ReactNode }) {
       <div
         id={panelId}
         hidden={!open}
+        // A setting changed (change events bubble): apply it and get out of the way.
+        onChange={() => {
+          setOpen(false)
+          button.current?.focus()
+        }}
         className="absolute top-full right-0 z-10 mt-2 w-56 rounded-lg bg-slate-950 p-3 font-mono text-[11px] text-slate-400 shadow-xl ring-1 ring-slate-700"
       >
         {children}
