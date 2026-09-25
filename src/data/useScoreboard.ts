@@ -85,10 +85,13 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
     window.addEventListener('focus', onFocus)
     // Once more through the new service worker, so the first visit is saved for offline.
     window.addEventListener(OFFLINE_READY, onFocus)
+    // Back online: replace a saved copy with fresh data straight away.
+    window.addEventListener('online', onFocus)
     document.addEventListener('visibilitychange', onVisible)
     return () => {
       window.removeEventListener('focus', onFocus)
       window.removeEventListener(OFFLINE_READY, onFocus)
+      window.removeEventListener('online', onFocus)
       document.removeEventListener('visibilitychange', onVisible)
       inFlight.current?.abort()
     }

@@ -67,6 +67,15 @@ test('refetches when the window regains focus', async () => {
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
 })
 
+test('refetches when the connection comes back', async () => {
+  const { result } = renderHook(() => useScoreboard(URL))
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  act(() => {
+    window.dispatchEvent(new Event('online'))
+  })
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+})
+
 test('refetches when the tab becomes visible', async () => {
   const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
