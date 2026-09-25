@@ -18,7 +18,7 @@ test('a day without games shows the next kickoff over a resting board', async ({
   await page.clock.setFixedTime(new Date('2026-09-19T12:00:00Z')) // Saturday, no NFL games
   await page.route(SCOREBOARD_API, (route) => route.fulfill({ json: nothingLive }))
   await page.goto('./')
-  const card = page.getByRole('region', { name: 'No games today' })
+  const card = page.getByRole('region', { name: 'Up next' })
   await expect(card).toContainText(/Sunday 20 Sept?/) // Safari: "Sep", Chromium: "Sept"
   await expect(card).toContainText('in 1d 8h')
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16) // board still there
@@ -39,5 +39,5 @@ test('while a game is live there is no card', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-09-20T20:00:00Z'))
   await page.goto('./')
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(16)
-  await expect(page.getByRole('region', { name: /Up next|No games today/ })).toHaveCount(0)
+  await expect(page.getByRole('region', { name: 'Up next' })).toHaveCount(0)
 })

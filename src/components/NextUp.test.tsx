@@ -17,9 +17,9 @@ test('off day: no game on today’s date in the selected time zone', () => {
   expect(isOffDay(games, at('2026-09-17T21:00:00Z'), 'eu')).toBe(true)
 })
 
-test('card shows the next kickoff and a countdown', () => {
+test('a day without games: the same "Up next" card, no extra "Next"', () => {
   render(<NextUp games={games} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
-  expect(screen.getByRole('region', { name: 'No games today' })).toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'Up next' })).not.toHaveTextContent('Next ')
   expect(screen.getByText('Sunday 20 Sept')).toBeInTheDocument()
   expect(screen.getByText('22:25')).toHaveAttribute('datetime', '2026-09-20T20:25:00.000Z')
   expect(screen.getByText('in 1d 8h')).toBeInTheDocument()
@@ -44,7 +44,7 @@ test('game day before kickoff: "Up next" with how many games start together', ()
 
 test('a single game at the next kickoff has no count', () => {
   render(<NextUp games={games} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
-  expect(screen.getByRole('region', { name: 'No games today' })).not.toHaveTextContent(/\d+ games/)
+  expect(screen.getByRole('region', { name: 'Up next' })).not.toHaveTextContent(/\d+ games/)
 })
 
 test('game day with no kickoff left: nothing', () => {
@@ -58,7 +58,7 @@ test('game day with no kickoff left: nothing', () => {
 test('next kickoff with only the day set: "time TBD", no countdown', () => {
   const tbd = games.map((g) => ({ ...g, timeTbd: true }))
   render(<NextUp games={tbd} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
-  const card = screen.getByRole('region', { name: 'No games today' })
+  const card = screen.getByRole('region', { name: 'Up next' })
   expect(card).toHaveTextContent('Sunday 20 Sept · time TBD')
   expect(card).not.toHaveTextContent(/in 1d/)
 })
