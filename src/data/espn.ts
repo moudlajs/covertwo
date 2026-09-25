@@ -31,6 +31,9 @@ type EspnEvent = {
   competitions?: {
     competitors?: EspnCompetitor[]
     broadcast?: string
+    /** false when only the day is set; `date` then holds a placeholder time. */
+    timeValid?: boolean
+    venue?: { fullName?: string; address?: { city?: string; state?: string } }
     leaders?: {
       name?: string
       leaders?: {
@@ -104,6 +107,12 @@ function quarters(home: EspnCompetitor | undefined, away: EspnCompetitor | undef
   return h.length > 0 && h.length === a.length ? { home: h, away: a } : null
 }
 
+/** "SoFi Stadium · Inglewood, CA", or whatever part ESPN has. */
+function venue(v: NonNullable<EspnEvent['competitions']>[number]['venue']): string | null {
+  const place = [v?.address?.city, v?.address?.state].filter(Boolean).join(', ')
+  return [v?.fullName, place].filter(Boolean).join(' · ') || null
+}
+
 function timeouts(
   state: string,
   s: { homeTimeouts?: number; awayTimeouts?: number } | undefined,
@@ -146,6 +155,8 @@ function mapEvent(e: EspnEvent | null): Game | null {
     clock: e.status?.displayClock ?? '',
     halftime,
     network: comp?.broadcast || null,
+    timeTbd: comp?.timeValid === false,
+    venue: venue(comp?.venue),
     possession,
     down,
     redZone: inPlay && comp?.situation?.isRedZone === true,

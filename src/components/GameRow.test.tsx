@@ -23,6 +23,23 @@ describe('GameRow', () => {
     expect(screen.getByText('FOX')).toBeInTheDocument()
   })
 
+  test('scheduled with only the day set: "TBD", no countdown', () => {
+    const game = games.find((g) => g.away.abbr === 'MIA' && g.home.abbr === 'SF')
+    if (!game) throw new Error('no MIA @ SF in fixture')
+    render(
+      <ul>
+        <GameRow
+          game={{ ...game, timeTbd: true }}
+          mode="eu"
+          now={Date.parse(game.startsAt) - 60_000}
+        />
+      </ul>,
+    )
+    expect(screen.getByText('TBD')).toBeInTheDocument()
+    expect(screen.queryByText('22:25')).not.toBeInTheDocument()
+    expect(screen.getByText('FOX')).toBeInTheDocument()
+  })
+
   test('scheduled: kickoff follows the time mode', () => {
     renderRow('MIA', 'SF', 'us')
     expect(screen.getByText('4:25 PM')).toBeInTheDocument()

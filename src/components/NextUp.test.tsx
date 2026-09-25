@@ -54,3 +54,11 @@ test('game day with no kickoff left: nothing', () => {
   )
   expect(container).toBeEmptyDOMElement()
 })
+
+test('next kickoff with only the day set: "time TBD", no countdown', () => {
+  const tbd = games.map((g) => ({ ...g, timeTbd: true }))
+  render(<NextUp games={tbd} now={at('2026-09-19T12:00:00Z')} mode="eu" offDay />)
+  const card = screen.getByRole('region', { name: 'No games today' })
+  expect(card).toHaveTextContent('Sunday 20 Sept · time TBD')
+  expect(card).not.toHaveTextContent(/in 1d/)
+})

@@ -14,6 +14,9 @@ export type Team = {
   color: string | null
 }
 
+/** A team not decided yet: ESPN's "TBD" placeholders (ids -1 and -2) in future playoff rounds. */
+export const undecided = (t: Team) => Number(t.id) < 0 || t.abbr === 'TBD'
+
 export type Leader = {
   /** e.g. "J. Goff" */
   name: string
@@ -33,6 +36,10 @@ export type Game = {
   clock: string
   halftime: boolean
   network: string | null
+  /** The day is set but the kickoff time isn't (ESPN `timeValid: false`): `startsAt` is a placeholder time. */
+  timeTbd: boolean
+  /** "SoFi Stadium · Inglewood, CA", when ESPN has it. */
+  venue: string | null
   /** "2nd & 7" and "DEN 34"; only while the ball is in play. */
   down: { distance: string; spot: string | null } | null
   /** ESPN's text for the most recent play, while live. */

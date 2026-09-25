@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test'
+import superBowl from '../fixtures/espn-nfl-superbowl.json' with { type: 'json' }
+import wildCard from '../fixtures/espn-nfl-wildcard.json' with { type: 'json' }
 import { mockEspn } from './mock-espn'
 
 test('week picker: step, jump, and back to the current week on league switch', async ({ page }) => {
@@ -56,4 +58,27 @@ test('on college the picker and the Top 25 toggle fit in one row', async ({ page
   expect(Math.abs(prev.y + prev.height / 2 - (view.y + view.height / 2))).toBeLessThan(4)
   expect(prev.x).toBeGreaterThan(row.x + row.width)
   expect(view.x + view.width).toBeLessThanOrEqual(header.x + header.width)
+})
+
+test('a playoff round without matchups shows one card, not TBD rows', async ({ page }) => {
+  await mockEspn(page)
+  await page.route(/nfl\/scoreboard\?seasontype=3&week=1$/, (route) =>
+    route.fulfill({ json: wildCard }),
+  )
+  await page.route(/nfl\/scoreboard\?seasontype=3&week=5$/, (route) =>
+    route.fulfill({ json: superBowl }),
+  )
+  await page.goto('./')
+  const week = page.getByRole('combobox', { name: 'Week' })
+
+  await week.selectOption({ label: 'Wild Card' })
+  const card = page.getByRole('region', { name: 'Wild Card' })
+  await expect(card).toContainText(/6 games · Sat 16/)
+  await expect(card).toContainText('Matchups are set once the games before it are played.')
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(0)
+
+  await week.selectOption({ label: 'Super Bowl' })
+  await expect(page.getByRole('region', { name: 'Super Bowl' })).toContainText(
+    'SoFi Stadium · Inglewood, CA',
+  )
 })

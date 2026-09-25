@@ -66,6 +66,9 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
   rewritten as live (3rd qtr, halftime, 4th qtr in the red zone, 1st qtr) and
   three as scheduled. The `situation` blocks on the live games are
   hand-written to ESPN's shape, not captured.
+- `fixtures/espn-nfl-wildcard.json` and `espn-nfl-superbowl.json` are real
+  (captured 2026-09-25) future playoff rounds: "TBD @ TBD" teams (ids -1/-2)
+  and, before times are set, `timeValid: false` with a placeholder 05:00Z.
 - **Tests never hit the real API.** Unit tests import the fixture; e2e uses
   `e2e/mock-espn.ts`, which also stubs logos and aborts any other ESPN URL.
 

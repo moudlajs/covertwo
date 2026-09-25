@@ -9,12 +9,17 @@ function status(game: Game, now?: number): string {
   if (game.state === 'post') return game.detail
   if (game.state === 'pre') {
     const network = game.network ?? 'Scheduled'
-    const until = now === undefined ? Infinity : Date.parse(game.startsAt) - now
+    const until = now === undefined || game.timeTbd ? Infinity : Date.parse(game.startsAt) - now
     return until <= COUNTDOWN_WINDOW_MS ? `${network} · ${formatCountdown(until)}` : network
   }
   if (game.halftime) return 'Halftime'
   const period = game.period > 4 ? 'OT' : `Q${game.period}`
   return `${period} · ${game.clock}`
+}
+
+/** Kickoff time, or "TBD" when ESPN only has the day. */
+function kickoff(game: Game, mode: TimeMode): string {
+  return game.timeTbd ? 'TBD' : formatTime(game.startsAt, mode)
 }
 
 function Ball() {
@@ -73,7 +78,7 @@ function summary(game: Game, mode: TimeMode, now?: number): string {
   // "No. 5 Miami Hurricanes" for ranked college teams.
   const name = (t: Team) => (t.rank === null ? t.name : `No. ${t.rank} ${t.name}`)
   if (game.state === 'pre')
-    return `${name(away)} at ${name(home)}, ${formatTime(game.startsAt, mode)}, ${status(game, now)}`
+    return `${name(away)} at ${name(home)}, ${kickoff(game, mode)}, ${status(game, now)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
@@ -161,7 +166,7 @@ export function GameRow({
               dateTime={game.startsAt}
               className="font-mono text-[13px] font-semibold text-slate-300 tabular-nums"
             >
-              {formatTime(game.startsAt, mode)}
+              {kickoff(game, mode)}
             </time>
           ) : (
             <span className="font-mono text-[15px] font-bold tabular-nums">

@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import fixture from '../../fixtures/espn-scoreboard.json'
+import superBowl from '../../fixtures/espn-nfl-superbowl.json'
+import wildCard from '../../fixtures/espn-nfl-wildcard.json'
 import { mapScoreboard } from './espn'
+import { undecided } from './game'
 
 const games = mapScoreboard(fixture)
 const byMatchup = (away: string, home: string) => {
@@ -153,5 +156,24 @@ describe('mapScoreboard', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(mapScoreboard({})).toEqual([])
     expect(mapScoreboard(null)).toEqual([])
+  })
+})
+
+describe('future playoff rounds', () => {
+  test('TBD teams, a date-only kickoff and no venue', () => {
+    const [g] = mapScoreboard(wildCard)
+    expect(g).toMatchObject({ timeTbd: true, venue: null })
+    expect(g && undecided(g.home) && undecided(g.away)).toBe(true)
+  })
+
+  test('a set kickoff and the venue', () => {
+    expect(mapScoreboard(superBowl)[0]).toMatchObject({
+      timeTbd: false,
+      venue: 'SoFi Stadium · Inglewood, CA',
+    })
+  })
+
+  test('real teams are decided', () => {
+    expect(games.some((g) => undecided(g.home) || undecided(g.away))).toBe(false)
   })
 })

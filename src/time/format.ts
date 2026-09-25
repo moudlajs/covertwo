@@ -34,3 +34,11 @@ export function dayKey(iso: string, mode: TimeMode): string {
 export function formatDay(iso: string, mode: TimeMode): string {
   return formatter(mode, { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(iso))
 }
+
+/** Days from one date to another, e.g. "Sat 16 – Mon 18 Jan" (EU) or "Sat, Jan 16 – Mon, Jan 18" (US). */
+export function formatDayRange(fromIso: string, toIso: string, mode: TimeMode): string {
+  const f = formatter(mode, { weekday: 'short', day: 'numeric', month: 'short' })
+  return dayKey(fromIso, mode) === dayKey(toIso, mode)
+    ? f.format(new Date(fromIso))
+    : f.formatRange(new Date(fromIso), new Date(toIso))
+}
