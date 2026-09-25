@@ -22,6 +22,7 @@
   --color-label: #8a3c0c;
   --color-accent: #fbbf24;
   --color-on-accent: #0f172a;
+  --color-accent-hover: #fcd34d;
   --color-slate-50: #0f172a;
   --color-slate-100: #0f172a;
   --color-slate-200: #1e293b;
@@ -54,6 +55,7 @@
   --color-label: color-mix(in oklab, var(--color-amber-400) 80%, transparent);
   --color-accent: var(--color-amber-400);
   --color-on-accent: var(--color-slate-950);
+  --color-accent-hover: #fcd34d;
   /* Score change: brief amber glow behind the number. */
   --animate-score-flash: score-flash 2.5s ease-out;
   @keyframes score-flash {
