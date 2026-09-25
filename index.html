@@ -11,5 +11,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!--
+      Cloudflare Web Analytics: cookieless, no consent banner needed. The plain JS
+      beacon (the site is on GitHub Pages, not proxied by Cloudflare). Get the token
+      in the Cloudflare dashboard: Analytics & Logs > Web Analytics > your site >
+      the JS snippet's "token" value, and replace CF_BEACON_TOKEN_HERE below.
+    -->
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "CF_BEACON_TOKEN_HERE"}'
+    ></script>
   </body>
 </html>

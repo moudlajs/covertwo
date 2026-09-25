@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { blockAnalytics } from './mock-espn'
 
 test('?demo shows built-in live data without calling the API', async ({ page }) => {
   const apiCalls: string[] = []
@@ -6,6 +7,7 @@ test('?demo shows built-in live data without calling the API', async ({ page }) 
     if (/api\.test|workers\.dev|espn\.com\/apis/.test(r.url())) apiCalls.push(r.url())
   })
   await page.route(/espncdn\.com/, (route) => route.abort()) // logos not needed here
+  await blockAnalytics(page)
   await page.goto('./?demo')
   await expect(page.getByText('DEMO', { exact: true })).toBeVisible()
   const main = page.getByRole('main')
