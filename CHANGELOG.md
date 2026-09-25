@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/moudlajs/covertwo/compare/v1.14.0...v1.15.0) (2026-09-25)
+
+
+### Features
+
+* week picker incl. preseason and playoffs ([#180](https://github.com/moudlajs/covertwo/issues/180)) ([c8ac4ab](https://github.com/moudlajs/covertwo/commit/c8ac4ab22bb9b589a26dfa658a7e0705dff6c9f8))
+
+
+### Documentation
+
+* keep the team-colour design alternatives ([#178](https://github.com/moudlajs/covertwo/issues/178)) ([069dfec](https://github.com/moudlajs/covertwo/commit/069dfeca132393594e79a38eb22ce352047ee833))
+
 ## [1.14.0](https://github.com/moudlajs/covertwo/compare/v1.13.1...v1.14.0) (2026-09-25)
 
 
