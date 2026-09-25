@@ -123,6 +123,10 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').leaders).toEqual({})
   })
 
+  test('team colours are mapped for the logo glow', () => {
+    expect(byMatchup('NO', 'BAL').home.color).toBe('#29126f') // Ravens purple (ESPN)
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

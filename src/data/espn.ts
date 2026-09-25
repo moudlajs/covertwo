@@ -1,3 +1,4 @@
+import { teamColor } from './colors'
 import type { Game, GameState, Team } from './game'
 
 // Only the fields we read. Everything is optional: this is an unofficial API,
@@ -9,7 +10,14 @@ type EspnCompetitor = {
   winner?: boolean
   /** College football poll rank; 99 means unranked. */
   curatedRank?: { current?: number }
-  team?: { id?: string; abbreviation?: string; displayName?: string; logo?: string }
+  team?: {
+    id?: string
+    abbreviation?: string
+    displayName?: string
+    logo?: string
+    color?: string
+    alternateColor?: string
+  }
 }
 
 type EspnEvent = {
@@ -62,6 +70,7 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     score: state === 'pre' || c.score === undefined || Number.isNaN(score) ? null : score,
     winner: c.winner === true,
     rank: rank(c.curatedRank?.current),
+    color: teamColor(t.color, t.alternateColor),
   }
 }
 

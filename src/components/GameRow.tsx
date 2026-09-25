@@ -46,7 +46,7 @@ function Side({
       data-side={align === 'start' ? 'away' : 'home'}
       className={`flex min-w-0 items-center gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
     >
-      <TeamLogo src={team.logo} />
+      <TeamLogo src={team.logo} glow={team.color} />
       <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
         <span className="truncate text-[13px] leading-none font-bold">
           {team.rank !== null && (
