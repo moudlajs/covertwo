@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/moudlajs/covertwo/compare/v1.15.0...v1.15.1) (2026-09-25)
+
+
+### Bug Fixes
+
+* week picker on the right of the league row; hidden in demo mode ([#182](https://github.com/moudlajs/covertwo/issues/182)) ([4158ba5](https://github.com/moudlajs/covertwo/commit/4158ba5f9d0b5b222801d6ab517f4f7e4137c2b0))
+
 ## [1.15.0](https://github.com/moudlajs/covertwo/compare/v1.14.0...v1.15.0) (2026-09-25)
 
 
