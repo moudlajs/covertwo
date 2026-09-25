@@ -167,6 +167,50 @@ describe('live polling', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
+  /** The fixture as if every game kicks off at `iso` and none has started. */
+  const allPre = (iso: string) => ({
+    ...fixture,
+    events: fixture.events.map((e) => ({
+      ...e,
+      date: iso,
+      status: { ...e.status, type: { ...e.status.type, state: 'pre', name: 'STATUS_SCHEDULED' } },
+    })),
+  })
+  const serve = (json: unknown) =>
+    fetchMock.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(json))))
+
+  test('with nothing live, wakes at kickoff and checks until the game starts', async () => {
+    vi.setSystemTime(new Date('2026-09-25T22:50:00Z'))
+    serve(allPre('2026-09-25T23:00:00Z')) // kickoff in 10 minutes
+    const { result } = renderHook(() => useScoreboard(URL))
+    await waitFor(() => expect(result.current.status).toBe('ready'))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(9 * 60_000)
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(1) // not before kickoff
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000)
+    })
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2)) // at kickoff
+    await tick()
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3)) // ESPN hasn't started it: again
+    serve(fixture) // now it's live: normal live polling
+    await tick()
+    await waitFor(() => expect(result.current.live).toBe(true))
+    await tick()
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(5))
+  })
+
+  test('a kickoff long past (postponed game) does not keep it polling', async () => {
+    vi.setSystemTime(new Date('2026-09-26T08:00:00Z'))
+    serve(allPre('2026-09-25T23:00:00Z')) // 9 hours ago, still not started
+    const { result } = renderHook(() => useScoreboard(URL))
+    await waitFor(() => expect(result.current.status).toBe('ready'))
+    await tick()
+    await tick()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
   test('skips polls while the tab is hidden', async () => {
     const { result } = renderHook(() => useScoreboard(URL))
     await waitFor(() => expect(result.current.status).toBe('ready'))
