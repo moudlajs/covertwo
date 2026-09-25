@@ -27,11 +27,12 @@ function serviceWorker(): Plugin {
       const outDir = options.dir ?? 'dist'
       const built = Object.keys(bundle).filter((f) => f !== 'index.html' && !f.endsWith('.map'))
       const files = ['./', ...built, ...filesIn('public')].map((f) => (f === './' ? f : `./${f}`))
-      const version = createHash('sha256')
-        .update(JSON.stringify(files))
-        .update(readFileSync(join(outDir, 'index.html')))
-        .digest('hex')
-        .slice(0, 12)
+      // Built files carry content hashes in their names; public/ files and the
+      // page don't, so their bytes go into the version too.
+      const hash = createHash('sha256').update(JSON.stringify(files))
+      for (const f of ['index.html', ...filesIn('public')])
+        hash.update(readFileSync(join(outDir, f)))
+      const version = hash.digest('hex').slice(0, 12)
       const source = readFileSync('src/sw.js', 'utf8')
         .replace('self.__PRECACHE__', JSON.stringify(files))
         .replace('self.__VERSION__', JSON.stringify(version))

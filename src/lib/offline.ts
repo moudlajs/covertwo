@@ -10,15 +10,20 @@ export const OFFLINE_READY = 'covertwo:offline-ready'
 export function registerServiceWorker() {
   const sw = navigator.serviceWorker
   const firstVisit = !sw.controller
-  sw.addEventListener('controllerchange', (event) => {
-    if (!firstVisit) return
-    const controller = (event.currentTarget as ServiceWorkerContainer).controller
-    window.dispatchEvent(new Event(OFFLINE_READY))
-    const logos = [...document.images]
-      .map((img) => img.currentSrc)
-      .filter((src) => src.includes('espncdn.com'))
-    controller?.postMessage({ type: 'save-logos', urls: logos })
-  })
+  // Only the first take-over; a later deploy's worker taking over needs nothing.
+  sw.addEventListener(
+    'controllerchange',
+    (event) => {
+      if (!firstVisit) return
+      const controller = (event.currentTarget as ServiceWorkerContainer).controller
+      window.dispatchEvent(new Event(OFFLINE_READY))
+      const logos = [...document.images]
+        .map((img) => img.currentSrc)
+        .filter((src) => src.includes('espncdn.com'))
+      controller?.postMessage({ type: 'save-logos', urls: logos })
+    },
+    { once: true },
+  )
   window.addEventListener('load', () => {
     sw.register('./sw.js').catch((error: unknown) => {
       console.error('[sw] registration failed', error)
