@@ -10,6 +10,8 @@ export type Team = {
   winner: boolean
   /** College football Top 25 rank; always null in the NFL. */
   rank: number | null
+  /** Team colour that reads on the dark panel (see teamColor), or null. */
+  color: string | null
 }
 
 export type Leader = {

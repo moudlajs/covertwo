@@ -11,6 +11,13 @@ test('uses the dark variant, decorative', () => {
   expect(img).toHaveAttribute('alt', '')
 })
 
+test('glows in the team colour when there is one', () => {
+  const { container, rerender } = render(<TeamLogo src={normal} glow="#241773" />)
+  expect(container.querySelector('img')?.style.filter).toContain('#241773')
+  rerender(<TeamLogo src={normal} />)
+  expect(container.querySelector('img')?.style.filter).toBe('')
+})
+
 test('falls back to the normal logo once if the dark one fails', () => {
   const { container } = render(<TeamLogo src={normal} />)
   const img = container.querySelector('img') as HTMLImageElement

@@ -10,6 +10,11 @@ test('NFL and college logos map to their dark-background variants', () => {
   )
 })
 
+test('the Jets keep their normal logo (ESPN dark variant is a wordmark)', () => {
+  const nyj = 'https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png'
+  expect(darkLogo(nyj)).toBe(nyj)
+})
+
 test('unknown URLs are left alone', () => {
   expect(darkLogo('https://example.com/logo.png')).toBe('https://example.com/logo.png')
   expect(darkLogo('')).toBe('')
