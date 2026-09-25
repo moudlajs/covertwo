@@ -7,7 +7,7 @@ import { useSessionSet } from '../lib/useSessionSet'
 import { GameRow } from './GameRow'
 
 const HEADING =
-  'sticky top-[var(--header-h,46px)] z-10 flex items-center gap-2 border-y border-slate-800 bg-[#0b1224] px-3 py-1 font-mono text-[10px] tracking-wider text-amber-400/80 uppercase'
+  'sticky top-[var(--header-h,46px)] z-10 flex items-center gap-2 border-y border-slate-800 bg-heading px-3 py-1 font-mono text-[10px] tracking-wider text-label uppercase'
 
 /**
  * Games grouped under day headings, in the selected time zone. The favourite

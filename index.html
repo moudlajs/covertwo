@@ -5,7 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="A small, modest NFL live scoreboard." />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#0b1020" />
+    <script>
+      // Theme before first paint, so light users never see a dark flash.
+      // Mirrors src/lib/theme.ts (key "covertwo:theme"), which takes over after load.
+      try {
+        var choice = localStorage.getItem('covertwo:theme')
+        var light =
+          choice === 'light' ||
+          (choice !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)
+        document.documentElement.dataset.theme = light ? 'light' : 'dark'
+        if (light) document.querySelector('meta[name="theme-color"]').content = '#f3efe6'
+      } catch (e) {}
+    </script>
     <title>covertwo</title>
   </head>
   <body>

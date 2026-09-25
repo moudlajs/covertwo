@@ -6,7 +6,7 @@ export function LoadError({ onRetry }: { onRetry: () => void }) {
       <button
         type="button"
         onClick={onRetry}
-        className="rounded bg-amber-400 px-3 py-1 font-mono text-[11px] font-bold text-slate-950 hover:bg-amber-300 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
+        className="rounded bg-accent px-3 py-1 font-mono text-[11px] font-bold text-on-accent hover:bg-amber-300 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
       >
         Retry
       </button>

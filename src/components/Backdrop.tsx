@@ -1,6 +1,5 @@
 const HASH_BAND = {
-  background:
-    'repeating-linear-gradient(90deg, rgb(255 255 255 / 0.07) 0 3px, transparent 3px 44px)',
+  background: 'repeating-linear-gradient(90deg, var(--hash) 0 3px, transparent 3px 44px)',
   maskImage: 'linear-gradient(transparent, black 30%, black 70%, transparent)',
 }
 

@@ -21,7 +21,7 @@ export function Segmented<T extends string>({
       {options.map((o) => (
         <label
           key={o.value}
-          className="cursor-pointer rounded-sm px-2 py-0.5 text-slate-400 hover:text-slate-100 has-checked:bg-amber-400 has-checked:font-bold has-checked:text-slate-950 has-focus-visible:ring-2 has-focus-visible:ring-amber-200"
+          className="cursor-pointer rounded-sm px-2 py-0.5 text-slate-400 hover:text-slate-100 has-checked:bg-accent has-checked:font-bold has-checked:text-on-accent has-focus-visible:ring-2 has-focus-visible:ring-amber-200"
         >
           <input
             type="radio"

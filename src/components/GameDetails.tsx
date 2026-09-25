@@ -72,7 +72,7 @@ export function GameDetails({ id, game, hidden }: { id: string; game: Game; hidd
           <dl className="grid max-w-[48ch] grid-cols-[3rem_1fr] gap-y-0.5">
             {lines.map(([name, value]) => (
               <Fragment key={name}>
-                <dt className="text-amber-400/80">{name}</dt>
+                <dt className="text-label">{name}</dt>
                 <dd>{value}</dd>
               </Fragment>
             ))}

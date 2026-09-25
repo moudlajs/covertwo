@@ -24,6 +24,7 @@ import { DEMO, DEMO_NOW } from './lib/demo'
 import { NextUp } from './components/NextUp'
 import { isOffDay } from './time/days'
 import { RoundAhead } from './components/RoundAhead'
+import { ThemeContext, useTheme, type ThemeChoice } from './lib/theme'
 import { undecided } from './data/game'
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
   const isCurrentWeek = week === null || week === season?.current
   const shownWeek = week ?? season?.current ?? null
   const [mode, setMode] = useTimeMode()
+  const { choice: themeChoice, setChoice: setThemeChoice, theme } = useTheme()
   const clock = useNow(60_000) // kickoff countdowns tick by the minute
   const now = DEMO ? DEMO_NOW : clock
   const changes = useScoreChanges(games)
@@ -75,112 +77,130 @@ export default function App() {
   const never = lastUpdated === null
 
   return (
-    <Shell
-      demo={DEMO}
-      league={
-        <Segmented
-          label="League"
-          name="league"
-          value={league}
-          onChange={(l) => {
-            setLeague(l)
-            setWeek(null) // another league, another calendar: back to its current week
-          }}
-          options={(Object.keys(LEAGUES) as League[]).map((id) => ({
-            value: id,
-            label: LEAGUES[id].label,
-          }))}
-        />
-      }
-      view={
-        <div className="flex items-center gap-2">
-          {/* No picker in demo mode: every week would show the same built-in data. */}
-          {!DEMO && season && shownWeek && (
-            <WeekPicker
-              season={season}
-              value={shownWeek}
-              onChange={(id) => setWeek(id === season.current ? null : id)}
-            />
-          )}
-          {league === 'ncaaf' && (
+    <ThemeContext value={theme}>
+      <Shell
+        demo={DEMO}
+        league={
+          <Segmented
+            label="League"
+            name="league"
+            value={league}
+            onChange={(l) => {
+              setLeague(l)
+              setWeek(null) // another league, another calendar: back to its current week
+            }}
+            options={(Object.keys(LEAGUES) as League[]).map((id) => ({
+              value: id,
+              label: LEAGUES[id].label,
+            }))}
+          />
+        }
+        view={
+          <div className="flex items-center gap-2">
+            {/* No picker in demo mode: every week would show the same built-in data. */}
+            {!DEMO && season && shownWeek && (
+              <WeekPicker
+                season={season}
+                value={shownWeek}
+                onChange={(id) => setWeek(id === season.current ? null : id)}
+              />
+            )}
+            {league === 'ncaaf' && (
+              <Segmented
+                label="College games"
+                name="ncaa-view"
+                value={ncaaView}
+                onChange={setNcaaView}
+                options={[
+                  { value: 'top25', label: 'Top 25' },
+                  { value: 'fbs', label: 'All FBS' },
+                ]}
+              />
+            )}
+          </div>
+        }
+        footer={
+          <>
+            <span>ESPN</span>
+            {/* Always mounted so screen readers announce score changes. */}
+            <span aria-live="polite" className="sr-only">
+              {changes.announcement}
+            </span>
+            <span className="flex items-center gap-2">
+              <Retrying active={status === 'error' && !never} />
+              <UpdatedAgo at={lastUpdated} live={live} />
+            </span>
+          </>
+        }
+        controls={
+          <>
             <Segmented
-              label="College games"
-              name="ncaa-view"
-              value={ncaaView}
-              onChange={setNcaaView}
+              label="Time zone"
+              name="time-mode"
+              value={mode}
+              onChange={setMode}
               options={[
-                { value: 'top25', label: 'Top 25' },
-                { value: 'fbs', label: 'All FBS' },
+                { value: 'eu', label: 'EU' },
+                { value: 'us', label: 'US' },
               ]}
             />
-          )}
-        </div>
-      }
-      footer={
-        <>
-          <span>ESPN</span>
-          {/* Always mounted so screen readers announce score changes. */}
-          <span aria-live="polite" className="sr-only">
-            {changes.announcement}
-          </span>
-          <span className="flex items-center gap-2">
-            <Retrying active={status === 'error' && !never} />
-            <UpdatedAgo at={lastUpdated} live={live} />
-          </span>
-        </>
-      }
-      controls={
-        <>
-          <Segmented
-            label="Time zone"
-            name="time-mode"
-            value={mode}
-            onChange={setMode}
-            options={[
-              { value: 'eu', label: 'EU' },
-              { value: 'us', label: 'US' },
-            ]}
-          />
-          <Menu>
-            <FavoriteSelect
-              teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
-              value={favorite}
-              onChange={(f) => setFavorite(league, f)}
-            />
-          </Menu>
-        </>
-      }
-    >
-      {status === 'error' && never ? (
-        <LoadError onRetry={retry} />
-      ) : status === 'loading' && never ? (
-        <Skeleton />
-      ) : empty ? (
-        <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
-          No games scheduled.
-        </p>
-      ) : roundAhead ? (
-        <RoundAhead games={games} round={round} mode={mode} />
-      ) : (
-        <>
-          {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}
-          {isCurrentWeek && !liveShown && (
-            <NextUp games={games} now={now} mode={mode} offDay={offDay} />
-          )}
-          {/* A resting board on days without games: still readable, just quieter. */}
-          <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
-            <ScoreList
-              games={games}
-              mode={mode}
-              flashing={changes.flashing}
-              favorite={favorite?.id}
-              now={now}
-              league={league}
-              foldPast={isCurrentWeek}
-            />
-          </div>
-        </>
-      )}
-    </Shell>
+            <Menu>
+              <FavoriteSelect
+                teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
+                value={favorite}
+                onChange={(f) => setFavorite(league, f)}
+              />
+              <div className="mt-3">
+                <span aria-hidden="true" className="mb-1 block text-slate-500">
+                  Theme
+                </span>
+                <Segmented<ThemeChoice>
+                  label="Theme"
+                  name="theme"
+                  value={themeChoice}
+                  onChange={setThemeChoice}
+                  options={[
+                    { value: 'system', label: 'System' },
+                    { value: 'light', label: 'Light' },
+                    { value: 'dark', label: 'Dark' },
+                  ]}
+                />
+              </div>
+            </Menu>
+          </>
+        }
+      >
+        {status === 'error' && never ? (
+          <LoadError onRetry={retry} />
+        ) : status === 'loading' && never ? (
+          <Skeleton />
+        ) : empty ? (
+          <p className="px-3 py-8 text-center font-mono text-xs text-slate-500">
+            No games scheduled.
+          </p>
+        ) : roundAhead ? (
+          <RoundAhead games={games} round={round} mode={mode} />
+        ) : (
+          <>
+            {/* Whenever nothing is live: the next kickoff (or a done week on an off day). */}
+            {isCurrentWeek && !liveShown && (
+              <NextUp games={games} now={now} mode={mode} offDay={offDay} />
+            )}
+            {/* A resting board on days without games: still readable, just quieter. */}
+            <div className={offDay ? 'opacity-75 saturate-50' : undefined}>
+              <ScoreList
+                games={games}
+                mode={mode}
+                flashing={changes.flashing}
+                favorite={favorite?.id}
+                now={now}
+                league={league}
+                foldPast={isCurrentWeek}
+              />
+            </div>
+          </>
+        )}
+      </Shell>
+    </ThemeContext>
   )
 }
