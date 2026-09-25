@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="apple-mobile-web-app-title" content="covertwo" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="A small, calm NFL and college football live scoreboard." />
     <meta name="theme-color" content="#0b1020" />
     <script>
@@ -21,6 +21,9 @@
         document.documentElement.dataset.theme = light ? 'light' : 'dark'
         if (light) document.querySelector('meta[name="theme-color"]').content = '#f3efe6'
       } catch (e) {}
+      // Launched from the home screen: styled as a full-screen app (the app: variant).
+      if (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)
+        document.documentElement.dataset.display = 'app'
     </script>
     <title>covertwo</title>
   </head>
