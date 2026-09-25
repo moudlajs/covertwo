@@ -30,3 +30,15 @@ test('another week shows no next-up card or resting board', async ({ page }) => 
   await expect(page.getByRole('combobox', { name: 'Week' })).toHaveValue('2:1')
   await expect(page.getByRole('region', { name: /No games today|Up next/ })).toHaveCount(0)
 })
+
+test('the week picker sits at the right end of the league row', async ({ page }) => {
+  await mockEspn(page)
+  await page.goto('./')
+  const league = await page.getByRole('group', { name: 'League' }).boundingBox()
+  const next = await page.getByRole('button', { name: 'Next week' }).boundingBox()
+  const header = await page.getByTestId('pinned-header').boundingBox()
+  if (!league || !next || !header) throw new Error('no layout')
+  expect(next.x).toBeGreaterThan(league.x + league.width)
+  // Right-aligned: its right edge sits within the row's right padding.
+  expect(header.x + header.width - (next.x + next.width)).toBeLessThan(20)
+})

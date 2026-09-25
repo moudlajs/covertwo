@@ -15,5 +15,6 @@ test('?demo shows built-in live data without calling the API', async ({ page }) 
   await expect(main.getByText('Q3 · 8:42', { exact: true })).toBeVisible()
   await expect(main.getByText('FOX · in 25m', { exact: true })).toBeVisible() // frozen demo clock
   await expect(page.getByRole('region', { name: 'No games today' })).toHaveCount(0) // a game day
+  await expect(page.getByRole('button', { name: 'Next week' })).toHaveCount(0) // no picker in demo
   expect(apiCalls).toEqual([])
 })

@@ -73,42 +73,43 @@ export default function App() {
     <Shell
       demo={DEMO}
       league={
+        <Segmented
+          label="League"
+          name="league"
+          value={league}
+          onChange={(l) => {
+            setLeague(l)
+            setWeek(null) // another league, another calendar: back to its current week
+          }}
+          options={(Object.keys(LEAGUES) as League[]).map((id) => ({
+            value: id,
+            label: LEAGUES[id].label,
+          }))}
+        />
+      }
+      view={
         <div className="flex items-center gap-2">
-          <Segmented
-            label="League"
-            name="league"
-            value={league}
-            onChange={(l) => {
-              setLeague(l)
-              setWeek(null) // another league, another calendar: back to its current week
-            }}
-            options={(Object.keys(LEAGUES) as League[]).map((id) => ({
-              value: id,
-              label: LEAGUES[id].label,
-            }))}
-          />
-          {season && shownWeek && (
+          {/* No picker in demo mode: every week would show the same built-in data. */}
+          {!DEMO && season && shownWeek && (
             <WeekPicker
               season={season}
               value={shownWeek}
               onChange={(id) => setWeek(id === season.current ? null : id)}
             />
           )}
+          {league === 'ncaaf' && (
+            <Segmented
+              label="College games"
+              name="ncaa-view"
+              value={ncaaView}
+              onChange={setNcaaView}
+              options={[
+                { value: 'top25', label: 'Top 25' },
+                { value: 'fbs', label: 'All FBS' },
+              ]}
+            />
+          )}
         </div>
-      }
-      view={
-        league === 'ncaaf' && (
-          <Segmented
-            label="College games"
-            name="ncaa-view"
-            value={ncaaView}
-            onChange={setNcaaView}
-            options={[
-              { value: 'top25', label: 'Top 25' },
-              { value: 'fbs', label: 'All FBS' },
-            ]}
-          />
-        )
       }
       footer={
         <>
