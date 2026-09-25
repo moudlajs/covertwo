@@ -40,7 +40,7 @@ export function Menu({ children }: { children?: ReactNode }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
-        className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
+        className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
       >
         <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
           <path
@@ -63,7 +63,7 @@ export function Menu({ children }: { children?: ReactNode }) {
         </p>
         <a
           href="https://github.com/moudlajs/covertwo"
-          className="mt-1 inline-block text-slate-300 underline decoration-slate-600 underline-offset-2 hover:text-white"
+          className="mt-1 inline-block text-slate-300 underline decoration-slate-600 underline-offset-2 hover:text-slate-100"
         >
           Source on GitHub
         </a>

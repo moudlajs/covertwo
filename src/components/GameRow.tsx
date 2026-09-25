@@ -60,7 +60,7 @@ function Side({
           {team.abbr}
         </span>
         {timeouts !== null && (
-          <span className="font-mono text-[9px] leading-none text-amber-400/80">TO {timeouts}</span>
+          <span className="font-mono text-[9px] leading-none text-label">TO {timeouts}</span>
         )}
       </span>
       {ball && <Ball />}

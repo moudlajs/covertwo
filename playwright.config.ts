@@ -10,6 +10,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}/covertwo/`,
     trace: 'on-first-retry',
+    // Playwright emulates a light system by default; the suite checks the
+    // dark design, and theme.spec.ts covers light.
+    colorScheme: 'dark',
   },
   projects: [
     // The real Safari engine: iOS-only bugs (like #121's scrollbar) show up here.

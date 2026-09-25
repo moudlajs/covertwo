@@ -26,7 +26,7 @@ export function Shell({
   children: ReactNode
 }) {
   return (
-    <div className="min-h-dvh bg-[#0b1020] px-2 py-6 text-slate-100 sm:py-12">
+    <div className="min-h-dvh bg-page px-2 py-6 text-slate-100 sm:py-12">
       <Backdrop />
       {/* No overflow-hidden anywhere up the tree: it would break the sticky
           header/footer and clip the menu dropdown. */}
@@ -35,10 +35,10 @@ export function Shell({
         // Height of the pinned header block; day headings stick right below it.
         // Scaled per screen size by --panel-scale (see index.css).
         style={{ '--header-h': '86px' } as CSSProperties}
-        className="relative mx-auto w-full max-w-[560px] rounded-xl [zoom:var(--panel-scale)] bg-slate-900 shadow-[0_0_0_1px_rgb(51_65_85/0.7),0_24px_48px_-12px_rgb(0_0_0/0.85),0_4px_12px_-2px_rgb(0_0_0/0.5)]"
+        className="relative mx-auto w-full max-w-[560px] rounded-xl [zoom:var(--panel-scale)] bg-slate-900 shadow-[var(--panel-shadow)]"
       >
         {/* 2px edge + h-11 header + h-10 league row (border included) = --header-h above. */}
-        <div data-testid="pinned-header" className="sticky top-0 z-20 rounded-t-xl bg-[#070d1f]">
+        <div data-testid="pinned-header" className="sticky top-0 z-20 rounded-t-xl bg-chrome">
           <div
             aria-hidden="true"
             className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"

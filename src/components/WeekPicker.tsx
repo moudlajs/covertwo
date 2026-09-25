@@ -2,7 +2,7 @@ import type { Season } from '../data/season'
 import { stepWeek } from '../data/season'
 
 const ARROW =
-  'grid size-6 place-items-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none'
+  'grid size-6 place-items-center rounded text-slate-400 hover:bg-slate-800 hover:text-slate-100 disabled:opacity-30 disabled:hover:bg-transparent focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none'
 
 /**
  * "‹ Wk 3 ›": step one week, or pick any week from the native list (grouped

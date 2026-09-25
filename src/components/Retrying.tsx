@@ -2,7 +2,7 @@
 export function Retrying({ active }: { active: boolean }) {
   // The live region stays mounted so the change is announced.
   return (
-    <span role="status" className="flex items-center gap-1 text-amber-400/80">
+    <span role="status" className="flex items-center gap-1 text-label">
       {active && (
         <>
           <span
