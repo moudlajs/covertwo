@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/moudlajs/covertwo/compare/v1.18.0...v1.18.1) (2026-09-25)
+
+
+### Bug Fixes
+
+* one wording for the next-up card ([#193](https://github.com/moudlajs/covertwo/issues/193)) ([1501be7](https://github.com/moudlajs/covertwo/commit/1501be7b6e4178a138f750e2a50ee130a45fd66e))
+
 ## [1.18.0](https://github.com/moudlajs/covertwo/compare/v1.17.0...v1.18.0) (2026-09-25)
 
 
