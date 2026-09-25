@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/moudlajs/covertwo/compare/v1.18.1...v1.19.0) (2026-09-25)
+
+
+### Features
+
+* installable web app with the Poster icon and C2 favicon ([#195](https://github.com/moudlajs/covertwo/issues/195)) ([0b3a489](https://github.com/moudlajs/covertwo/commit/0b3a48982f26af7cf7e02a9589ebbb5abf529519))
+
 ## [1.18.1](https://github.com/moudlajs/covertwo/compare/v1.18.0...v1.18.1) (2026-09-25)
 
 
