@@ -39,5 +39,6 @@ test('as an app on a wide screen (tablet) the floating panel stays too', async (
   await launchFromHomeScreen(page)
   await mockEspn(page)
   await page.goto('./')
+  await expect(page.locator('html')).toHaveAttribute('data-display', 'app') // detected, just wide
   expect((await panelBox(page)).radius).not.toBe('0px')
 })
