@@ -69,6 +69,12 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 - `fixtures/espn-nfl-wildcard.json` and `espn-nfl-superbowl.json` are real
   (captured 2026-09-25) future playoff rounds: "TBD @ TBD" teams (ids -1/-2)
   and, before times are set, `timeValid: false` with a placeholder 05:00Z.
+- Offline (#53): a hand-written service worker (`src/sw.js`, written to
+  `dist/sw.js` by the `serviceWorker()` plugin in `vite.config.ts` with the
+  list of files to save) keeps the app, the last good scoreboard per URL and
+  the logos. A saved copy carries `x-covertwo-saved-at`; `useScoreboard` then
+  reports `offline` and the footer shows it. Production builds only; e2e
+  blocks the worker except in `offline.spec.ts` (Chromium only).
 - **Tests never hit the real API.** Unit tests import the fixture; e2e uses
   `e2e/mock-espn.ts`, which also stubs logos and aborts any other ESPN URL.
 

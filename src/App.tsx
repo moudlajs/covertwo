@@ -29,6 +29,8 @@ import { RoundAhead } from './components/RoundAhead'
 import { ThemeContext, useTheme } from './lib/theme'
 import { ThemeToggle } from './components/ThemeToggle'
 import { undecided } from './data/game'
+import { darkLogo } from './data/logos'
+import { saveLogos } from './lib/offline'
 
 export default function App() {
   const [league, setLeague] = useLeague()
@@ -63,6 +65,11 @@ export default function App() {
   const clock = useNow(60_000) // kickoff countdowns tick by the minute
   const now = DEMO ? DEMO_NOW : clock
   const changes = useScoreChanges(games)
+  // The logos on the board, for offline use (the variant this theme shows).
+  useEffect(() => {
+    const logo = (src: string) => (theme === 'dark' ? darkLogo(src) : src)
+    saveLogos(games.flatMap((g) => [logo(g.home.logo), logo(g.away.logo)]).filter(Boolean))
+  }, [games, theme])
   const title = documentTitle(games, favorite?.id)
   useEffect(() => {
     document.title = title
@@ -133,7 +140,8 @@ export default function App() {
               {changes.announcement}
             </span>
             <span className="flex items-center gap-2">
-              <Retrying active={status === 'error' && !never} />
+              {/* offline: a saved copy with no network; "updated" then says how old it is. */}
+              <Retrying active={status === 'error' && !never} offline={board.offline} />
               <UpdatedAgo at={lastUpdated} live={live} />
             </span>
           </>

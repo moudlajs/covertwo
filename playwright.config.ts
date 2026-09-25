@@ -13,6 +13,9 @@ export default defineConfig({
     // Playwright emulates a light system by default; the suite checks the
     // dark design, and theme.spec.ts covers light.
     colorScheme: 'dark',
+    // The production build registers a service worker; its requests would
+    // bypass the page-level ESPN mocks. offline.spec.ts turns it back on.
+    serviceWorkers: 'block',
   },
   projects: [
     // The real Safari engine: iOS-only bugs (like #121's scrollbar) show up here.

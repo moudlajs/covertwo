@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { mapScoreboard } from './espn'
 import { mapSeason, type Season } from './season'
 import type { Game } from './game'
+import { OFFLINE_READY } from '../lib/offline'
 
 /** How often to refetch while a game is live, or while retrying after a failure. */
 export const POLL_MS = 30_000
@@ -15,9 +16,20 @@ export type Scoreboard = {
   lastUpdated: number | null
   /** ESPN's season calendar from the last successful load. */
   season: Season | null
+  /** The data is a saved copy from the service worker (no network): `lastUpdated` is when it was saved. */
+  offline: boolean
 }
 
-const INITIAL: Scoreboard = { games: [], status: 'loading', lastUpdated: null, season: null }
+const INITIAL: Scoreboard = {
+  games: [],
+  status: 'loading',
+  lastUpdated: null,
+  season: null,
+  offline: false,
+}
+
+/** Set by the service worker (src/sw.js) on a saved copy served offline. */
+const SAVED_AT = 'x-covertwo-saved-at'
 
 /**
  * Loads the scoreboard once on mount and again whenever the window regains
@@ -46,11 +58,13 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
       status = res.status
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json: unknown = await res.json()
+      const savedAt = Number(res.headers.get(SAVED_AT)) || null
       setBoard({
         games: mapScoreboard(json),
         season: mapSeason(json),
         status: 'ready',
-        lastUpdated: Date.now(),
+        lastUpdated: savedAt ?? Date.now(),
+        offline: savedAt !== null,
       })
     } catch (error) {
       if (controller.signal.aborted) return
@@ -69,9 +83,15 @@ export function useScoreboard(url: string): Scoreboard & { live: boolean; retry:
     }
     const onFocus = () => void load()
     window.addEventListener('focus', onFocus)
+    // Once more through the new service worker, so the first visit is saved for offline.
+    window.addEventListener(OFFLINE_READY, onFocus)
+    // Back online: replace a saved copy with fresh data straight away.
+    window.addEventListener('online', onFocus)
     document.addEventListener('visibilitychange', onVisible)
     return () => {
       window.removeEventListener('focus', onFocus)
+      window.removeEventListener(OFFLINE_READY, onFocus)
+      window.removeEventListener('online', onFocus)
       document.removeEventListener('visibilitychange', onVisible)
       inFlight.current?.abort()
     }

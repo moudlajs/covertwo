@@ -11,3 +11,8 @@ test('shows retrying when active', () => {
   render(<Retrying active />)
   expect(screen.getByRole('status')).toHaveTextContent('retrying…')
 })
+
+test('announces offline in the same live region', () => {
+  render(<Retrying active={false} offline />)
+  expect(screen.getByRole('status')).toHaveTextContent('offline')
+})

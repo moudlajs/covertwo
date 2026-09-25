@@ -38,11 +38,40 @@ test('loads once on mount', async () => {
   expect(fetchMock).toHaveBeenCalledTimes(1)
 })
 
+test('a saved copy from the service worker: offline, dated when it was saved', async () => {
+  const savedAt = Date.parse('2026-09-20T18:00:00Z')
+  fetchMock.mockImplementation(() =>
+    Promise.resolve(
+      new Response(JSON.stringify(fixture), {
+        headers: { 'x-covertwo-saved-at': String(savedAt) },
+      }),
+    ),
+  )
+  const { result } = renderHook(() => useScoreboard(URL))
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  expect(result.current).toMatchObject({ offline: true, lastUpdated: savedAt })
+})
+
+test('fresh data is not offline', async () => {
+  const { result } = renderHook(() => useScoreboard(URL))
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  expect(result.current.offline).toBe(false)
+})
+
 test('refetches when the window regains focus', async () => {
   const { result } = renderHook(() => useScoreboard(URL))
   await waitFor(() => expect(result.current.status).toBe('ready'))
   act(() => {
     window.dispatchEvent(new Event('focus'))
+  })
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+})
+
+test('refetches when the connection comes back', async () => {
+  const { result } = renderHook(() => useScoreboard(URL))
+  await waitFor(() => expect(result.current.status).toBe('ready'))
+  act(() => {
+    window.dispatchEvent(new Event('online'))
   })
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
 })
