@@ -19,15 +19,19 @@ export function useWakeLock(active: boolean) {
   useEffect(() => {
     if (!active || !wakeLockSupported()) return
     let lock: WakeLockSentinel | null = null
+    let pending = false // one request at a time, so no lock is ever orphaned
     let stopped = false
     const acquire = async () => {
-      if (document.visibilityState !== 'visible' || (lock && !lock.released)) return
+      if (pending || document.visibilityState !== 'visible' || (lock && !lock.released)) return
+      pending = true
       try {
         const next = await navigator.wakeLock.request('screen')
         if (stopped) void next.release()
         else lock = next
       } catch {
         // Refused (battery saver, permissions policy): the screen just sleeps as usual.
+      } finally {
+        pending = false
       }
     }
     void acquire()

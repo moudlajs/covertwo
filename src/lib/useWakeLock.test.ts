@@ -59,6 +59,16 @@ test('takes the lock again when the tab comes back', async () => {
   expect(request).toHaveBeenCalledTimes(2)
 })
 
+test('back-to-back visibility events request only one lock', async () => {
+  renderHook(() => useWakeLock(true))
+  await act(async () => {
+    document.dispatchEvent(new Event('visibilitychange'))
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  expect(request).toHaveBeenCalledTimes(1)
+  expect(held()).toBe(1)
+})
+
 test('a refused request is fine', async () => {
   request.mockRejectedValueOnce(new Error('NotAllowedError'))
   renderHook(() => useWakeLock(true))

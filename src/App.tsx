@@ -42,8 +42,6 @@ export default function App() {
   const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null, week))
   const { status, lastUpdated, live, retry } = board
   const [keepAwake, setKeepAwake] = useKeepAwake()
-  // Only while something is live: the scoreboard on the table during the game.
-  useWakeLock(keepAwake && live)
   // Memoized: useScoreChanges detects new data by array identity.
   const games = useMemo(
     () =>
@@ -74,6 +72,8 @@ export default function App() {
   // which with a college favourite includes games filtered out of Top 25; that
   // one keeps driving polling, this one drives the next-up card.
   const liveShown = games.some((g) => g.state === 'in')
+  // Only while a game on your board is live: the scoreboard on the table during the game.
+  useWakeLock(keepAwake && liveShown)
   // The next-up card, the resting board and folding are about "now": current week only.
   const offDay = isCurrentWeek && !empty && isOffDay(games, now, mode)
   // A future playoff round: no team in it is known yet.
