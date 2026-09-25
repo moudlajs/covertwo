@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.2](https://github.com/moudlajs/covertwo/compare/v1.21.1...v1.21.2) (2026-09-25)
+
+
+### Bug Fixes
+
+* full-screen layout when launched from the home screen ([#205](https://github.com/moudlajs/covertwo/issues/205)) ([d747a0b](https://github.com/moudlajs/covertwo/commit/d747a0b96a4f7c03e7f3c02b193ba3c8db94effd))
+
 ## [1.21.1](https://github.com/moudlajs/covertwo/compare/v1.21.0...v1.21.1) (2026-09-25)
 
 
