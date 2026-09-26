@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/moudlajs/covertwo/compare/v1.23.0...v1.23.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* no cut-off team abbreviations on 360px phones ([#217](https://github.com/moudlajs/covertwo/issues/217)) ([8f648c0](https://github.com/moudlajs/covertwo/commit/8f648c0a980ab2d8eb3ce23820cf9a9aa5cc59da))
+
 ## [1.23.0](https://github.com/moudlajs/covertwo/compare/v1.22.0...v1.23.0) (2026-09-26)
 
 
