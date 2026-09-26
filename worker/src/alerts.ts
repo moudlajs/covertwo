@@ -35,6 +35,8 @@ export type Deps = {
   /** Sends one notification; returns the push service's HTTP status. */
   send: (subscription: PushSubscriptionJSON, message: Message) => Promise<number>
   now: () => number
+  /** Runs work after the response has gone out (the Durable Object's waitUntil). */
+  background: (work: Promise<unknown>) => void
 }
 
 /** A cap that keeps the free plan free. */
@@ -82,7 +84,8 @@ export async function subscribe(
   await deps.storage.put(key, subscriber)
   await deps.storage.put('next', 0) // look now: the new subscriber may care about a live game
   if (existing) return 'updated'
-  await deps.send(subscriber.subscription, WELCOME).catch(() => 0)
+  // In the background: turning alerts on shouldn't wait for the push service.
+  deps.background(deps.send(subscriber.subscription, WELCOME).catch(() => 0))
   return 'new'
 }
 

@@ -220,7 +220,10 @@ async function send(
       options: { ttl: 15 * 60, urgency: 'high' },
     },
   })
-  return (await fetch(endpoint, { method: 'POST', headers, body })).status
+  // A slow push service mustn't hold up the watcher or the test button.
+  return (
+    await fetch(endpoint, { method: 'POST', headers, body, signal: AbortSignal.timeout(10_000) })
+  ).status
 }
 
 /** ESPN's scoreboard for the watcher, through the same short edge cache. */
@@ -240,12 +243,13 @@ async function scoreboard(league: League, allFbs: boolean): Promise<unknown> {
  */
 export class Alerts {
   private deps: Deps
-  constructor(state: { storage: Storage }, env: Env) {
+  constructor(state: { storage: Storage; waitUntil(work: Promise<unknown>): void }, env: Env) {
     this.deps = {
       storage: state.storage,
       scoreboard,
       send: (subscription, message) => send(env.VAPID_PRIVATE_JWK, subscription, message),
       now: () => Date.now(),
+      background: (work) => state.waitUntil(work),
     }
   }
 

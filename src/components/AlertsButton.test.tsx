@@ -5,7 +5,13 @@ import { DEFAULT_PREFS, type PushState } from '../lib/push'
 import { AlertsButton } from './AlertsButton'
 
 const setup = (state: PushState | null, teams: string[] = ['Baltimore Ravens']) => {
-  const props = { onOn: vi.fn(), onOff: vi.fn(), onPref: vi.fn() }
+  const props = {
+    onOn: vi.fn(),
+    onOff: vi.fn(),
+    onPref: vi.fn(),
+    onTest: vi.fn(),
+    testResult: null,
+  }
   render(
     <>
       <AlertsButton
@@ -56,6 +62,7 @@ test('a test alert button once alerts are on, with its result', async () => {
   const user = userEvent.setup()
   const { rerender } = render(
     <AlertsButton
+      testResult={null}
       state="off"
       prefs={DEFAULT_PREFS}
       busy={false}

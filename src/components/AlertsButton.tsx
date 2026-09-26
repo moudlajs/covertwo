@@ -52,11 +52,11 @@ export function AlertsButton({
   busy,
   failed,
   teams,
-  testResult = null,
+  testResult,
   onOn,
   onOff,
   onPref,
-  onTest = () => {},
+  onTest,
 }: {
   state: PushState | null
   prefs: AlertPrefs
@@ -65,11 +65,11 @@ export function AlertsButton({
   /** Your team per league, for the hints ("Baltimore Ravens"). */
   teams: string[]
   /** What the last test alert did, in words. */
-  testResult?: string | null
+  testResult: string | null
   onOn: () => void
   onOff: () => void
   onPref: (key: keyof AlertPrefs, on: boolean) => void
-  onTest?: () => void
+  onTest: () => void
 }) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)

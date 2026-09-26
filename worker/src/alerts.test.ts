@@ -65,6 +65,7 @@ beforeEach(() => {
     scoreboard: vi.fn(async () => espn),
     send: vi.fn(async () => 201),
     now: () => NOW,
+    background: (work) => void work,
   }
 })
 
