@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.1](https://github.com/moudlajs/covertwo/compare/v1.26.0...v1.26.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* keep screen on whenever covertwo is open ([#228](https://github.com/moudlajs/covertwo/issues/228)) ([cb8546d](https://github.com/moudlajs/covertwo/commit/cb8546d74fdffdfcda0639e41b8b92765be73361))
+
 ## [1.26.0](https://github.com/moudlajs/covertwo/compare/v1.25.0...v1.26.0) (2026-09-26)
 
 
