@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, test, vi } from 'vitest'
-import { CACHE_SECONDS, handle } from './index'
+import { CACHE_SECONDS, handle, isPushService } from './index'
 
 const ok = () => vi.fn(async () => new Response('{"events":[]}', { status: 200 }))
 const get = (path: string, origin = 'https://moudlajs.github.io', method = 'GET') =>
@@ -142,6 +142,10 @@ describe('push endpoints', () => {
     const bad = [
       'not json',
       { ...valid, subscription: { ...valid.subscription, endpoint: 'http://insecure.example' } },
+      {
+        ...valid,
+        subscription: { ...valid.subscription, endpoint: 'https://attacker.example/hook' },
+      },
       { ...valid, prefs: { ...valid.prefs, scores: 'yes' } },
       { ...valid, prefs: { ...valid.prefs, teams: { nfl: 'DROP TABLE', ncaaf: null } } },
       'x'.repeat(5000),
@@ -158,4 +162,22 @@ describe('push endpoints', () => {
     expect(res.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')
     expect(res.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type')
   })
+})
+
+test('only real push services may be endpoints', () => {
+  for (const ok of [
+    'https://web.push.apple.com/QGuQyavXutnMH',
+    'https://fcm.googleapis.com/fcm/send/dAPT',
+    'https://updates.push.services.mozilla.com/wpush/v2/gAAA',
+    'https://wns2-par02p.notify.windows.com/w/?token=x',
+  ])
+    expect(isPushService(ok)).toBe(true)
+  for (const bad of [
+    'https://attacker.example/hook',
+    'http://web.push.apple.com/x',
+    'https://web.push.apple.com.attacker.example/x',
+    'https://fcm.googleapis.com@attacker.example/x',
+    'not a url',
+  ])
+    expect(isPushService(bad)).toBe(false)
 })

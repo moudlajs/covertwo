@@ -47,6 +47,28 @@ const alerts = (env: Env) => env.ALERTS.get(env.ALERTS.idFromName('main'))
 
 const ESPN_HEADERS = { 'User-Agent': 'covertwo (+https://github.com/moudlajs/covertwo)' }
 
+/**
+ * Push services the browsers use (Safari, Chrome and most Android browsers,
+ * Firefox, Edge). Only these may be a subscription's endpoint: the watcher
+ * POSTs to it every alert, so anything else would let a caller aim it anywhere.
+ */
+export function isPushService(endpoint: string): boolean {
+  let host: string
+  try {
+    const url = new URL(endpoint)
+    if (url.protocol !== 'https:') return false
+    host = url.hostname
+  } catch {
+    return false
+  }
+  return (
+    host === 'web.push.apple.com' ||
+    host === 'fcm.googleapis.com' ||
+    host.endsWith('.push.services.mozilla.com') ||
+    host.endsWith('.notify.windows.com')
+  )
+}
+
 const isBool = (v: unknown): v is boolean => typeof v === 'boolean'
 const isKey = (v: unknown) => typeof v === 'string' && /^[A-Za-z0-9_-]{10,200}=*$/.test(v)
 const isTeam = (v: unknown) => v === null || (typeof v === 'string' && /^\d{1,8}$/.test(v))
@@ -60,8 +82,8 @@ export function parseSubscriber(json: unknown): Subscriber | null {
   const teams = (prefs?.teams ?? {}) as Record<string, unknown>
   if (
     typeof sub?.endpoint !== 'string' ||
-    !sub.endpoint.startsWith('https://') ||
     sub.endpoint.length > 1000 ||
+    !isPushService(sub.endpoint) ||
     !isKey(keys.p256dh) ||
     !isKey(keys.auth) ||
     !prefs ||
@@ -102,7 +124,7 @@ async function push(request: Request, path: string, cors: Record<string, string>
   if (path === '/push/subscribe') body = parseSubscriber(json)
   else {
     const endpoint = (json as { endpoint?: unknown } | null)?.endpoint
-    body = typeof endpoint === 'string' && endpoint.startsWith('https://') ? { endpoint } : null
+    body = typeof endpoint === 'string' && isPushService(endpoint) ? { endpoint } : null
   }
   if (!body) return new Response('Invalid', { status: 400, headers: cors })
   const res = await alerts(env).fetch(`https://alerts${path.slice('/push'.length)}`, {
