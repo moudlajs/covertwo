@@ -85,6 +85,11 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
   `@pushforge/builder`, signed by `VAPID_PRIVATE_JWK` (GitHub and Worker
   secret, never in the repo). ESPN team ids overlap across leagues, so alerts
   carry their league.
+- App side of alerts (#55): the 🔔 panel (`AlertsButton`, stays open while
+  choosing) and `src/lib/push.ts` / `useAlerts` subscribe this device with the
+  VAPID public key and keep the Worker's copy of the choices and favourites
+  current. `src/sw.js` shows each push and opens the app on tap. iPhone
+  Safari tabs have no push: the panel says to add covertwo to the Home Screen.
 - **Tests never hit the real API.** Unit tests import the fixture; e2e uses
   `e2e/mock-espn.ts`, which also stubs logos and aborts any other ESPN URL.
 
@@ -93,7 +98,7 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 Dark background with a subtle accent partly hidden behind one centered,
 elevated, rounded panel (~560-640px on desktop, near full width on mobile).
 Compact, table-aligned rows that are not an HTML table. Header: title, then
-★ favourite, ☕ keep screen on, ☀ theme, and EU/US at the far right (#213;
+★ favourite, ☕ keep screen on, 🔔 alerts, ☀ theme, and EU/US at the far right (#213;
 no menu, the version lives in the footer). The NFL/NCAA segmented toggle sits right after the
 title (the slot was reserved from the start). No NFL shield logo.
 

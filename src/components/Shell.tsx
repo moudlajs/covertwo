@@ -8,7 +8,6 @@ import { Header } from './Header'
  * viewport and the footer to the bottom, both opaque so rows pass under them.
  */
 export function Shell({
-  demo = false,
   league,
   view,
   controls,
@@ -16,8 +15,6 @@ export function Shell({
   toast,
   children,
 }: {
-  /** Show the DEMO badge next to the title. */
-  demo?: boolean
   /** Second header row, left: which league. */
   league?: ReactNode
   /** Second header row, right: the week picker, and on college which games (Top 25 / All FBS). */
@@ -50,7 +47,7 @@ export function Shell({
             aria-hidden="true"
             className="mx-3 h-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-rose-500"
           />
-          <Header controls={controls} demo={demo} />
+          <Header controls={controls} />
           <div className="flex h-10 items-center justify-between gap-2 border-t border-slate-800 px-3">
             {league}
             {view}

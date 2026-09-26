@@ -1,4 +1,4 @@
-import { ICON_BUTTON, ICON_BUTTON_ON } from './iconButton'
+import { iconButton } from './iconButton'
 
 /** ☕ in the header: keep the screen on while games are live. Amber while on. */
 export function KeepAwakeButton({
@@ -14,7 +14,7 @@ export function KeepAwakeButton({
       aria-pressed={value}
       aria-label="Keep screen on during live games"
       onClick={() => onChange(!value)}
-      className={`${ICON_BUTTON} ${value ? ICON_BUTTON_ON : ''}`}
+      className={iconButton(value)}
     >
       <svg
         viewBox="0 0 24 24"

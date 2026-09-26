@@ -67,6 +67,30 @@ self.addEventListener('message', (event) => {
   )
 })
 
+// Lock-screen alerts (#55/#69): the Worker sends { title, body, tag }. A newer
+// alert for the same game (tag) replaces the older one.
+self.addEventListener('push', (event) => {
+  const alert = event.data?.json() ?? {}
+  event.waitUntil(
+    self.registration.showNotification(alert.title ?? 'covertwo', {
+      body: alert.body ?? '',
+      tag: alert.tag,
+      icon: './icons/icon-192.png',
+      badge: './icons/favicon-32.png',
+    }),
+  )
+})
+
+// Tapping an alert opens covertwo (or brings it to the front).
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windows) => (windows[0] ? windows[0].focus() : self.clients.openWindow('./'))),
+  )
+})
+
 /** The page: always the newest when online, the saved one offline. */
 async function page(request) {
   try {

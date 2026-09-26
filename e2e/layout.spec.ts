@@ -26,11 +26,10 @@ test('page never scrolls horizontally', async ({ page }) => {
   expect(overflow).toBe(0)
 })
 
-test('the header fits a 360px phone, demo badge included', async ({ page }, info) => {
+test('the header fits a 360px phone', async ({ page }, info) => {
   test.skip(info.project.name !== 'mobile', 'phone layout')
   await page.setViewportSize({ width: 360, height: 780 })
-  await page.goto('./?demo')
-  await expect(page.getByText('DEMO', { exact: true })).toBeVisible()
+  await page.goto('./')
   const header = page.getByRole('banner')
   const fits = await header.evaluate((el) => el.scrollWidth <= el.clientWidth)
   expect(fits).toBe(true)

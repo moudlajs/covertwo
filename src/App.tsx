@@ -14,6 +14,8 @@ import { FBS_TEAMS, NFL_TEAMS } from './data/teams'
 import { FavoriteButton } from './components/FavoriteButton'
 import { KeepAwakeButton } from './components/KeepAwakeButton'
 import { Toast } from './components/Toast'
+import { AlertsButton } from './components/AlertsButton'
+import { useAlerts } from './lib/useAlerts'
 import { useKeepAwake, useWakeLock, wakeLockSupported } from './lib/useWakeLock'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
@@ -44,6 +46,7 @@ export default function App() {
   const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null, week))
   const { status, lastUpdated, live, retry } = board
   const [keepAwake, setKeepAwake] = useKeepAwake()
+  const alerts = useAlerts(favorites)
   // A one-line message saying what a header tap did.
   const [toast, setToast] = useState<{ text: string; id: number } | null>(null)
   const say = (text: string) => setToast((t) => ({ text, id: (t?.id ?? 0) + 1 }))
@@ -95,7 +98,6 @@ export default function App() {
   return (
     <ThemeContext value={theme}>
       <Shell
-        demo={DEMO}
         league={
           <Segmented
             label="League"
@@ -177,6 +179,16 @@ export default function App() {
                 }}
               />
             )}
+            <AlertsButton
+              state={alerts.state}
+              prefs={alerts.prefs}
+              busy={alerts.busy}
+              failed={alerts.failed}
+              teams={[favorites.nfl?.name, favorites.ncaaf?.name].filter((n): n is string => !!n)}
+              onOn={alerts.on}
+              onOff={alerts.off}
+              onPref={alerts.setPref}
+            />
             <ThemeToggle theme={theme} onChange={setTheme} />
             <span aria-hidden="true" className="mx-0.5 h-5 w-px bg-slate-700" />
             <Segmented
