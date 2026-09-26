@@ -1,5 +1,10 @@
 import type { Favorite } from '../data/useFavorites'
+import { ROW, SettingText } from './SettingRow'
 
+/**
+ * Settings row: the favourite team as a value with a ›. The phone's own
+ * picker opens from an invisible native select laid over the whole row.
+ */
 export function FavoriteSelect({
   teams,
   value,
@@ -13,12 +18,19 @@ export function FavoriteSelect({
   // (e.g. a team that left FBS).
   const options = value && !teams.some((t) => t.id === value.id) ? [value, ...teams] : teams
   return (
-    <label className="block">
-      <span className="mb-1 block text-slate-500">Favourite team</span>
+    <div
+      className={`${ROW} relative hover:bg-slate-900 has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200 has-[select:focus-visible]:ring-inset`}
+    >
+      <SettingText name="Favourite team" hint="Pinned to the top" />
+      <span aria-hidden="true" className="flex min-w-0 items-center gap-1 text-slate-300">
+        <span className="truncate">{value?.name ?? 'None'}</span>
+        <span className="text-slate-500">›</span>
+      </span>
       <select
+        aria-label="Favourite team"
         value={value?.id ?? ''}
         onChange={(e) => onChange(options.find((t) => t.id === e.target.value) ?? null)}
-        className="w-full cursor-pointer rounded bg-slate-900 px-1.5 py-1 text-slate-200 ring-1 ring-slate-700 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
+        className="absolute inset-0 cursor-pointer opacity-0"
       >
         <option value="">None</option>
         {options.map((t) => (
@@ -27,6 +39,6 @@ export function FavoriteSelect({
           </option>
         ))}
       </select>
-    </label>
+    </div>
   )
 }

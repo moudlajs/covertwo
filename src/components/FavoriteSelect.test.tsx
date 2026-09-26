@@ -33,3 +33,20 @@ test('college lists every FBS team, including unranked Maryland', () => {
   expect(FBS_TEAMS).toHaveLength(138)
   expect(screen.getByRole('option', { name: 'Maryland Terrapins' })).toHaveValue('120')
 })
+
+test('shows the current team as the row value', () => {
+  render(
+    <FavoriteSelect
+      teams={NFL_TEAMS}
+      value={{ id: '33', name: 'Baltimore Ravens' }}
+      onChange={vi.fn()}
+    />,
+  )
+  expect(screen.getByText('Baltimore Ravens', { selector: 'span' })).toBeInTheDocument()
+  expect(screen.getByText('Pinned to the top')).toBeInTheDocument()
+})
+
+test('None when no team is picked', () => {
+  render(<FavoriteSelect teams={NFL_TEAMS} value={null} onChange={vi.fn()} />)
+  expect(screen.getByText('None', { selector: 'span' })).toBeInTheDocument()
+})

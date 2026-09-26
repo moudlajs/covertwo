@@ -1,5 +1,8 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
+/** How long the menu stays open after a change, so the change is seen. */
+const CLOSE_DELAY_MS = 200
+
 /**
  * Hamburger button with a small dropdown panel: settings, the version and a
  * link to the repo. Changing a setting applies it and closes the menu, as do
@@ -10,6 +13,8 @@ export function Menu({ children }: { children?: ReactNode }) {
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
   const panelId = useId()
+  const closing = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(closing.current), [])
 
   useEffect(() => {
     if (!open) return
@@ -54,24 +59,29 @@ export function Menu({ children }: { children?: ReactNode }) {
       <div
         id={panelId}
         hidden={!open}
-        // A setting changed (change events bubble): apply it and get out of the way.
+        // A setting changed (change events bubble): apply it and get out of the
+        // way, after a beat so a switch is seen flipping.
         onChange={() => {
-          setOpen(false)
-          button.current?.focus()
+          window.clearTimeout(closing.current)
+          closing.current = window.setTimeout(() => {
+            setOpen(false)
+            button.current?.focus()
+          }, CLOSE_DELAY_MS)
         }}
-        className="absolute top-full right-0 z-10 mt-2 w-56 rounded-lg bg-slate-950 p-3 font-mono text-[11px] text-slate-400 shadow-xl ring-1 ring-slate-700"
+        className="absolute top-full right-0 z-10 mt-2 w-72 overflow-hidden rounded-lg bg-slate-950 font-mono text-[11px] text-slate-400 shadow-xl ring-1 ring-slate-700"
       >
         {children}
-        <hr className="my-2 border-slate-800" />
-        <p>
-          covertwo <span className="text-amber-400">v{__APP_VERSION__}</span>
-        </p>
-        <a
-          href="https://github.com/moudlajs/covertwo"
-          className="mt-1 inline-block text-slate-300 underline decoration-slate-600 underline-offset-2 hover:text-slate-100"
-        >
-          Source on GitHub
-        </a>
+        <div className="flex items-center justify-between border-t border-slate-800 px-3.5 py-2.5">
+          <span>
+            covertwo <span className="text-amber-400">v{__APP_VERSION__}</span>
+          </span>
+          <a
+            href="https://github.com/moudlajs/covertwo"
+            className="text-slate-300 underline decoration-slate-600 underline-offset-2 hover:text-slate-100"
+          >
+            Source on GitHub
+          </a>
+        </div>
       </div>
     </div>
   )
