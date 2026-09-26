@@ -98,7 +98,6 @@ export default function App() {
   return (
     <ThemeContext value={theme}>
       <Shell
-        demo={DEMO}
         league={
           <Segmented
             label="League"
