@@ -22,11 +22,14 @@ export function Menu({ children }: { children?: ReactNode }) {
     // where the user wanted it, so it only closes.
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
+      window.clearTimeout(closing.current)
       setOpen(false)
       button.current?.focus()
     }
     const onPointer = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false)
+      if (root.current?.contains(e.target as Node)) return
+      window.clearTimeout(closing.current) // a pending close must not pull focus back
+      setOpen(false)
     }
     document.addEventListener('keydown', onKey)
     document.addEventListener('pointerdown', onPointer)
@@ -44,7 +47,10 @@ export function Menu({ children }: { children?: ReactNode }) {
         aria-label="Menu"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          window.clearTimeout(closing.current)
+          setOpen((o) => !o)
+        }}
         className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
       >
         <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">

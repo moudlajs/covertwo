@@ -67,3 +67,24 @@ test('changing a setting closes it and returns focus to the button', async () =>
   await waitFor(() => expect(button).toHaveAttribute('aria-expanded', 'false'))
   expect(button).toHaveFocus()
 })
+
+test('a click outside right after a change keeps focus where it went', async () => {
+  const user = userEvent.setup()
+  render(
+    <>
+      <Menu>
+        <select aria-label="Pick">
+          <option>a</option>
+          <option>b</option>
+        </select>
+      </Menu>
+      <button type="button">elsewhere</button>
+    </>,
+  )
+  await user.click(screen.getByRole('button', { name: 'Menu' }))
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Pick' }), 'b')
+  const elsewhere = screen.getByRole('button', { name: 'elsewhere' })
+  await user.click(elsewhere) // within the close delay
+  await new Promise((r) => setTimeout(r, 300))
+  expect(elsewhere).toHaveFocus()
+})
