@@ -118,3 +118,16 @@ test('on a short week the status message sits right above the footer', async ({ 
   expect(t.y + t.height).toBeLessThanOrEqual(f.y)
   expect(f.y - (t.y + t.height)).toBeLessThan(16)
 })
+
+test('on a 360px phone no team abbreviation or status line is cut off', async ({ page }, info) => {
+  test.skip(info.project.name !== 'mobile', 'phone layout')
+  await page.setViewportSize({ width: 360, height: 780 })
+  await page.reload()
+  await expect(page.getByRole('main').getByRole('listitem').first()).toBeVisible()
+  const cut = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-side] .truncate, [data-centre] > *')]
+      .filter((el) => el.scrollWidth > el.clientWidth + 0.5)
+      .map((el) => el.textContent),
+  )
+  expect(cut).toEqual([])
+})
