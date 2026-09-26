@@ -19,9 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # The Worker bundles the push library and the app's ESPN mapper (../src).
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: worker
           wranglerVersion: '4.138.0'
+          # Signs lock-screen alerts (#69). Only here and in the Worker, never in the repo.
+          secrets: |
+            VAPID_PRIVATE_JWK
+        env:
+          VAPID_PRIVATE_JWK: ${{ secrets.VAPID_PRIVATE_JWK }}
