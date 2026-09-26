@@ -135,6 +135,7 @@ export default function App() {
             )}
           </div>
         }
+        toast={<Toast message={toast} />}
         footer={
           <>
             <span>
@@ -222,7 +223,6 @@ export default function App() {
           </>
         )}
       </Shell>
-      <Toast message={toast} />
     </ThemeContext>
   )
 }

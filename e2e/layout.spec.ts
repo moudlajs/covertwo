@@ -102,3 +102,19 @@ test('day headings stick just under the pinned header', async ({ page }) => {
   const heading = await sunday.boundingBox()
   expect(heading?.y).toBe((block?.y ?? 0) + (block?.height ?? 0))
 })
+
+test('on a short week the status message sits right above the footer', async ({ page }) => {
+  await page.route(SCOREBOARD_API, (route) =>
+    route.fulfill({ json: { ...scoreboard, events: scoreboard.events.slice(0, 1) } }),
+  )
+  await page.reload()
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(1)
+  await page.getByLabel('Favourite team').selectOption({ label: 'Dallas Cowboys' })
+  const toast = page.getByTestId('toast').getByText('Dallas Cowboys pinned to the top')
+  await expect(toast).toBeVisible()
+  const t = await toast.boundingBox()
+  const f = await page.getByRole('contentinfo').boundingBox()
+  if (!t || !f) throw new Error('no layout')
+  expect(t.y + t.height).toBeLessThanOrEqual(f.y)
+  expect(f.y - (t.y + t.height)).toBeLessThan(16)
+})

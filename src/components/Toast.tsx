@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 export const TOAST_MS = 2200
 
 /**
- * A one-line message saying what a tap just did, low on the screen above the
- * footer. `message.id` changes with every new message, even a repeated one.
+ * A one-line message saying what a tap just did, just above the footer (Shell
+ * puts it inside the sticky footer, so it follows it on short and long pages). `message.id` changes with every new message, even a repeated one.
  */
 export function Toast({ message }: { message: { text: string; id: number } | null }) {
   const [shown, setShown] = useState<number | null>(null)
@@ -27,7 +27,7 @@ export function Toast({ message }: { message: { text: string; id: number } | nul
     <div
       aria-live="polite"
       data-testid="toast"
-      className="pointer-events-none fixed inset-x-0 bottom-[calc(2.5rem+env(safe-area-inset-bottom))] z-30 flex justify-center px-4"
+      className="pointer-events-none absolute inset-x-0 bottom-full mb-2 flex justify-center px-4 font-normal"
     >
       {visible && (
         <span className="rounded-md bg-slate-100 px-3 py-1.5 font-mono text-[11px] text-slate-950 shadow-lg">
