@@ -49,7 +49,7 @@ function Side({
     <div
       aria-hidden="true"
       data-side={align === 'start' ? 'away' : 'home'}
-      className={`flex min-w-0 items-center gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
+      className={`flex min-w-0 items-center gap-1.5 min-[380px]:gap-2 ${align === 'end' ? 'flex-row-reverse' : ''} ${dim ? 'text-slate-500' : 'text-slate-100'}`}
     >
       <TeamLogo src={team.logo} glow={team.color} />
       <span className={`flex min-w-0 flex-col gap-0.5 ${align === 'end' ? 'items-end' : ''}`}>
@@ -159,7 +159,7 @@ export function GameRow({
         <div
           aria-hidden="true"
           data-centre
-          className="flex w-40 flex-col items-center leading-none sm:w-60"
+          className="flex w-[9.75rem] flex-col items-center leading-none min-[380px]:w-40 sm:w-60"
         >
           {game.state === 'pre' ? (
             <time
