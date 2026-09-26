@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/moudlajs/covertwo/compare/v1.23.1...v1.24.0) (2026-09-26)
+
+
+### Features
+
+* lock-screen alerts server in the Worker ([#220](https://github.com/moudlajs/covertwo/issues/220)) ([851486b](https://github.com/moudlajs/covertwo/commit/851486b62de5c5a820c052e375eec8f660bc2d48))
+
 ## [1.23.1](https://github.com/moudlajs/covertwo/compare/v1.23.0...v1.23.1) (2026-09-26)
 
 
