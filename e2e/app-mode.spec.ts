@@ -42,3 +42,27 @@ test('as an app on a wide screen (tablet) the floating panel stays too', async (
   await expect(page.locator('html')).toHaveAttribute('data-display', 'app') // detected, just wide
   expect((await panelBox(page)).radius).not.toBe('0px')
 })
+
+test('as an app on a phone nothing reaches past the screen edge (no sideways drag)', async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== 'mobile', 'phone layout')
+  await launchFromHomeScreen(page)
+  await mockEspn(page)
+  await page.goto('./')
+  await expect(page.getByRole('main').getByRole('listitem').first()).toBeVisible()
+  const past = await page.evaluate(() => {
+    const vw = document.documentElement.clientWidth
+    return [...document.querySelectorAll('body *')]
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width > 0 && (r.right > vw + 0.5 || r.left < -0.5)).length
+  })
+  expect(past).toBe(0)
+})
+
+test('the page never scrolls sideways', async ({ page }) => {
+  await mockEspn(page)
+  await page.goto('./')
+  const overflow = await page.evaluate(() => getComputedStyle(document.documentElement).overflowX)
+  expect(overflow).toBe('clip')
+})
