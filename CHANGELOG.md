@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/moudlajs/covertwo/compare/v1.21.3...v1.22.0) (2026-09-26)
+
+
+### Features
+
+* settings menu as rows, with a switch for on/off ([#211](https://github.com/moudlajs/covertwo/issues/211)) ([0192ab9](https://github.com/moudlajs/covertwo/commit/0192ab9702f1b13d07d196ae05340c900bad5504))
+
 ## [1.21.3](https://github.com/moudlajs/covertwo/compare/v1.21.2...v1.21.3) (2026-09-26)
 
 
