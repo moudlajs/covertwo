@@ -10,7 +10,12 @@ function minutesLeft(clock: string): number | null {
  * Crunch time: live, 4th quarter or overtime, 5:00 or less on the clock, and
  * within one score (8 points). When timeouts matter at a glance.
  */
-export function isCrunchTime(game: Game): boolean {
+export function isCrunchTime(
+  game: Pick<Game, 'state' | 'halftime' | 'period' | 'clock'> & {
+    home: { score: number | null }
+    away: { score: number | null }
+  },
+): boolean {
   if (game.state !== 'in' || game.halftime || game.period < 4) return false
   const left = minutesLeft(game.clock)
   const { home, away } = game

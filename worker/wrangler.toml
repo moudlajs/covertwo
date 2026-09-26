@@ -1,3 +1,16 @@
 name = "covertwo-api"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
+
+# Lock-screen alerts (#69): one Durable Object keeps subscribers and the last
+# look at each league (SQLite backend: the free plan's). The cron runs it every minute.
+[[durable_objects.bindings]]
+name = "ALERTS"
+class_name = "Alerts"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Alerts"]
+
+[triggers]
+crons = ["* * * * *"]
