@@ -1,5 +1,5 @@
 import type { Favorite } from '../data/useFavorites'
-import { ICON_BUTTON, ICON_BUTTON_ON } from './iconButton'
+import { iconButton } from './iconButton'
 
 /**
  * ★ in the header: one tap opens the phone's own team picker (an invisible
@@ -19,7 +19,7 @@ export function FavoriteButton({
   const options = value && !teams.some((t) => t.id === value.id) ? [value, ...teams] : teams
   return (
     <span
-      className={`relative ${ICON_BUTTON} ${value ? ICON_BUTTON_ON : ''} has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200`}
+      className={`relative ${iconButton(value !== null)} has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200`}
     >
       <svg
         viewBox="0 0 24 24"
