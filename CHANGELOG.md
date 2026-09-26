@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.3](https://github.com/moudlajs/covertwo/compare/v1.21.2...v1.21.3) (2026-09-26)
+
+
+### Bug Fixes
+
+* installed app can no longer be dragged sideways ([#208](https://github.com/moudlajs/covertwo/issues/208)) ([244be21](https://github.com/moudlajs/covertwo/commit/244be21065e86167305bc82f8945f0894a9fb7b5))
+
 ## [1.21.2](https://github.com/moudlajs/covertwo/compare/v1.21.1...v1.21.2) (2026-09-25)
 
 
