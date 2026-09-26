@@ -1,11 +1,11 @@
 import type { Favorite } from '../data/useFavorites'
-import { ROW, SettingText } from './SettingRow'
+import { ICON_BUTTON, ICON_BUTTON_ON } from './iconButton'
 
 /**
- * Settings row: the favourite team as a value with a ›. The phone's own
- * picker opens from an invisible native select laid over the whole row.
+ * ★ in the header: one tap opens the phone's own team picker (an invisible
+ * native select laid over the icon). Filled amber while a team is pinned.
  */
-export function FavoriteSelect({
+export function FavoriteButton({
   teams,
   value,
   onChange,
@@ -18,14 +18,20 @@ export function FavoriteSelect({
   // (e.g. a team that left FBS).
   const options = value && !teams.some((t) => t.id === value.id) ? [value, ...teams] : teams
   return (
-    <div
-      className={`${ROW} relative hover:bg-slate-900 has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200 has-[select:focus-visible]:ring-inset`}
+    <span
+      className={`relative ${ICON_BUTTON} ${value ? ICON_BUTTON_ON : ''} has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200`}
     >
-      <SettingText name="Favourite team" hint="Pinned to the top" />
-      <span aria-hidden="true" className="flex min-w-0 items-center gap-1 text-slate-300">
-        <span className="truncate">{value?.name ?? 'None'}</span>
-        <span className="text-slate-500">›</span>
-      </span>
+      <svg
+        viewBox="0 0 24 24"
+        className="size-[18px]"
+        aria-hidden="true"
+        fill={value ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      >
+        <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
+      </svg>
       <select
         aria-label="Favourite team"
         value={value?.id ?? ''}
@@ -39,6 +45,6 @@ export function FavoriteSelect({
           </option>
         ))}
       </select>
-    </div>
+    </span>
   )
 }

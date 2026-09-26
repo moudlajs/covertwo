@@ -34,7 +34,6 @@ test('an unranked college favourite (Maryland) shows, pinned, in the Top 25 view
   await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(22) // plain Top 25
 
   const fbs = page.waitForRequest(/ncaaf\/scoreboard\?groups=80$/)
-  await page.getByRole('button', { name: 'Menu' }).click()
   await page.getByLabel('Favourite team').selectOption({ label: 'Maryland Terrapins' })
   await fbs
 

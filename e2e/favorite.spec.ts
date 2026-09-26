@@ -8,11 +8,9 @@ test('Ravens pinned by default; picking another team re-pins and persists', asyn
   await expect(first).toContainText('Baltimore Ravens')
   await expect(page.getByRole('main').getByRole('listitem').first()).toContainText('BAL')
 
-  await page.getByRole('button', { name: 'Menu' }).click()
   await page.getByLabel('Favourite team').selectOption({ label: 'Dallas Cowboys' })
   await expect(first).toContainText('Dallas Cowboys')
-  // Picking closes the menu: the board is right there, no Escape needed.
-  await expect(page.getByRole('button', { name: 'Menu' })).toHaveAttribute('aria-expanded', 'false')
+  await expect(page.getByTestId('toast')).toHaveText('Dallas Cowboys pinned to the top')
   await expect(page).toHaveTitle('WSH 23-20 DAL · covertwo') // favourite is live
 
   await page.reload()

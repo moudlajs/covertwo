@@ -1,4 +1,5 @@
 import type { Theme } from '../lib/theme'
+import { ICON_BUTTON } from './iconButton'
 
 /** One icon button: a sun on dark (switches to light), a moon on light. */
 export function ThemeToggle({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
@@ -8,11 +9,11 @@ export function ThemeToggle({ theme, onChange }: { theme: Theme; onChange: (t: T
       type="button"
       aria-label={`Switch to ${next} theme`}
       onClick={() => onChange(next)}
-      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none"
+      className={ICON_BUTTON}
     >
       <svg
         viewBox="0 0 24 24"
-        className="size-5"
+        className="size-[18px]"
         aria-hidden="true"
         fill="none"
         stroke="currentColor"

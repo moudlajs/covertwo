@@ -19,7 +19,7 @@ test('a score change flashes the new score and is announced', async ({ page }) =
   await expect(main.locator('[data-centre]').getByText('27', { exact: true })).toHaveClass(
     /animate-score-flash/,
   )
-  await expect(page.locator('[aria-live="polite"]')).toHaveText(
+  await expect(page.locator('[aria-live="polite"]:not([data-testid="toast"])')).toHaveText(
     'Score: Washington Commanders 23, Dallas Cowboys 27',
   )
 })

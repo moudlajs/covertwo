@@ -82,8 +82,9 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 
 Dark background with a subtle accent partly hidden behind one centered,
 elevated, rounded panel (~560-640px on desktop, near full width on mobile).
-Compact, table-aligned rows that are not an HTML table. Header: title, EU/US
-toggle, hamburger menu. The NFL/NCAA segmented toggle sits right after the
+Compact, table-aligned rows that are not an HTML table. Header: title, then
+★ favourite, ☕ keep screen on, ☀ theme, and EU/US at the far right (#213;
+no menu, the version lives in the footer). The NFL/NCAA segmented toggle sits right after the
 title (the slot was reserved from the start). No NFL shield logo.
 
 **Chosen: variant D** (#14). C's "ticker" graphics with B's centered layout:
