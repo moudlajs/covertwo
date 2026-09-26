@@ -6,7 +6,12 @@ const HASH_BAND = {
 /** Warm glow and two bands of hash marks, partly hidden behind the panel. */
 export function Backdrop() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
+    // Not in the app: the full-screen panel covers it, and its rotated bands
+    // (wider than the screen) let iOS drag the page sideways.
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 overflow-hidden app:hidden"
+    >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgb(251_191_36/0.14),transparent_45%),radial-gradient(ellipse_at_100%_100%,rgb(56_189_248/0.08),transparent_40%)]" />
       <div
         className="absolute -top-20 -left-1/4 h-72 w-[150%] -rotate-[8deg] opacity-60"

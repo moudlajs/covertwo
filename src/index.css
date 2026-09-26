@@ -13,10 +13,19 @@
   }
 }
 
-/* As an app, no rubber-band bounce dragging the whole page. */
+/*
+ * Never sideways: clip anything wider than the screen (clip, unlike hidden,
+ * makes no scroll container, so the sticky header keeps working).
+ */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* As an app, no rubber-band bounce dragging the whole page, either way. */
 :root[data-display='app'],
 :root[data-display='app'] body {
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
 }
 
 :root {
