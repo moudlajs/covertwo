@@ -6,15 +6,18 @@
 // cron every minute has the Alerts Durable Object (alerts.ts) send what changed.
 import { buildPushHTTPRequest } from '@pushforge/builder'
 import {
+  sendTest,
+  status,
   subscribe,
   tick,
   unsubscribe,
   type Deps,
+  type Message,
   type PushSubscriptionJSON,
   type Storage,
   type Subscriber,
 } from './alerts'
-import type { Alert, League } from './events'
+import type { League } from './events'
 
 const UPSTREAM = 'https://site.api.espn.com/apis/site/v2/sports/'
 
@@ -131,6 +134,12 @@ async function push(request: Request, path: string, cors: Record<string, string>
     method: 'POST',
     body: JSON.stringify(body),
   })
+  // The test's result (the push service's answer) goes back to the app.
+  if (path === '/push/test')
+    return new Response(await res.text(), {
+      status: res.status,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    })
   return new Response(null, { status: res.status, headers: cors })
 }
 
@@ -157,9 +166,18 @@ export async function handle(
     })
   if (
     request.method === 'POST' &&
-    (url.pathname === '/push/subscribe' || url.pathname === '/push/unsubscribe')
+    ['/push/subscribe', '/push/unsubscribe', '/push/test'].includes(url.pathname)
   )
     return push(request, url.pathname, cors, env)
+  // What the watcher is doing: counts and the last check, no subscriber data.
+  if (request.method === 'GET' && url.pathname === '/push/status') {
+    if (!env) return new Response('Unavailable', { status: 503, headers: cors })
+    const res = await alerts(env).fetch('https://alerts/status')
+    return new Response(await res.text(), {
+      status: res.status,
+      headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    })
+  }
   if (request.method !== 'GET')
     return new Response('Method not allowed', { status: 405, headers: cors })
 
@@ -186,17 +204,17 @@ export async function handle(
   }
 }
 
-/** Sends one alert through the phone's push service, signed with our VAPID key. */
+/** Sends one notification through the device's push service, signed with our VAPID key. */
 async function send(
   jwk: string,
   subscription: PushSubscriptionJSON,
-  alert: Alert,
+  message: Message,
 ): Promise<number> {
   const { endpoint, headers, body } = await buildPushHTTPRequest({
     privateJWK: jwk,
     subscription,
     message: {
-      payload: { title: alert.title, body: alert.body, tag: alert.gameId },
+      payload: message,
       adminContact: 'https://github.com/moudlajs/covertwo',
       // A score alert is old news after a quarter of an hour.
       options: { ttl: 15 * 60, urgency: 'high' },
@@ -226,7 +244,7 @@ export class Alerts {
     this.deps = {
       storage: state.storage,
       scoreboard,
-      send: (subscription, alert) => send(env.VAPID_PRIVATE_JWK, subscription, alert),
+      send: (subscription, message) => send(env.VAPID_PRIVATE_JWK, subscription, message),
       now: () => Date.now(),
     }
   }
@@ -234,9 +252,19 @@ export class Alerts {
   async fetch(request: Request): Promise<Response> {
     const path = new URL(request.url).pathname
     if (path === '/tick') return Response.json(await tick(this.deps))
+    if (path === '/status') return Response.json(await status(this.deps))
     const body = (await request.json()) as Subscriber & { endpoint: string }
     if (path === '/subscribe')
-      return new Response(null, { status: (await subscribe(this.deps, body)) ? 204 : 503 })
+      return new Response(null, {
+        status: (await subscribe(this.deps, body)) === 'full' ? 503 : 204,
+      })
+    if (path === '/test') {
+      const result = await sendTest(this.deps, body.endpoint)
+      // 200 with the push service's answer; 404 for an unknown device, 429 too soon.
+      if (result === 'unknown') return Response.json({ error: 'unknown' }, { status: 404 })
+      if (result === 'wait') return Response.json({ error: 'wait' }, { status: 429 })
+      return Response.json({ push: result })
+    }
     if (path === '/unsubscribe') {
       await unsubscribe(this.deps, body.endpoint)
       return new Response(null, { status: 204 })

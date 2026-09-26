@@ -188,6 +188,8 @@ export default function App() {
               onOn={alerts.on}
               onOff={alerts.off}
               onPref={alerts.setPref}
+              testResult={alerts.testResult}
+              onTest={() => void alerts.test()}
             />
             <ThemeToggle theme={theme} onChange={setTheme} />
             <span aria-hidden="true" className="mx-0.5 h-5 w-px bg-slate-700" />
