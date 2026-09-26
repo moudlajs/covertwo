@@ -53,6 +53,7 @@ export function AlertsButton({
   failed,
   teams,
   testResult,
+  testing,
   onOn,
   onOff,
   onPref,
@@ -66,6 +67,8 @@ export function AlertsButton({
   teams: string[]
   /** What the last test alert did, in words. */
   testResult: string | null
+  /** A test is on its way: the button waits. */
+  testing: boolean
   onOn: () => void
   onOff: () => void
   onPref: (key: keyof AlertPrefs, on: boolean) => void
@@ -132,7 +135,8 @@ export function AlertsButton({
             <button
               type="button"
               onClick={onTest}
-              className="w-fit text-amber-400 underline decoration-amber-400/40 underline-offset-2 hover:text-amber-300"
+              disabled={testing}
+              className="w-fit text-amber-400 underline decoration-amber-400/40 underline-offset-2 hover:text-amber-300 disabled:opacity-50"
             >
               Send a test alert
             </button>

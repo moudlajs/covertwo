@@ -189,6 +189,7 @@ export default function App() {
               onOff={alerts.off}
               onPref={alerts.setPref}
               testResult={alerts.testResult}
+              testing={alerts.testing}
               onTest={() => void alerts.test()}
             />
             <ThemeToggle theme={theme} onChange={setTheme} />

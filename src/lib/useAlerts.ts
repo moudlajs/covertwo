@@ -83,7 +83,9 @@ export function useAlerts(favorites: Favorites) {
     }
   }
 
+  const [testing, setTesting] = useState(false)
   const test = async () => {
+    setTesting(true)
     setTestResult('Sending…')
     try {
       let result = await sendTest()
@@ -104,12 +106,15 @@ export function useAlerts(favorites: Favorites) {
     } catch (error) {
       console.error('[alerts] test failed', error)
       setTestResult("Couldn't reach covertwo's server. Check your connection.")
+    } finally {
+      setTesting(false)
     }
   }
 
   return {
     state,
     testResult,
+    testing,
     test,
     prefs,
     busy,

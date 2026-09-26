@@ -11,6 +11,7 @@ const setup = (state: PushState | null, teams: string[] = ['Baltimore Ravens']) 
     onPref: vi.fn(),
     onTest: vi.fn(),
     testResult: null,
+    testing: false,
   }
   render(
     <>
@@ -63,6 +64,7 @@ test('a test alert button once alerts are on, with its result', async () => {
   const { rerender } = render(
     <AlertsButton
       testResult={null}
+      testing={false}
       state="off"
       prefs={DEFAULT_PREFS}
       busy={false}
@@ -84,6 +86,7 @@ test('a test alert button once alerts are on, with its result', async () => {
       failed={false}
       teams={[]}
       testResult="Sent. It should be on your lock screen in a moment."
+      testing={false}
       onOn={vi.fn()}
       onOff={vi.fn()}
       onPref={vi.fn()}

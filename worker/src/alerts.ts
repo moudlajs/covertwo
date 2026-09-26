@@ -162,6 +162,7 @@ export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number 
       check.sends.push(status)
       if (status === 404 || status === 410) {
         await deps.storage.delete(key) // unsubscribed or expired at the push service
+        await deps.storage.delete(`test:${key}`)
         break
       }
       if (status >= 200 && status < 300) sent++
