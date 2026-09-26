@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/moudlajs/covertwo/compare/v1.25.0...v1.26.0) (2026-09-26)
+
+
+### Features
+
+* prove alerts work: welcome alert, test button, status page ([#225](https://github.com/moudlajs/covertwo/issues/225)) ([4d1dd52](https://github.com/moudlajs/covertwo/commit/4d1dd527b655a21faf80d8c2d35743b594f9db59))
+
 ## [1.25.0](https://github.com/moudlajs/covertwo/compare/v1.24.0...v1.25.0) (2026-09-26)
 
 
