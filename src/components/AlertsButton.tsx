@@ -52,9 +52,12 @@ export function AlertsButton({
   busy,
   failed,
   teams,
+  testResult,
+  testing,
   onOn,
   onOff,
   onPref,
+  onTest,
 }: {
   state: PushState | null
   prefs: AlertPrefs
@@ -62,9 +65,14 @@ export function AlertsButton({
   failed: boolean
   /** Your team per league, for the hints ("Baltimore Ravens"). */
   teams: string[]
+  /** What the last test alert did, in words. */
+  testResult: string | null
+  /** A test is on its way: the button waits. */
+  testing: boolean
   onOn: () => void
   onOff: () => void
   onPref: (key: keyof AlertPrefs, on: boolean) => void
+  onTest: () => void
 }) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -122,6 +130,21 @@ export function AlertsButton({
           disabled={busy}
           onChange={(v) => (v ? onOn() : onOff())}
         />
+        {on && (
+          <div className="grid gap-1 px-3.5 pb-2">
+            <button
+              type="button"
+              onClick={onTest}
+              disabled={testing}
+              className="w-fit text-amber-400 underline decoration-amber-400/40 underline-offset-2 hover:text-amber-300 disabled:opacity-50"
+            >
+              Send a test alert
+            </button>
+            <p aria-live="polite" className="text-[10.5px] leading-relaxed text-slate-400">
+              {testResult}
+            </p>
+          </div>
+        )}
         {failed && (
           <p role="alert" className="px-3.5 pb-1 text-rose-400">
             That didn&apos;t work. Check your connection and try again.

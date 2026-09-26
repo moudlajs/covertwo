@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { DEFAULT_PREFS, pushState, turnOff, turnOn, VAPID_PUBLIC_KEY } from './push'
+import { DEFAULT_PREFS, pushState, sendTest, turnOff, turnOn, VAPID_PUBLIC_KEY } from './push'
 
 const favorites = { nfl: { id: '33', name: 'Baltimore Ravens' }, ncaaf: null }
 const endpoint = 'https://web.push.apple.com/abc'
@@ -98,4 +98,19 @@ test('turning off: the Worker forgets this device and the browser drops it', asy
   expect(url).toMatch(/\/push\/unsubscribe$/)
   expect(JSON.parse(init.body as string)).toEqual({ endpoint })
   expect(sub?.unsubscribe).toHaveBeenCalled()
+})
+
+test('test alert: sent, too soon, unknown to the server, refused', async () => {
+  permission = 'granted'
+  await pushManager.subscribe()
+  const answer = (status: number, body: unknown) =>
+    fetchMock.mockImplementationOnce(async () => Response.json(body, { status }))
+  answer(200, { push: 201 })
+  expect(await sendTest()).toBe('sent')
+  answer(429, { error: 'wait' })
+  expect(await sendTest()).toBe('wait')
+  answer(404, { error: 'unknown' })
+  expect(await sendTest()).toBe('gone')
+  answer(200, { push: 403 })
+  expect(await sendTest()).toBe(403)
 })

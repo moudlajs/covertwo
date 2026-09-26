@@ -3,6 +3,7 @@ import type { Favorites } from '../data/useFavorites'
 import {
   DEFAULT_PREFS,
   pushState,
+  sendTest,
   sync,
   turnOff,
   turnOn,
@@ -39,6 +40,8 @@ export function useAlerts(favorites: Favorites) {
   const [state, setState] = useState<PushState | null>(null)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
+  /** The last test's result, in words. */
+  const [testResult, setTestResult] = useState<string | null>(null)
 
   useEffect(() => {
     let current = true
@@ -80,8 +83,39 @@ export function useAlerts(favorites: Favorites) {
     }
   }
 
+  const [testing, setTesting] = useState(false)
+  const test = async () => {
+    setTesting(true)
+    setTestResult('Sending…')
+    try {
+      let result = await sendTest()
+      if (result === 'gone') {
+        // The Worker lost this device (or never got it): register it again, once.
+        await sync(prefs, favorites)
+        result = await sendTest()
+      }
+      setTestResult(
+        result === 'sent'
+          ? 'Sent. It should be on your lock screen in a moment.'
+          : result === 'wait'
+            ? 'Just sent one. Try again in a few seconds.'
+            : result === 'gone'
+              ? "covertwo's server doesn't know this device. Turn alerts off and on again."
+              : `The push service refused it (${result || 'no answer'}). Turn alerts off and on again.`,
+      )
+    } catch (error) {
+      console.error('[alerts] test failed', error)
+      setTestResult("Couldn't reach covertwo's server. Check your connection.")
+    } finally {
+      setTesting(false)
+    }
+  }
+
   return {
     state,
+    testResult,
+    testing,
+    test,
     prefs,
     busy,
     failed,

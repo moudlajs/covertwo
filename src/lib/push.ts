@@ -102,3 +102,23 @@ export async function turnOff(): Promise<PushState> {
   }
   return 'off'
 }
+
+/**
+ * Asks the Worker to send this device a test alert. `sent` means the push
+ * service took it; `gone` means the Worker doesn't know this device (sync and
+ * retry); a number is the push service's refusal status (0 = no answer).
+ */
+export async function sendTest(): Promise<'sent' | 'wait' | 'gone' | number> {
+  const subscription = await (await registration())?.pushManager.getSubscription()
+  if (!subscription) return 'gone'
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/push/test`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint: subscription.endpoint }),
+  })
+  if (res.status === 429) return 'wait'
+  if (res.status === 404) return 'gone'
+  if (!res.ok) throw new Error(`/push/test: HTTP ${res.status}`)
+  const { push } = (await res.json()) as { push: number }
+  return push >= 200 && push < 300 ? 'sent' : push
+}

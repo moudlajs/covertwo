@@ -5,7 +5,14 @@ import { DEFAULT_PREFS, type PushState } from '../lib/push'
 import { AlertsButton } from './AlertsButton'
 
 const setup = (state: PushState | null, teams: string[] = ['Baltimore Ravens']) => {
-  const props = { onOn: vi.fn(), onOff: vi.fn(), onPref: vi.fn() }
+  const props = {
+    onOn: vi.fn(),
+    onOff: vi.fn(),
+    onPref: vi.fn(),
+    onTest: vi.fn(),
+    testResult: null,
+    testing: false,
+  }
   render(
     <>
       <AlertsButton
@@ -49,6 +56,46 @@ test('on: the bell is lit and the switch turns alerts off', async () => {
   await user.click(bell)
   await user.click(screen.getByRole('switch', { name: 'On this device' }))
   expect(onOff).toHaveBeenCalled()
+})
+
+test('a test alert button once alerts are on, with its result', async () => {
+  const onTest = vi.fn()
+  const user = userEvent.setup()
+  const { rerender } = render(
+    <AlertsButton
+      testResult={null}
+      testing={false}
+      state="off"
+      prefs={DEFAULT_PREFS}
+      busy={false}
+      failed={false}
+      teams={[]}
+      onOn={vi.fn()}
+      onOff={vi.fn()}
+      onPref={vi.fn()}
+      onTest={onTest}
+    />,
+  )
+  await user.click(screen.getByRole('button', { name: 'Alerts' }))
+  expect(screen.queryByRole('button', { name: 'Send a test alert' })).not.toBeInTheDocument()
+  rerender(
+    <AlertsButton
+      state="on"
+      prefs={DEFAULT_PREFS}
+      busy={false}
+      failed={false}
+      teams={[]}
+      testResult="Sent. It should be on your lock screen in a moment."
+      testing={false}
+      onOn={vi.fn()}
+      onOff={vi.fn()}
+      onPref={vi.fn()}
+      onTest={onTest}
+    />,
+  )
+  await user.click(screen.getByRole('button', { name: 'Send a test alert' }))
+  expect(onTest).toHaveBeenCalled()
+  expect(screen.getByText(/lock screen in a moment/)).toBeInTheDocument()
 })
 
 test('no team yet: the hint says to pick one', async () => {

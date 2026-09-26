@@ -1,7 +1,18 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import fixture from '../../fixtures/espn-scoreboard.json'
-import { subscribe, tick, unsubscribe, type Deps, type Storage, type Subscriber } from './alerts'
+import {
+  sendTest,
+  status,
+  subscribe,
+  tick,
+  unsubscribe,
+  TEST,
+  WELCOME,
+  type Deps,
+  type Storage,
+  type Subscriber,
+} from './alerts'
 
 /** Durable Object storage, in memory. */
 function memory(): Storage & { data: Map<string, unknown> } {
@@ -54,6 +65,7 @@ beforeEach(() => {
     scoreboard: vi.fn(async () => espn),
     send: vi.fn(async () => 201),
     now: () => NOW,
+    background: (work) => void work,
   }
 })
 
@@ -66,7 +78,7 @@ describe('alerts', () => {
     expect(await tick(deps)).toEqual({ looked: true, sent: 1 })
     expect(deps.send).toHaveBeenCalledWith(
       expect.objectContaining({ endpoint: 'https://push.example/fan' }),
-      expect.objectContaining({ kind: 'score', title: 'Touchdown, Jacksonville Jaguars' }),
+      expect.objectContaining({ title: 'Touchdown, Jacksonville Jaguars' }),
     )
   })
 
@@ -115,5 +127,36 @@ describe('alerts', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(await tick(deps)).toEqual({ looked: true, sent: 0 })
     expect(await storage.get('next')).toBe(NOW)
+  })
+
+  test('a new device gets the welcome alert once; an update does not', async () => {
+    expect(await subscribe(deps, subscriber('https://push.example/fan'))).toBe('new')
+    expect(await subscribe(deps, subscriber('https://push.example/fan', '1'))).toBe('updated')
+    expect(deps.send).toHaveBeenCalledTimes(1)
+    expect(deps.send).toHaveBeenCalledWith(
+      expect.objectContaining({ endpoint: 'https://push.example/fan' }),
+      WELCOME,
+    )
+  })
+
+  test('the test alert: to known devices, at most every 30 seconds', async () => {
+    expect(await sendTest(deps, 'https://push.example/nobody')).toBe('unknown')
+    await subscribe(deps, subscriber('https://push.example/fan'))
+    expect(await sendTest(deps, 'https://push.example/fan')).toBe(201)
+    expect(deps.send).toHaveBeenLastCalledWith(expect.anything(), TEST)
+    expect(await sendTest(deps, 'https://push.example/fan')).toBe('wait')
+  })
+
+  test('status: counts and the last check, nothing about who', async () => {
+    await subscribe(deps, subscriber('https://push.example/fan'))
+    await tick(deps)
+    espn = jaxTouchdown()
+    await tick(deps)
+    const s = await status(deps)
+    expect(s).toMatchObject({
+      subscribers: 1,
+      last: { at: NOW, looked: true, leagues: ['nfl'], alerts: 1, sends: [201] },
+    })
+    expect(JSON.stringify(s)).not.toContain('push.example')
   })
 })

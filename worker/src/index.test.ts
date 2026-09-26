@@ -157,6 +157,26 @@ describe('push endpoints', () => {
     expect(stub.fetch).not.toHaveBeenCalled()
   })
 
+  test('the test alert returns the push service answer to the app', async () => {
+    const stub = { fetch: vi.fn(async () => Response.json({ push: 201 })) }
+    const e = { ALERTS: { idFromName: () => 'main', get: () => stub }, VAPID_PRIVATE_JWK: '{}' }
+    const res = await handle(
+      post('/push/test', { endpoint: 'https://web.push.apple.com/abc' }),
+      ok(),
+      e,
+    )
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ push: 201 })
+  })
+
+  test('status is public and never cached', async () => {
+    const stub = { fetch: vi.fn(async () => Response.json({ subscribers: 1 })) }
+    const e = { ALERTS: { idFromName: () => 'main', get: () => stub }, VAPID_PRIVATE_JWK: '{}' }
+    const res = await handle(get('/push/status'), ok(), e)
+    expect(await res.json()).toEqual({ subscribers: 1 })
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
+  })
+
   test('the preflight allows POST with a JSON body', async () => {
     const res = await handle(get('/push/subscribe', 'https://moudlajs.github.io', 'OPTIONS'))
     expect(res.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')

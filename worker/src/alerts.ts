@@ -15,14 +15,28 @@ export type Storage = {
 
 export type PushSubscriptionJSON = { endpoint: string; keys: { p256dh: string; auth: string } }
 export type Subscriber = { subscription: PushSubscriptionJSON; prefs: Prefs }
+/** What a notification shows; the tag makes a newer one replace an older one. */
+export type Message = { title: string; body: string; tag: string }
+
+/** The last check, kept for GET /push/status: aggregates only, no subscriber data. */
+export type LastCheck = {
+  at: number
+  looked: boolean
+  leagues: League[]
+  alerts: number
+  /** The push services' HTTP statuses for this check's sends (0 = network error). */
+  sends: number[]
+}
 
 export type Deps = {
   storage: Storage
   /** ESPN's scoreboard (all FBS for college when a subscriber's team may be unranked). */
   scoreboard: (league: League, allFbs: boolean) => Promise<unknown>
-  /** Sends one alert; returns the push service's HTTP status. */
-  send: (subscription: PushSubscriptionJSON, alert: Alert) => Promise<number>
+  /** Sends one notification; returns the push service's HTTP status. */
+  send: (subscription: PushSubscriptionJSON, message: Message) => Promise<number>
   now: () => number
+  /** Runs work after the response has gone out (the Durable Object's waitUntil). */
+  background: (work: Promise<unknown>) => void
 }
 
 /** A cap that keeps the free plan free. */
@@ -40,25 +54,72 @@ async function keyFor(endpoint: string): Promise<string> {
   return `sub:${hex.slice(0, 32)}`
 }
 
-/** Adds or updates a subscriber. False when full. */
-export async function subscribe(deps: Deps, subscriber: Subscriber): Promise<boolean> {
+/** Shown once when a device turns alerts on: proof the whole way to its lock screen works. */
+export const WELCOME: Message = {
+  title: 'Alerts are on',
+  body: "You'll get the alerts you picked, even with covertwo closed.",
+  tag: 'welcome',
+}
+/** What the test button sends. */
+export const TEST: Message = {
+  title: 'Test alert',
+  body: 'This is how covertwo alerts look on this device.',
+  tag: 'test',
+}
+/** One test per device this often, at most. */
+const TEST_GAP_MS = 30_000
+
+/**
+ * Adds or updates a subscriber. A new one gets the welcome notification at
+ * once. `full` when the cap is reached.
+ */
+export async function subscribe(
+  deps: Deps,
+  subscriber: Subscriber,
+): Promise<'new' | 'updated' | 'full'> {
   const key = await keyFor(subscriber.subscription.endpoint)
   const existing = await deps.storage.get(key)
   if (!existing && (await deps.storage.list({ prefix: 'sub:' })).size >= MAX_SUBSCRIBERS)
-    return false
+    return 'full'
   await deps.storage.put(key, subscriber)
   await deps.storage.put('next', 0) // look now: the new subscriber may care about a live game
-  return true
+  if (existing) return 'updated'
+  // In the background: turning alerts on shouldn't wait for the push service.
+  deps.background(deps.send(subscriber.subscription, WELCOME).catch(() => 0))
+  return 'new'
+}
+
+/** Sends the test notification to a subscribed device: the push service's status, or why not. */
+export async function sendTest(deps: Deps, endpoint: string): Promise<number | 'unknown' | 'wait'> {
+  const key = await keyFor(endpoint)
+  const subscriber = await deps.storage.get<Subscriber>(key)
+  if (!subscriber) return 'unknown'
+  const last = (await deps.storage.get<number>(`test:${key}`)) ?? 0
+  if (deps.now() - last < TEST_GAP_MS) return 'wait'
+  await deps.storage.put(`test:${key}`, deps.now())
+  return deps.send(subscriber.subscription, TEST).catch(() => 0)
+}
+
+/** For GET /push/status: counts and the last check, nothing about who. */
+export async function status(deps: Deps) {
+  return {
+    subscribers: (await deps.storage.list({ prefix: 'sub:' })).size,
+    next: (await deps.storage.get<number>('next')) ?? 0,
+    last: (await deps.storage.get<LastCheck>('last')) ?? null,
+  }
 }
 
 export async function unsubscribe(deps: Deps, endpoint: string): Promise<void> {
-  await deps.storage.delete(await keyFor(endpoint))
+  const key = await keyFor(endpoint)
+  await deps.storage.delete(key)
+  await deps.storage.delete(`test:${key}`)
 }
 
 /** One minute's work: look at the leagues someone cares about and send what changed. */
 export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number }> {
   const now = deps.now()
   if (now < ((await deps.storage.get<number>('next')) ?? 0)) return { looked: false, sent: 0 }
+  const check: LastCheck = { at: now, looked: true, leagues: [], alerts: 0, sends: [] }
   const subscribers = await deps.storage.list<Subscriber>({ prefix: 'sub:' })
   const all = [...subscribers.values()]
   const needs: Record<League, boolean> = {
@@ -71,6 +132,7 @@ export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number 
   let next = now + QUIET_MS
   for (const league of ['nfl', 'ncaaf'] as const) {
     if (!needs[league]) continue
+    check.leagues.push(league)
     let games: Snap[]
     try {
       games = mapScoreboard(await deps.scoreboard(league, league === 'ncaaf' && allFbs)).map(snap)
@@ -95,12 +157,18 @@ export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number 
   for (const [key, subscriber] of subscribers)
     for (const alert of alerts) {
       if (!wants(subscriber.prefs, alert)) continue
-      const status = await deps.send(subscriber.subscription, alert).catch(() => 0)
+      const message = { title: alert.title, body: alert.body, tag: alert.gameId }
+      const status = await deps.send(subscriber.subscription, message).catch(() => 0)
+      check.sends.push(status)
       if (status === 404 || status === 410) {
         await deps.storage.delete(key) // unsubscribed or expired at the push service
+        await deps.storage.delete(`test:${key}`)
         break
       }
       if (status >= 200 && status < 300) sent++
     }
+  check.alerts = alerts.length
+  check.sends = check.sends.slice(0, 20)
+  await deps.storage.put('last', check)
   return { looked: true, sent }
 }
