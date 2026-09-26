@@ -1,6 +1,6 @@
 import { iconButton } from './iconButton'
 
-/** ☕ in the header: keep the screen on while games are live. Amber while on. */
+/** ☕ in the header: keep the screen on while covertwo is open. Amber while on. */
 export function KeepAwakeButton({
   value,
   onChange,
@@ -12,7 +12,7 @@ export function KeepAwakeButton({
     <button
       type="button"
       aria-pressed={value}
-      aria-label="Keep screen on during live games"
+      aria-label="Keep screen on while covertwo is open"
       onClick={() => onChange(!value)}
       className={iconButton(value)}
     >

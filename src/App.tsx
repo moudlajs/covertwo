@@ -85,8 +85,8 @@ export default function App() {
   // which with a college favourite includes games filtered out of Top 25; that
   // one keeps driving polling, this one drives the next-up card.
   const liveShown = games.some((g) => g.state === 'in')
-  // Only while a game on your board is live: the scoreboard on the table during the game.
-  useWakeLock(keepAwake && liveShown)
+  // While covertwo is open and in front (the browser lets go when you switch away).
+  useWakeLock(keepAwake)
   // The next-up card, the resting board and folding are about "now": current week only.
   const offDay = isCurrentWeek && !empty && isOffDay(games, now, mode)
   // A future playoff round: no team in it is known yet.
@@ -175,7 +175,7 @@ export default function App() {
                 value={keepAwake}
                 onChange={(on) => {
                   setKeepAwake(on)
-                  say(on ? 'Screen stays on while games are live' : 'Screen sleeps as usual')
+                  say(on ? 'Screen stays on while covertwo is open' : 'Screen sleeps as usual')
                 }}
               />
             )}
