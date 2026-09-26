@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/moudlajs/covertwo/compare/v1.24.0...v1.25.0) (2026-09-26)
+
+
+### Features
+
+* alerts panel and lock-screen notifications in the app ([#222](https://github.com/moudlajs/covertwo/issues/222)) ([751692d](https://github.com/moudlajs/covertwo/commit/751692d599fef891cc48a57a2dcb178ecda38584))
+
 ## [1.24.0](https://github.com/moudlajs/covertwo/compare/v1.23.1...v1.24.0) (2026-09-26)
 
 
