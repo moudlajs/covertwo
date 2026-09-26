@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, test, vi } from 'vitest'
-import { CACHE_SECONDS, handle } from './index'
+import { CACHE_SECONDS, handle, isPushService } from './index'
 
 const ok = () => vi.fn(async () => new Response('{"events":[]}', { status: 200 }))
 const get = (path: string, origin = 'https://moudlajs.github.io', method = 'GET') =>
@@ -78,4 +78,106 @@ describe('worker', () => {
     expect(res.status).toBe(502)
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://moudlajs.github.io')
   })
+})
+
+describe('push endpoints', () => {
+  const valid = {
+    subscription: {
+      endpoint: 'https://web.push.apple.com/abc',
+      keys: { p256dh: 'BMw4ryOGue1hP3_wEq_Yi22GCbF8W4X0j', auth: 'tBHItJI5svbpez7KI4CCXg' },
+    },
+    prefs: {
+      teams: { nfl: '33', ncaaf: null },
+      scores: true,
+      kickoffFinal: false,
+      close: true,
+      upsets: false,
+    },
+  }
+  const env = () => {
+    const stub = { fetch: vi.fn(async () => new Response(null, { status: 204 })) }
+    return {
+      stub,
+      env: { ALERTS: { idFromName: () => 'main', get: () => stub }, VAPID_PRIVATE_JWK: '{}' },
+    }
+  }
+  const post = (path: string, body: unknown, origin = 'https://moudlajs.github.io') =>
+    new Request(`https://covertwo-api.example.workers.dev${path}`, {
+      method: 'POST',
+      headers: { Origin: origin, 'Content-Type': 'application/json' },
+      body: typeof body === 'string' ? body : JSON.stringify(body),
+    })
+
+  test('a valid subscription goes to the Alerts object', async () => {
+    const { stub, env: e } = env()
+    const res = await handle(post('/push/subscribe', valid), ok(), e)
+    expect(res.status).toBe(204)
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('https://moudlajs.github.io')
+    expect(stub.fetch).toHaveBeenCalledWith('https://alerts/subscribe', {
+      method: 'POST',
+      body: JSON.stringify(valid),
+    })
+  })
+
+  test('unsubscribe with an endpoint', async () => {
+    const { stub, env: e } = env()
+    const res = await handle(
+      post('/push/unsubscribe', { endpoint: 'https://web.push.apple.com/abc' }),
+      ok(),
+      e,
+    )
+    expect(res.status).toBe(204)
+    expect(stub.fetch).toHaveBeenCalledWith('https://alerts/unsubscribe', expect.anything())
+  })
+
+  test('other sites may not subscribe', async () => {
+    const { stub, env: e } = env()
+    const res = await handle(post('/push/subscribe', valid, 'https://evil.example'), ok(), e)
+    expect(res.status).toBe(403)
+    expect(stub.fetch).not.toHaveBeenCalled()
+  })
+
+  test('bad bodies are refused before storage', async () => {
+    const { stub, env: e } = env()
+    const bad = [
+      'not json',
+      { ...valid, subscription: { ...valid.subscription, endpoint: 'http://insecure.example' } },
+      {
+        ...valid,
+        subscription: { ...valid.subscription, endpoint: 'https://attacker.example/hook' },
+      },
+      { ...valid, prefs: { ...valid.prefs, scores: 'yes' } },
+      { ...valid, prefs: { ...valid.prefs, teams: { nfl: 'DROP TABLE', ncaaf: null } } },
+      'x'.repeat(5000),
+    ]
+    for (const body of bad)
+      expect((await handle(post('/push/subscribe', body), ok(), e)).status).toBeGreaterThanOrEqual(
+        400,
+      )
+    expect(stub.fetch).not.toHaveBeenCalled()
+  })
+
+  test('the preflight allows POST with a JSON body', async () => {
+    const res = await handle(get('/push/subscribe', 'https://moudlajs.github.io', 'OPTIONS'))
+    expect(res.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')
+    expect(res.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type')
+  })
+})
+
+test('only real push services may be endpoints', () => {
+  for (const ok of [
+    'https://web.push.apple.com/QGuQyavXutnMH',
+    'https://fcm.googleapis.com/fcm/send/dAPT',
+    'https://updates.push.services.mozilla.com/wpush/v2/gAAA',
+    'https://wns2-par02p.notify.windows.com/w/?token=x',
+  ])
+    expect(isPushService(ok)).toBe(true)
+  for (const bad of [
+    'https://attacker.example/hook',
+    'http://web.push.apple.com/x',
+    'https://web.push.apple.com.attacker.example/x',
+    'https://fcm.googleapis.com@attacker.example/x',
+    'not a url',
+  ])
+    expect(isPushService(bad)).toBe(false)
 })

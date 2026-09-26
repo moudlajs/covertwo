@@ -16,6 +16,7 @@
     "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
+    "@pushforge/builder": "^2.0.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

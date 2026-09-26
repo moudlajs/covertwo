@@ -75,6 +75,16 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
   the logos. A saved copy carries `x-covertwo-saved-at`; `useScoreboard` then
   reports `offline` and the footer shows it. Production builds only; e2e
   blocks the worker except in `offline.spec.ts` (Chromium only).
+- Lock-screen alerts (#69, approved 2026-09-26): the Worker also takes push
+  subscriptions (`POST /push/subscribe`, `/push/unsubscribe`; app origins only,
+  bodies validated) and a cron runs every minute. The `Alerts` Durable Object
+  (SQLite-backed key-value storage, free plan) keeps subscribers and the last
+  look at each league. It fetches ESPN only when games are live or kicking
+  off within 15 minutes, diffs the games (`worker/src/events.ts`: touchdown,
+  field goal, kickoff, final, close finish, college upset) and sends with
+  `@pushforge/builder`, signed by `VAPID_PRIVATE_JWK` (GitHub and Worker
+  secret, never in the repo). ESPN team ids overlap across leagues, so alerts
+  carry their league.
 - **Tests never hit the real API.** Unit tests import the fixture; e2e uses
   `e2e/mock-espn.ts`, which also stubs logos and aborts any other ESPN URL.
 
@@ -140,6 +150,6 @@ issue.
 ## Out of scope
 
 - Fantasy / Sleeper features of any kind (that lives in waiverwatch).
-- Any backend beyond the proxy Worker. Ask before adding server features.
-- Server push notifications (needs a Worker; backlog).
+- Any backend beyond the Worker (proxy + lock-screen alerts). Ask before adding
+  server features.
 - The NFL shield or other league trademarks in the UI.
