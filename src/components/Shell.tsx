@@ -13,6 +13,7 @@ export function Shell({
   view,
   controls,
   footer,
+  toast,
   children,
 }: {
   /** Show the DEMO badge next to the title. */
@@ -23,6 +24,8 @@ export function Shell({
   view?: ReactNode
   controls?: ReactNode
   footer?: ReactNode
+  /** Shown just above the footer (the Toast). */
+  toast?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -57,6 +60,7 @@ export function Shell({
         {footer && (
           <footer className="sticky bottom-0 z-20 flex justify-between rounded-b-xl border-t border-slate-800 bg-slate-900 px-3 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] font-mono text-[10px] text-slate-500 app:rounded-none">
             {footer}
+            {toast}
           </footer>
         )}
       </div>

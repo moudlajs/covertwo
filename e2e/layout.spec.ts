@@ -26,32 +26,27 @@ test('page never scrolls horizontally', async ({ page }) => {
   expect(overflow).toBe(0)
 })
 
-test('open menu stays inside the viewport', async ({ page }) => {
-  await page.getByRole('button', { name: 'Menu' }).click()
-  const link = page.getByRole('link', { name: 'Source on GitHub' })
-  await expect(link).toBeVisible()
-  const box = await link.boundingBox()
-  const viewport = page.viewportSize()
-  if (!box || !viewport) throw new Error('no layout')
-  expect(box.x).toBeGreaterThanOrEqual(0)
-  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width)
+test('the header fits a 360px phone, demo badge included', async ({ page }, info) => {
+  test.skip(info.project.name !== 'mobile', 'phone layout')
+  await page.setViewportSize({ width: 360, height: 780 })
+  await page.goto('./?demo')
+  await expect(page.getByText('DEMO', { exact: true })).toBeVisible()
+  const header = page.getByRole('banner')
+  const fits = await header.evaluate((el) => el.scrollWidth <= el.clientWidth)
+  expect(fits).toBe(true)
+  // EU/US ends the row, inside the screen.
+  const zone = await page.getByRole('group', { name: 'Time zone' }).boundingBox()
+  if (!zone) throw new Error('no time zone toggle')
+  expect(zone.x + zone.width).toBeLessThanOrEqual(360)
 })
 
-test('menu is not clipped by the panel while it is still loading', async ({ page }) => {
-  await page.route(SCOREBOARD_API, () => {}) // never answers: stays in the loading state
-  await page.reload()
-  await expect(page.getByTestId('skeleton')).toBeVisible()
-  await page.getByRole('button', { name: 'Menu' }).click()
-  const dropdown = page.getByRole('link', { name: 'Source on GitHub' }).locator('..')
-  const box = await dropdown.boundingBox()
-  if (!box) throw new Error('no dropdown box')
-  // Just inside the dropdown's bottom edge: if an ancestor clips it, the
-  // topmost element there belongs to something else.
-  const inside = await dropdown.evaluate(
-    (el, [x, y]) => el.contains(document.elementFromPoint(x, y)),
-    [box.x + 8, box.y + box.height - 0.5] as const,
+test('the footer has the version and a link to the source', async ({ page }) => {
+  const footer = page.getByRole('contentinfo')
+  await expect(footer).toContainText(/v\d+\.\d+\.\d+|vdev/)
+  await expect(footer.getByRole('link', { name: 'source' })).toHaveAttribute(
+    'href',
+    'https://github.com/moudlajs/covertwo',
   )
-  expect(inside).toBe(true)
 })
 
 test('a short week keeps a short panel pinned at the top', async ({ page }) => {
@@ -106,4 +101,20 @@ test('day headings stick just under the pinned header', async ({ page }) => {
   const block = await page.getByTestId('pinned-header').boundingBox()
   const heading = await sunday.boundingBox()
   expect(heading?.y).toBe((block?.y ?? 0) + (block?.height ?? 0))
+})
+
+test('on a short week the status message sits right above the footer', async ({ page }) => {
+  await page.route(SCOREBOARD_API, (route) =>
+    route.fulfill({ json: { ...scoreboard, events: scoreboard.events.slice(0, 1) } }),
+  )
+  await page.reload()
+  await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(1)
+  await page.getByLabel('Favourite team').selectOption({ label: 'Dallas Cowboys' })
+  const toast = page.getByTestId('toast').getByText('Dallas Cowboys pinned to the top')
+  await expect(toast).toBeVisible()
+  const t = await toast.boundingBox()
+  const f = await page.getByRole('contentinfo').boundingBox()
+  if (!t || !f) throw new Error('no layout')
+  expect(t.y + t.height).toBeLessThanOrEqual(f.y)
+  expect(f.y - (t.y + t.height)).toBeLessThan(16)
 })

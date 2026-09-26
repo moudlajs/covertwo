@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { LoadError } from './components/LoadError'
-import { Menu } from './components/Menu'
 import { Retrying } from './components/Retrying'
 import { ScoreList } from './components/ScoreList'
 import { Segmented } from './components/Segmented'
@@ -12,8 +11,9 @@ import { useLeague } from './data/useLeague'
 import { useNcaaView } from './data/useNcaaView'
 import { useFavorites } from './data/useFavorites'
 import { FBS_TEAMS, NFL_TEAMS } from './data/teams'
-import { FavoriteSelect } from './components/FavoriteSelect'
-import { KeepAwakeToggle } from './components/KeepAwakeToggle'
+import { FavoriteButton } from './components/FavoriteButton'
+import { KeepAwakeButton } from './components/KeepAwakeButton'
+import { Toast } from './components/Toast'
 import { useKeepAwake, useWakeLock, wakeLockSupported } from './lib/useWakeLock'
 import { useScoreboard } from './data/useScoreboard'
 import { useScoreChanges } from './data/useScoreChanges'
@@ -44,6 +44,9 @@ export default function App() {
   const board = useScoreboard(scoreboardUrl(league, ncaaView, collegeFavorite !== null, week))
   const { status, lastUpdated, live, retry } = board
   const [keepAwake, setKeepAwake] = useKeepAwake()
+  // A one-line message saying what a header tap did.
+  const [toast, setToast] = useState<{ text: string; id: number } | null>(null)
+  const say = (text: string) => setToast((t) => ({ text, id: (t?.id ?? 0) + 1 }))
   // Memoized: useScoreChanges detects new data by array identity.
   const games = useMemo(
     () =>
@@ -132,9 +135,18 @@ export default function App() {
             )}
           </div>
         }
+        toast={<Toast message={toast} />}
         footer={
           <>
-            <span>ESPN</span>
+            <span>
+              ESPN · v{__APP_VERSION__} ·{' '}
+              <a
+                href="https://github.com/moudlajs/covertwo"
+                className="underline decoration-slate-600 underline-offset-2 hover:text-slate-300"
+              >
+                source
+              </a>
+            </span>
             {/* Always mounted so screen readers announce score changes. */}
             <span aria-live="polite" className="sr-only">
               {changes.announcement}
@@ -148,6 +160,25 @@ export default function App() {
         }
         controls={
           <>
+            <FavoriteButton
+              teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
+              value={favorite}
+              onChange={(f) => {
+                setFavorite(league, f)
+                say(f ? `${f.name} pinned to the top` : 'No team pinned')
+              }}
+            />
+            {wakeLockSupported() && (
+              <KeepAwakeButton
+                value={keepAwake}
+                onChange={(on) => {
+                  setKeepAwake(on)
+                  say(on ? 'Screen stays on while games are live' : 'Screen sleeps as usual')
+                }}
+              />
+            )}
+            <ThemeToggle theme={theme} onChange={setTheme} />
+            <span aria-hidden="true" className="mx-0.5 h-5 w-px bg-slate-700" />
             <Segmented
               label="Time zone"
               name="time-mode"
@@ -158,15 +189,6 @@ export default function App() {
                 { value: 'us', label: 'US' },
               ]}
             />
-            <ThemeToggle theme={theme} onChange={setTheme} />
-            <Menu>
-              <FavoriteSelect
-                teams={league === 'nfl' ? NFL_TEAMS : FBS_TEAMS}
-                value={favorite}
-                onChange={(f) => setFavorite(league, f)}
-              />
-              {wakeLockSupported() && <KeepAwakeToggle value={keepAwake} onChange={setKeepAwake} />}
-            </Menu>
           </>
         }
       >
