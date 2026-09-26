@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/moudlajs/covertwo/compare/v1.22.0...v1.23.0) (2026-09-26)
+
+
+### Features
+
+* header icons instead of the menu; EU/US at the far right ([#214](https://github.com/moudlajs/covertwo/issues/214)) ([58ad076](https://github.com/moudlajs/covertwo/commit/58ad07643fdb957f0c2b2df5305351ab9d915f52))
+
 ## [1.22.0](https://github.com/moudlajs/covertwo/compare/v1.21.3...v1.22.0) (2026-09-26)
 
 
