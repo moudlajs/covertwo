@@ -4,7 +4,7 @@ import { usePersistedChoice } from './usePersistedChoice'
 /** Screen Wake Lock exists here (not in every browser, e.g. older Safari). */
 export const wakeLockSupported = () => typeof navigator !== 'undefined' && 'wakeLock' in navigator
 
-/** The "keep the screen on during live games" setting: off by default, persisted. */
+/** The "keep the screen on while covertwo is open" setting: off by default, persisted. */
 export function useKeepAwake() {
   const [value, setValue] = usePersistedChoice('covertwo:keep-awake', ['on', 'off'] as const, 'off')
   return [value === 'on', (on: boolean) => setValue(on ? 'on' : 'off')] as const

@@ -6,7 +6,7 @@ import { KeepAwakeButton } from './KeepAwakeButton'
 test('a toggle button that says whether it is on', async () => {
   const onChange = vi.fn()
   const { rerender } = render(<KeepAwakeButton value={false} onChange={onChange} />)
-  const button = screen.getByRole('button', { name: 'Keep screen on during live games' })
+  const button = screen.getByRole('button', { name: 'Keep screen on while covertwo is open' })
   expect(button).toHaveAttribute('aria-pressed', 'false')
   await userEvent.click(button)
   expect(onChange).toHaveBeenCalledWith(true)
