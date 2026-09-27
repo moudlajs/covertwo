@@ -14,6 +14,7 @@ import {
   type Deps,
   type Message,
   type PushSubscriptionJSON,
+  type SendResult,
   type Storage,
   type Subscriber,
 } from './alerts'
@@ -204,12 +205,29 @@ export async function handle(
   }
 }
 
+/**
+ * Why a push service refused a notification, as a short word only: Apple and
+ * Google send JSON like {"reason":"Unregistered"}. The raw body is never kept,
+ * since it's shown on the public status page and could echo device data.
+ */
+export async function refusal(res: Response): Promise<string | null> {
+  if (res.ok) return null
+  try {
+    const reason: unknown = JSON.parse(await res.text()).reason
+    return typeof reason === 'string' && /^[A-Za-z][A-Za-z0-9 _.-]{0,59}$/.test(reason)
+      ? reason
+      : null
+  } catch {
+    return null
+  }
+}
+
 /** Sends one notification through the device's push service, signed with our VAPID key. */
 async function send(
   jwk: string,
   subscription: PushSubscriptionJSON,
   message: Message,
-): Promise<number> {
+): Promise<SendResult> {
   const { endpoint, headers, body } = await buildPushHTTPRequest({
     privateJWK: jwk,
     subscription,
@@ -221,9 +239,13 @@ async function send(
     },
   })
   // A slow push service mustn't hold up the watcher or the test button.
-  return (
-    await fetch(endpoint, { method: 'POST', headers, body, signal: AbortSignal.timeout(10_000) })
-  ).status
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body,
+    signal: AbortSignal.timeout(10_000),
+  })
+  return { status: res.status, reason: await refusal(res) }
 }
 
 /** ESPN's scoreboard for the watcher, through the same short edge cache. */

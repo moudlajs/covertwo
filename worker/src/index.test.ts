@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, test, vi } from 'vitest'
-import { CACHE_SECONDS, handle, isPushService } from './index'
+import { CACHE_SECONDS, handle, isPushService, refusal } from './index'
 
 const ok = () => vi.fn(async () => new Response('{"events":[]}', { status: 200 }))
 const get = (path: string, origin = 'https://moudlajs.github.io', method = 'GET') =>
@@ -200,4 +200,14 @@ test('only real push services may be endpoints', () => {
     'not a url',
   ])
     expect(isPushService(bad)).toBe(false)
+})
+
+test("a push service's refusal: its reason word only, never raw text", async () => {
+  const refused = (body: string | null, status = 410) => refusal(new Response(body, { status }))
+  expect(await refused('{"reason":"Unregistered"}')).toBe('Unregistered')
+  expect(await refused('{"reason":"BadDeviceToken"}', 400)).toBe('BadDeviceToken')
+  expect(await refused(null)).toBeNull() // no body
+  expect(await refused('gateway error for https://web.push.apple.com/abc')).toBeNull() // not JSON
+  expect(await refused('{"reason":"see https://web.push.apple.com/abc"}')).toBeNull() // not a word
+  expect(await refused('{"reason":"Unregistered"}', 201)).toBeNull() // success
 })
