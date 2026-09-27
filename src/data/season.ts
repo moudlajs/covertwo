@@ -22,8 +22,8 @@ type EspnCalendar = {
 }
 
 /**
- * ESPN's short label, with "Week" always in full ("Pre Wk 1" → "Pre Week 1"):
- * it fits the week picker even on a 360px phone.
+ * ESPN's short label, with "Week" in full ("Pre Wk 1" → "Pre Week 1"). The
+ * week picker shortens it back to "Wk" only on phones under 375px wide.
  */
 function shorten(label: string): string {
   return label.replace(/\bWk\b/, 'Week')
