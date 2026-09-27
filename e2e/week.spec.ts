@@ -82,3 +82,28 @@ test('a playoff round without matchups shows one card, not TBD rows', async ({ p
     'SoFi Stadium · Inglewood, CA',
   )
 })
+
+for (const [width, label] of [
+  [393, 'Week 2'],
+  [360, 'Wk 2'],
+] as const) {
+  test(`the week label reads "${label}" at ${width}px and never wraps`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'mobile', 'phone layout')
+    await mockEspn(page)
+    await page.setViewportSize({ width, height: 780 })
+    await page.goto('./')
+    const row = page.getByTestId('pinned-header').locator(':scope > div').last()
+    // What's visible (innerText skips the hidden letters).
+    const visible = await row.evaluate((el) => (el as HTMLElement).innerText.replace(/\s+/g, ' '))
+    expect(visible).toContain(label)
+    // College has the most in this row: nothing in it may wrap.
+    await page.getByText('NCAA', { exact: true }).click()
+    await expect(page.getByRole('group', { name: 'College games' })).toBeVisible()
+    const wrapped = await row.evaluate((el) =>
+      [...el.querySelectorAll('span, label')]
+        .filter((e) => e.getClientRects().length > 1)
+        .map((e) => e.textContent),
+    )
+    expect(wrapped).toEqual([])
+  })
+}

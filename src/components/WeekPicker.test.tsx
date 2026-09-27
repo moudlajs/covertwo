@@ -27,7 +27,7 @@ test('arrows are disabled at the ends of the season', () => {
 test('the list jumps to any week, grouped, with this week marked', async () => {
   const onChange = vi.fn()
   render(<WeekPicker season={season} value="2:2" onChange={onChange} />)
-  expect(screen.getByRole('option', { name: 'Wk 2 (this week)' })).toBeInTheDocument()
+  expect(screen.getByRole('option', { name: 'Week 2 (this week)' })).toBeInTheDocument()
   expect(screen.getByRole('group', { name: 'Postseason' })).toBeInTheDocument()
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Week' }), 'Super Bowl')
   expect(onChange).toHaveBeenLastCalledWith('3:5')
@@ -38,7 +38,7 @@ test('shows the short label; amber when not on the current week', () => {
     <WeekPicker season={season} value="2:2" onChange={vi.fn()} />,
   )
   const label = container.querySelector('span[aria-hidden="true"]')
-  expect(label).toHaveTextContent(/^Wk 2$/)
+  expect(label).toHaveTextContent(/^Week 2$/)
   expect(label).not.toHaveClass('text-amber-300')
   rerender(<WeekPicker season={season} value="2:5" onChange={vi.fn()} />)
   expect(container.querySelector('span[aria-hidden="true"]')).toHaveClass('text-amber-300')

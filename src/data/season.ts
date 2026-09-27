@@ -21,9 +21,12 @@ type EspnCalendar = {
   week?: { number?: number }
 }
 
-/** "Week 3" → "Wk 3" so the stepper stays narrow on phones; other labels as ESPN gives them. */
+/**
+ * ESPN's short label, with "Week" always in full ("Pre Wk 1" → "Pre Week 1"):
+ * it fits the week picker even on a 360px phone.
+ */
 function shorten(label: string): string {
-  return label.replace(/^Week (\d+)$/, 'Wk $1')
+  return label.replace(/\bWk\b/, 'Week')
 }
 
 /** The season calendar and this response's week, or null when ESPN sends none. */
