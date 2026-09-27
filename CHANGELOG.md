@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.2](https://github.com/moudlajs/covertwo/compare/v1.26.1...v1.26.2) (2026-09-27)
+
+
+### Bug Fixes
+
+* record why the watcher drops a subscription ([#231](https://github.com/moudlajs/covertwo/issues/231)) ([615fcc4](https://github.com/moudlajs/covertwo/commit/615fcc4867a698813f6fefa3f2d9303c50de1442))
+
 ## [1.26.1](https://github.com/moudlajs/covertwo/compare/v1.26.0...v1.26.1) (2026-09-26)
 
 
