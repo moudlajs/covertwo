@@ -5,7 +5,21 @@ const ARROW =
   'grid size-6 place-items-center rounded text-slate-400 hover:bg-slate-800 hover:text-slate-100 disabled:opacity-30 disabled:hover:bg-transparent focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:outline-none'
 
 /**
- * "‹ Wk 3 ›": step one week, or pick any week from the native list (grouped
+ * "Week 3", or "Wk 3" on phones narrower than 375px: there the college row
+ * (league, week, Top 25 / All FBS) has no room for the full word.
+ */
+function Label({ text }: { text: string }) {
+  const at = text.indexOf('Week')
+  if (at < 0) return text
+  return (
+    <>
+      {text.slice(0, at)}W<span className="max-[374px]:hidden">ee</span>k{text.slice(at + 4)}
+    </>
+  )
+}
+
+/**
+ * "‹ Week 3 ›": step one week, or pick any week from the native list (grouped
  * by preseason / regular season / postseason). The label turns amber when
  * the shown week isn't the current one. Tells the parent the chosen week id,
  * "seasonType:week".
@@ -40,9 +54,9 @@ export function WeekPicker({
       <div className="relative rounded has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-amber-200">
         <span
           aria-hidden="true"
-          className={`block px-1.5 py-0.5 text-center ${value === season.current ? 'text-slate-200' : 'text-amber-300'}`}
+          className={`block px-1.5 py-0.5 text-center whitespace-nowrap ${value === season.current ? 'text-slate-200' : 'text-amber-300'}`}
         >
-          {shown?.short ?? '?'}
+          <Label text={shown?.short ?? '?'} />
         </span>
         <select
           aria-label="Week"
