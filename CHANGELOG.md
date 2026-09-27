@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.0](https://github.com/moudlajs/covertwo/compare/v1.26.2...v1.27.0) (2026-09-27)
+
+
+### Features
+
+* link preview card for shared links ([#233](https://github.com/moudlajs/covertwo/issues/233)) ([20fc4af](https://github.com/moudlajs/covertwo/commit/20fc4af9b67a45b918fbf0f53d748b926d148085))
+
 ## [1.26.2](https://github.com/moudlajs/covertwo/compare/v1.26.1...v1.26.2) (2026-09-27)
 
 
