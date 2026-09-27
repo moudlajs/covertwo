@@ -205,6 +205,15 @@ export async function handle(
   }
 }
 
+/**
+ * Why a push service refused a notification: Apple and Google explain it in
+ * the body (e.g. {"reason":"Unregistered"}). Null for a success or an empty body.
+ */
+export async function refusal(res: Response): Promise<string | null> {
+  if (res.ok) return null
+  return (await res.text().catch(() => '')).slice(0, 200) || null
+}
+
 /** Sends one notification through the device's push service, signed with our VAPID key. */
 async function send(
   jwk: string,
@@ -228,9 +237,7 @@ async function send(
     body,
     signal: AbortSignal.timeout(10_000),
   })
-  // Apple and Google explain refusals in the body (e.g. {"reason":"Unregistered"}).
-  const reason = res.ok ? null : (await res.text().catch(() => '')).slice(0, 200) || null
-  return { status: res.status, reason }
+  return { status: res.status, reason: await refusal(res) }
 }
 
 /** ESPN's scoreboard for the watcher, through the same short edge cache. */

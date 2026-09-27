@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, test, vi } from 'vitest'
-import { CACHE_SECONDS, handle, isPushService } from './index'
+import { CACHE_SECONDS, handle, isPushService, refusal } from './index'
 
 const ok = () => vi.fn(async () => new Response('{"events":[]}', { status: 200 }))
 const get = (path: string, origin = 'https://moudlajs.github.io', method = 'GET') =>
@@ -200,4 +200,13 @@ test('only real push services may be endpoints', () => {
     'not a url',
   ])
     expect(isPushService(bad)).toBe(false)
+})
+
+test("a push service's refusal reason, from its answer", async () => {
+  expect(await refusal(new Response('{"reason":"Unregistered"}', { status: 410 }))).toBe(
+    '{"reason":"Unregistered"}',
+  )
+  expect(await refusal(new Response(null, { status: 410 }))).toBeNull() // no body: null, not ''
+  expect(await refusal(new Response('ok, queued', { status: 201 }))).toBeNull() // success: null
+  expect(await refusal(new Response('x'.repeat(500), { status: 400 }))).toHaveLength(200)
 })
