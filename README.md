@@ -5,36 +5,65 @@
 [![Deploy](https://img.shields.io/github/deployments/moudlajs/covertwo/github-pages?label=deploy)](https://github.com/moudlajs/covertwo/deployments/github-pages)
 [![License: MIT](https://img.shields.io/github/license/moudlajs/covertwo)](LICENSE)
 
-A small, modest NFL live scoreboard. One compact row per game, grouped by
-day, with a Europe/US time toggle. A widget, not a website.
+A calm NFL and college football scoreboard. One compact row per game,
+grouped by day, in European or US time. No ads, no account, no video: just
+the scores, a widget rather than a website.
 
-**Live:** https://moudlajs.github.io/covertwo/
+**Live:** https://moudlajs.github.io/covertwo/ (or [`?demo`](https://moudlajs.github.io/covertwo/?demo) for a Sunday frozen mid-game)
 
-<img src="docs/screenshot.png" alt="covertwo showing a week of NFL games grouped by day, with kickoff times in Prague time" width="560">
+<img src="docs/screenshot.png" alt="covertwo in dark mode: a week of NFL games grouped by day, with live games showing down and distance, and the favourite team pinned on top" width="560">
+
+<p>
+  <img src="docs/screenshot-alerts.png" alt="covertwo on a phone with the alerts panel open: switches for your team's scores, kickoff and final, close finishes and college upsets" width="270">
+  <img src="docs/screenshot-light.png" alt="covertwo on a phone in the light theme" width="270">
+</p>
+
+## What it does
+
+- **NFL and college**: college as the Top 25 or all FBS games; any week of the
+  season, including the playoff rounds before their matchups are set.
+- **Live detail, kept calm**: the score, clock, down and distance, red zone and
+  possession in the row; tap a game for quarters, leaders and the last play.
+- **Your team** (★) pinned to the top and highlighted; every team's logo glows
+  in its own colours.
+- **Lock-screen alerts** (🔔), even with covertwo closed: your team's scores,
+  kickoff and final, close finishes, college upsets. Each one is optional.
+- **An app on your phone**: add it to the home screen for the full-screen app,
+  keep the screen on (☕) while it's open, and see the last scores offline.
+- **Light and dark** themes (☀), EU or US time.
 
 ## Architecture
 
-A static site on GitHub Pages plus one tiny Cloudflare Worker. ESPN's API
-rejects browser requests from other sites, so the Worker fetches it
-server-side, caches it for ~15s and adds CORS headers.
+A static site on GitHub Pages plus one small Cloudflare Worker on the free
+plan. ESPN's API rejects browser requests from other sites, so the Worker
+fetches it server-side, caches it for ~15s (every visitor shares one upstream
+request) and adds CORS headers. The same Worker runs the lock-screen alerts:
+a cron every minute has one Durable Object look at the games that matter, spot
+touchdowns, finals and close finishes, and send them through the phones' push
+services.
 
 ```mermaid
 flowchart LR
   subgraph Browser
-    App[covertwo<br/>React SPA]
-    LS[(localStorage<br/>time mode)]
+    App[covertwo<br/>React PWA]
+    SW[service worker<br/>offline + alerts]
   end
-  Worker[Cloudflare Worker<br/>proxy + 15s cache]
-  ESPN[ESPN scoreboard API<br/>site.api.espn.com]
-  CDN[ESPN CDN<br/>team logos]
+  subgraph Worker[Cloudflare Worker]
+    Proxy[proxy<br/>15s cache]
+    Alerts[(Alerts<br/>Durable Object)]
+    Cron((cron<br/>every minute))
+  end
+  ESPN[ESPN scoreboard API]
+  Push[Apple / Google<br/>push services]
   subgraph GitHub
     Repo[main branch] --> Actions[GitHub Actions] --> Pages[GitHub Pages]
   end
   Pages -- static files --> App
-  App -- "GET /nfl/scoreboard<br/>(30s while live)" --> Worker
-  Worker --> ESPN
-  App -- img --> CDN
-  App <--> LS
+  App -- "scoreboard<br/>(30s while live)" --> Proxy --> ESPN
+  App -- "subscribe / choices" --> Alerts
+  Cron --> Alerts -- "only while games are on" --> ESPN
+  Alerts -- "touchdown, final, …" --> Push --> SW
+  App <--> SW
 ```
 
 ## Development workflow
@@ -112,6 +141,12 @@ To redeploy without a release, run the **Deploy** workflow manually.
 
 See the [milestones](https://github.com/moudlajs/covertwo/milestones).
 Contributing rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Not affiliated
+
+covertwo is a hobby project, not affiliated with the NFL, the NCAA, ESPN or
+any team. Scores come from ESPN's public scoreboard; team names and logos
+belong to their owners.
 
 ## License
 
