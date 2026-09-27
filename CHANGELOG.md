@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.27.1](https://github.com/moudlajs/covertwo/compare/v1.27.0...v1.27.1) (2026-09-27)
+
+
+### Bug Fixes
+
+* write Week in full in the week picker ([#239](https://github.com/moudlajs/covertwo/issues/239)) ([c4fef35](https://github.com/moudlajs/covertwo/commit/c4fef35e9e4769da537743a96e3042b8fe29f640))
+
+
+### Documentation
+
+* README for launch: screenshots, features, alerts in the architecture ([#236](https://github.com/moudlajs/covertwo/issues/236)) ([19be684](https://github.com/moudlajs/covertwo/commit/19be684ea9b5c5ddbe83a6952754801104b7c92c))
+
 ## [1.27.0](https://github.com/moudlajs/covertwo/compare/v1.26.2...v1.27.0) (2026-09-27)
 
 
