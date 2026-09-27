@@ -206,12 +206,20 @@ export async function handle(
 }
 
 /**
- * Why a push service refused a notification: Apple and Google explain it in
- * the body (e.g. {"reason":"Unregistered"}). Null for a success or an empty body.
+ * Why a push service refused a notification, as a short word only: Apple and
+ * Google send JSON like {"reason":"Unregistered"}. The raw body is never kept,
+ * since it's shown on the public status page and could echo device data.
  */
 export async function refusal(res: Response): Promise<string | null> {
   if (res.ok) return null
-  return (await res.text().catch(() => '')).slice(0, 200) || null
+  try {
+    const reason: unknown = JSON.parse(await res.text()).reason
+    return typeof reason === 'string' && /^[A-Za-z][A-Za-z0-9 _.-]{0,59}$/.test(reason)
+      ? reason
+      : null
+  } catch {
+    return null
+  }
 }
 
 /** Sends one notification through the device's push service, signed with our VAPID key. */

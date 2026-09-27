@@ -105,13 +105,13 @@ describe('alerts', () => {
   test('a subscription the push service says is gone is removed', async () => {
     await subscribe(deps, subscriber('https://push.example/fan'))
     await tick(deps)
-    deps.send = vi.fn(async () => ({ status: 410, reason: '{"reason":"Unregistered"}' }))
+    deps.send = vi.fn(async () => ({ status: 410, reason: 'Unregistered' }))
     espn = jaxTouchdown()
     await tick(deps)
     expect((await storage.list({ prefix: 'sub:' })).size).toBe(0)
     // Logged for the status page, with the push service's reason.
     expect((await status(deps)).removals).toEqual([
-      { at: NOW, status: 410, reason: '{"reason":"Unregistered"}' },
+      { at: NOW, status: 410, reason: 'Unregistered' },
     ])
   })
 

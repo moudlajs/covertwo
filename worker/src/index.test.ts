@@ -202,11 +202,12 @@ test('only real push services may be endpoints', () => {
     expect(isPushService(bad)).toBe(false)
 })
 
-test("a push service's refusal reason, from its answer", async () => {
-  expect(await refusal(new Response('{"reason":"Unregistered"}', { status: 410 }))).toBe(
-    '{"reason":"Unregistered"}',
-  )
-  expect(await refusal(new Response(null, { status: 410 }))).toBeNull() // no body: null, not ''
-  expect(await refusal(new Response('ok, queued', { status: 201 }))).toBeNull() // success: null
-  expect(await refusal(new Response('x'.repeat(500), { status: 400 }))).toHaveLength(200)
+test("a push service's refusal: its reason word only, never raw text", async () => {
+  const refused = (body: string | null, status = 410) => refusal(new Response(body, { status }))
+  expect(await refused('{"reason":"Unregistered"}')).toBe('Unregistered')
+  expect(await refused('{"reason":"BadDeviceToken"}', 400)).toBe('BadDeviceToken')
+  expect(await refused(null)).toBeNull() // no body
+  expect(await refused('gateway error for https://web.push.apple.com/abc')).toBeNull() // not JSON
+  expect(await refused('{"reason":"see https://web.push.apple.com/abc"}')).toBeNull() // not a word
+  expect(await refused('{"reason":"Unregistered"}', 201)).toBeNull() // success
 })
