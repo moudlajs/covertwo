@@ -63,7 +63,7 @@ beforeEach(() => {
   deps = {
     storage,
     scoreboard: vi.fn(async () => espn),
-    send: vi.fn(async () => 201),
+    send: vi.fn(async () => ({ status: 201, reason: null })),
     now: () => NOW,
     background: (work) => void work,
   }
@@ -105,10 +105,14 @@ describe('alerts', () => {
   test('a subscription the push service says is gone is removed', async () => {
     await subscribe(deps, subscriber('https://push.example/fan'))
     await tick(deps)
-    deps.send = vi.fn(async () => 410)
+    deps.send = vi.fn(async () => ({ status: 410, reason: '{"reason":"Unregistered"}' }))
     espn = jaxTouchdown()
     await tick(deps)
     expect((await storage.list({ prefix: 'sub:' })).size).toBe(0)
+    // Logged for the status page, with the push service's reason.
+    expect((await status(deps)).removals).toEqual([
+      { at: NOW, status: 410, reason: '{"reason":"Unregistered"}' },
+    ])
   })
 
   test('unsubscribe removes, and subscribing again updates instead of adding', async () => {
@@ -155,7 +159,8 @@ describe('alerts', () => {
     const s = await status(deps)
     expect(s).toMatchObject({
       subscribers: 1,
-      last: { at: NOW, looked: true, leagues: ['nfl'], alerts: 1, sends: [201] },
+      last: { at: NOW, looked: true, leagues: ['nfl'], alerts: 1, sends: [201], reasons: [] },
+      removals: [],
     })
     expect(JSON.stringify(s)).not.toContain('push.example')
   })

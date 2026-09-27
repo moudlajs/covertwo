@@ -26,14 +26,23 @@ export type LastCheck = {
   alerts: number
   /** The push services' HTTP statuses for this check's sends (0 = network error). */
   sends: number[]
+  /** Why sends failed, as the push services said it (e.g. Apple's "Unregistered"). */
+  reasons: string[]
 }
+
+/** A device the watcher dropped because its push service said it's gone. No device data. */
+export type Removal = { at: number; status: number; reason: string | null }
+
+/** What a push service answered: the HTTP status, and its reason text when it refused. */
+export type SendResult = { status: number; reason: string | null }
+const NO_ANSWER: SendResult = { status: 0, reason: 'no answer' }
 
 export type Deps = {
   storage: Storage
   /** ESPN's scoreboard (all FBS for college when a subscriber's team may be unranked). */
   scoreboard: (league: League, allFbs: boolean) => Promise<unknown>
   /** Sends one notification; returns the push service's HTTP status. */
-  send: (subscription: PushSubscriptionJSON, message: Message) => Promise<number>
+  send: (subscription: PushSubscriptionJSON, message: Message) => Promise<SendResult>
   now: () => number
   /** Runs work after the response has gone out (the Durable Object's waitUntil). */
   background: (work: Promise<unknown>) => void
@@ -85,7 +94,7 @@ export async function subscribe(
   await deps.storage.put('next', 0) // look now: the new subscriber may care about a live game
   if (existing) return 'updated'
   // In the background: turning alerts on shouldn't wait for the push service.
-  deps.background(deps.send(subscriber.subscription, WELCOME).catch(() => 0))
+  deps.background(deps.send(subscriber.subscription, WELCOME).catch(() => NO_ANSWER))
   return 'new'
 }
 
@@ -97,7 +106,7 @@ export async function sendTest(deps: Deps, endpoint: string): Promise<number | '
   const last = (await deps.storage.get<number>(`test:${key}`)) ?? 0
   if (deps.now() - last < TEST_GAP_MS) return 'wait'
   await deps.storage.put(`test:${key}`, deps.now())
-  return deps.send(subscriber.subscription, TEST).catch(() => 0)
+  return (await deps.send(subscriber.subscription, TEST).catch(() => NO_ANSWER)).status
 }
 
 /** For GET /push/status: counts and the last check, nothing about who. */
@@ -106,6 +115,7 @@ export async function status(deps: Deps) {
     subscribers: (await deps.storage.list({ prefix: 'sub:' })).size,
     next: (await deps.storage.get<number>('next')) ?? 0,
     last: (await deps.storage.get<LastCheck>('last')) ?? null,
+    removals: (await deps.storage.get<Removal[]>('removals')) ?? [],
   }
 }
 
@@ -119,7 +129,7 @@ export async function unsubscribe(deps: Deps, endpoint: string): Promise<void> {
 export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number }> {
   const now = deps.now()
   if (now < ((await deps.storage.get<number>('next')) ?? 0)) return { looked: false, sent: 0 }
-  const check: LastCheck = { at: now, looked: true, leagues: [], alerts: 0, sends: [] }
+  const check: LastCheck = { at: now, looked: true, leagues: [], alerts: 0, sends: [], reasons: [] }
   const subscribers = await deps.storage.list<Subscriber>({ prefix: 'sub:' })
   const all = [...subscribers.values()]
   const needs: Record<League, boolean> = {
@@ -158,17 +168,24 @@ export async function tick(deps: Deps): Promise<{ looked: boolean; sent: number 
     for (const alert of alerts) {
       if (!wants(subscriber.prefs, alert)) continue
       const message = { title: alert.title, body: alert.body, tag: alert.gameId }
-      const status = await deps.send(subscriber.subscription, message).catch(() => 0)
+      const { status, reason } = await deps
+        .send(subscriber.subscription, message)
+        .catch(() => NO_ANSWER)
       check.sends.push(status)
+      if (reason) check.reasons.push(reason)
       if (status === 404 || status === 410) {
         await deps.storage.delete(key) // unsubscribed or expired at the push service
         await deps.storage.delete(`test:${key}`)
+        // Kept for the status page, so a dropped device can be explained.
+        const removals = (await deps.storage.get<Removal[]>('removals')) ?? []
+        await deps.storage.put('removals', [{ at: now, status, reason }, ...removals].slice(0, 10))
         break
       }
       if (status >= 200 && status < 300) sent++
     }
   check.alerts = alerts.length
   check.sends = check.sends.slice(0, 20)
+  check.reasons = check.reasons.slice(0, 5)
   await deps.storage.put('last', check)
   return { looked: true, sent }
 }

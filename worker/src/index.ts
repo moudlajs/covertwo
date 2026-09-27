@@ -14,6 +14,7 @@ import {
   type Deps,
   type Message,
   type PushSubscriptionJSON,
+  type SendResult,
   type Storage,
   type Subscriber,
 } from './alerts'
@@ -209,7 +210,7 @@ async function send(
   jwk: string,
   subscription: PushSubscriptionJSON,
   message: Message,
-): Promise<number> {
+): Promise<SendResult> {
   const { endpoint, headers, body } = await buildPushHTTPRequest({
     privateJWK: jwk,
     subscription,
@@ -221,9 +222,15 @@ async function send(
     },
   })
   // A slow push service mustn't hold up the watcher or the test button.
-  return (
-    await fetch(endpoint, { method: 'POST', headers, body, signal: AbortSignal.timeout(10_000) })
-  ).status
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body,
+    signal: AbortSignal.timeout(10_000),
+  })
+  // Apple and Google explain refusals in the body (e.g. {"reason":"Unregistered"}).
+  const reason = res.ok ? null : (await res.text().catch(() => '')).slice(0, 200) || null
+  return { status: res.status, reason }
 }
 
 /** ESPN's scoreboard for the watcher, through the same short edge cache. */
