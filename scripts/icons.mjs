@@ -1,4 +1,5 @@
-// Renders the icon PNGs in public/icons/ from the SVG sources in design/icons/.
+// Renders the icon PNGs in public/icons/ from the SVG sources in design/icons/,
+// and the link preview public/og.png from design/og.html.
 // The SVGs use Anton from Google Fonts, so this needs the network once.
 // Usage: npm run icons
 import { chromium } from '@playwright/test'
@@ -29,5 +30,21 @@ for (const [source, output, size, radius] of ICONS) {
   await page.locator('div').screenshot({ path: `${OUT}/${output}`, omitBackground: true })
   await page.close()
   console.log(`${OUT}/${output}`)
+}
+// The link preview (Open Graph card), 1200x630.
+{
+  const page = await browser.newPage({ viewport: { width: 1200, height: 630 } })
+  const html = readFileSync('design/og.html', 'utf8').replace(
+    '{{ICON}}',
+    readFileSync('design/icons/poster.svg', 'utf8'),
+  )
+  await page.setContent(
+    `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400&family=JetBrains+Mono:wght@800&display=swap">${html}`,
+  )
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForTimeout(300)
+  await page.locator('.card').screenshot({ path: 'public/og.png' })
+  await page.close()
+  console.log('public/og.png')
 }
 await browser.close()

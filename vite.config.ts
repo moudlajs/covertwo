@@ -26,7 +26,10 @@ function serviceWorker(): Plugin {
     writeBundle(options, bundle) {
       const outDir = options.dir ?? 'dist'
       const built = Object.keys(bundle).filter((f) => f !== 'index.html' && !f.endsWith('.map'))
-      const files = ['./', ...built, ...filesIn('public')].map((f) => (f === './' ? f : `./${f}`))
+      // Not the link preview image: only other sites fetch it.
+      const files = ['./', ...built, ...filesIn('public').filter((f) => f !== 'og.png')].map((f) =>
+        f === './' ? f : `./${f}`,
+      )
       // Built files carry content hashes in their names; public/ files and the
       // page don't, so their bytes go into the version too.
       const hash = createHash('sha256').update(JSON.stringify(files))
