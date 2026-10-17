@@ -153,6 +153,8 @@ describe('GameRow', () => {
     const { container } = renderRow('WSH', 'DAL')
     expect(container.querySelector('[data-side="away"]')).toHaveTextContent('TO 0')
     expect(container.querySelector('[data-side="home"]')).toHaveTextContent('TO 1')
+    // The timeouts take the record's place.
+    expect(container).not.toHaveTextContent(/\(\d+-\d+\)/)
   })
 
   test('outside crunch time: no "TO" in the row', () => {
@@ -199,10 +201,28 @@ describe('GameRow', () => {
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '')
   })
 
-  test('scheduled summary names both teams and the kickoff', () => {
+  test('scheduled summary names both teams with their records, and the kickoff', () => {
     renderRow('MIA', 'SF')
-    expect(screen.getByText('Miami Dolphins at San Francisco 49ers, 22:25, FOX')).toHaveClass(
-      'sr-only',
+    expect(
+      screen.getByText('Miami Dolphins (0-2) at San Francisco 49ers (2-0), 22:25, FOX'),
+    ).toHaveClass('sr-only')
+  })
+
+  test('each team shows its record under its name', () => {
+    renderRow('MIA', 'SF')
+    expect(screen.getByText('(0-2)')).toBeInTheDocument()
+    expect(screen.getByText('(2-0)')).toBeInTheDocument()
+  })
+
+  test('no record line when ESPN has none', () => {
+    const game = games.find((g) => g.away.abbr === 'MIA' && g.home.abbr === 'SF')
+    if (!game) throw new Error('no MIA @ SF in fixture')
+    render(
+      <ul>
+        <GameRow game={{ ...game, away: { ...game.away, record: null } }} mode="eu" />
+      </ul>,
     )
+    expect(screen.queryByText('(0-2)')).not.toBeInTheDocument()
+    expect(screen.getByText('(2-0)')).toBeInTheDocument()
   })
 })

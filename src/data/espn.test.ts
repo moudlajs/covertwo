@@ -35,6 +35,12 @@ describe('mapScoreboard', () => {
     expect(g.away).toMatchObject({ abbr: 'DET', score: 31, winner: false })
   })
 
+  test("each team's season record", () => {
+    const g = byMatchup('MIA', 'SF')
+    expect(g.away.record).toBe('0-2')
+    expect(g.home.record).toBe('2-0')
+  })
+
   test('overtime final keeps the OT detail', () => {
     expect(byMatchup('GB', 'NYJ').detail).toBe('Final/OT')
   })
@@ -164,6 +170,7 @@ describe('future playoff rounds', () => {
     const [g] = mapScoreboard(wildCard)
     expect(g).toMatchObject({ timeTbd: true, venue: null })
     expect(g && undecided(g.home) && undecided(g.away)).toBe(true)
+    expect(g?.home.record).toBeNull()
   })
 
   test('a set kickoff and the venue', () => {
