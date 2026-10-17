@@ -21,7 +21,8 @@ the scores, a widget rather than a website.
 ## What it does
 
 - **NFL and college**: college as the Top 25 or all FBS games; any week of the
-  season, including the playoff rounds before their matchups are set.
+  season, including the playoff rounds before their matchups are set. NFL
+  weeks list the teams on bye.
 - **Live detail, kept calm**: the score, clock, down and distance, red zone and
   possession in the row; tap a game for quarters, leaders and the last play,
   or before kickoff for the line, over/under and weather.

@@ -34,6 +34,42 @@ export const NFL_TEAMS: { id: string; name: string }[] = [
   { id: '28', name: 'Washington Commanders' },
 ]
 
+/** ESPN's abbreviation per NFL team id, for teams with no game to read it from (byes). */
+export const NFL_ABBR: Record<string, string> = {
+  '22': 'ARI',
+  '1': 'ATL',
+  '33': 'BAL',
+  '2': 'BUF',
+  '29': 'CAR',
+  '3': 'CHI',
+  '4': 'CIN',
+  '5': 'CLE',
+  '6': 'DAL',
+  '7': 'DEN',
+  '8': 'DET',
+  '9': 'GB',
+  '34': 'HOU',
+  '11': 'IND',
+  '30': 'JAX',
+  '12': 'KC',
+  '13': 'LV',
+  '24': 'LAC',
+  '14': 'LAR',
+  '15': 'MIA',
+  '16': 'MIN',
+  '17': 'NE',
+  '18': 'NO',
+  '19': 'NYG',
+  '20': 'NYJ',
+  '21': 'PHI',
+  '23': 'PIT',
+  '25': 'SF',
+  '26': 'SEA',
+  '27': 'TB',
+  '10': 'TEN',
+  '28': 'WSH',
+}
+
 /**
  * All FBS teams by ESPN id (138, from ESPN's FBS standings, 2026 season), so
  * any college team can be a favourite, not just the ones in the loaded slate.
