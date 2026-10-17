@@ -19,7 +19,8 @@ export function TeamLogo({ src }: { src: string }) {
       alt=""
       width={24}
       height={24}
-      className="size-6 shrink-0"
+      // 20px on the narrowest phones, where the abbreviations need the room.
+      className="size-5 shrink-0 min-[380px]:size-6"
     />
   )
 }
