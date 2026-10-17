@@ -64,7 +64,7 @@ function Side({
           <span className="font-mono text-[9px] leading-none text-label">TO {timeouts}</span>
         ) : (
           team.record && (
-            <span className="font-mono text-[9px] leading-none text-slate-500">
+            <span className={`font-mono text-[9px] leading-none ${dim ? '' : 'text-slate-400'}`}>
               ({team.record})
             </span>
           )
