@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/moudlajs/covertwo/compare/v1.27.1...v1.28.0) (2026-10-17)
+
+
+### Features
+
+* team record (W-L) under each team's name ([#243](https://github.com/moudlajs/covertwo/issues/243)) ([8f406f6](https://github.com/moudlajs/covertwo/commit/8f406f6de718da0e90be478519da80e856081ca7))
+
 ## [1.27.1](https://github.com/moudlajs/covertwo/compare/v1.27.0...v1.27.1) (2026-09-27)
 
 
