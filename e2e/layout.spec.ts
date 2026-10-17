@@ -131,14 +131,10 @@ test('on a 360px phone no team abbreviation or status line is cut off', async ({
   expect(cut).toEqual([])
 })
 
-test('live rows carry the win probability bar on their bottom edge', async ({ page }) => {
+test('live rows show the win chance under each team name', async ({ page }) => {
   await mockEspn(page)
   await page.goto('./')
   const row = page.getByRole('listitem').filter({ hasText: 'Jacksonville Jaguars' })
-  const bar = await row.locator('[data-winbar]').boundingBox()
-  const button = await row.getByRole('button').first().boundingBox()
-  if (!bar || !button) throw new Error('no layout')
-  expect(bar.height).toBe(2)
-  expect(Math.abs(bar.y + bar.height - (button.y + button.height))).toBeLessThan(1)
-  await expect(page.locator('[data-winbar]')).toHaveCount(4) // the four live games
+  await expect(row.locator('[data-side="away"]')).toHaveText(/\(68%\)/)
+  await expect(row.locator('[data-side="home"]')).toHaveText(/\(32%\)/)
 })

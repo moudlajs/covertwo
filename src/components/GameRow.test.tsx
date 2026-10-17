@@ -153,8 +153,8 @@ describe('GameRow', () => {
     const { container } = renderRow('WSH', 'DAL')
     expect(container.querySelector('[data-side="away"]')).toHaveTextContent('TO 0')
     expect(container.querySelector('[data-side="home"]')).toHaveTextContent('TO 1')
-    // The timeouts take the record's place.
-    expect(container).not.toHaveTextContent(/\(\d+-\d+\)/)
+    // The timeouts take the win chance's place.
+    expect(container).not.toHaveTextContent(/\(\d+%\)/)
   })
 
   test('outside crunch time: no "TO" in the row', () => {
@@ -201,41 +201,21 @@ describe('GameRow', () => {
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '')
   })
 
-  test('scheduled summary names both teams with their records, and the kickoff', () => {
+  test('scheduled summary names both teams and the kickoff', () => {
     renderRow('MIA', 'SF')
-    expect(
-      screen.getByText('Miami Dolphins (0-2) at San Francisco 49ers (2-0), 22:25, FOX'),
-    ).toHaveClass('sr-only')
-  })
-
-  test('each team shows its record under its name', () => {
-    renderRow('MIA', 'SF')
-    expect(screen.getByText('(0-2)')).toBeInTheDocument()
-    expect(screen.getByText('(2-0)')).toBeInTheDocument()
-  })
-
-  test('no record line when ESPN has none', () => {
-    const game = games.find((g) => g.away.abbr === 'MIA' && g.home.abbr === 'SF')
-    if (!game) throw new Error('no MIA @ SF in fixture')
-    render(
-      <ul>
-        <GameRow game={{ ...game, away: { ...game.away, record: null } }} mode="eu" />
-      </ul>,
+    expect(screen.getByText('Miami Dolphins at San Francisco 49ers, 22:25, FOX')).toHaveClass(
+      'sr-only',
     )
-    expect(screen.queryByText('(0-2)')).not.toBeInTheDocument()
-    expect(screen.getByText('(2-0)')).toBeInTheDocument()
   })
 
-  test('live: win probability bar split away | home, the favourite in amber', () => {
+  test('live: each team shows its win chance under its name, adding up to 100', () => {
     const { container } = renderRow('JAX', 'DEN') // DEN 31.8% at home
-    const [away, home] = container.querySelectorAll<HTMLElement>('[data-winbar] > span')
-    expect(away?.style.width).toBe('68.2%')
-    expect(away).toHaveClass('bg-amber-400/70')
-    expect(home).toHaveClass('bg-slate-700')
+    expect(container.querySelector('[data-side="away"]')).toHaveTextContent('(68%)')
+    expect(container.querySelector('[data-side="home"]')).toHaveTextContent('(32%)')
     expect(screen.getByText(/Jacksonville Jaguars 68% to win$/)).toHaveClass('sr-only')
   })
 
-  test('no win probability bar without data or outside live games', () => {
+  test('no win chance without data or outside live games', () => {
     const game = games.find((g) => g.away.abbr === 'JAX' && g.home.abbr === 'DEN')
     if (!game) throw new Error('no JAX @ DEN in fixture')
     const { container } = render(
@@ -243,8 +223,9 @@ describe('GameRow', () => {
         <GameRow game={{ ...game, winProb: null }} mode="eu" />
       </ul>,
     )
-    expect(container.querySelector('[data-winbar]')).toBeNull()
-    expect(renderRow('DET', 'BUF').container.querySelector('[data-winbar]')).toBeNull()
+    expect(container).not.toHaveTextContent(/\(\d+%\)/)
+    expect(renderRow('DET', 'BUF').container).not.toHaveTextContent(/\(\d+%\)/)
+    expect(renderRow('MIA', 'SF').container).not.toHaveTextContent(/\(\d+%\)/)
   })
 
   test('an even game is spoken as even', () => {

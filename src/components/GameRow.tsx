@@ -37,6 +37,7 @@ function Side({
   align,
   ball,
   timeouts = null,
+  chance = null,
 }: {
   team: Team
   dim: boolean
@@ -44,6 +45,8 @@ function Side({
   ball: boolean
   /** Timeouts left, shown only in crunch time. */
   timeouts?: number | null
+  /** Win chance in percent, while live. */
+  chance?: number | null
 }) {
   return (
     <div
@@ -59,13 +62,13 @@ function Side({
           )}
           {team.abbr}
         </span>
-        {/* Late in close games the timeouts take the record's place. */}
+        {/* Late in close games the timeouts take the win chance's place. */}
         {timeouts !== null ? (
           <span className="font-mono text-[9px] leading-none text-label">TO {timeouts}</span>
         ) : (
-          team.record && (
-            <span className={`font-mono text-[9px] leading-none ${dim ? '' : 'text-slate-400'}`}>
-              ({team.record})
+          chance !== null && (
+            <span className="font-mono text-[9px] leading-none text-slate-400 tabular-nums">
+              ({chance}%)
             </span>
           )
         )}
@@ -84,10 +87,8 @@ function summary(game: Game, mode: TimeMode, now?: number): string {
   const { away, home } = game
   // "No. 5 Miami Hurricanes" for ranked college teams.
   const name = (t: Team) => (t.rank === null ? t.name : `No. ${t.rank} ${t.name}`)
-  // Records only before kickoff: next to a score they'd read as more numbers.
-  const withRecord = (t: Team) => (t.record ? `${name(t)} (${t.record})` : name(t))
   if (game.state === 'pre')
-    return `${withRecord(away)} at ${withRecord(home)}, ${kickoff(game, mode)}, ${status(game, now)}`
+    return `${name(away)} at ${name(home)}, ${kickoff(game, mode)}, ${status(game, now)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''
@@ -104,22 +105,6 @@ function oddsText(game: Game, home: number): string {
   const pct = Math.round(Math.max(home, 1 - home) * 100)
   if (pct === 50) return 'win chances even'
   return `${(home > 0.5 ? game.home : game.away).name} ${pct}% to win`
-}
-
-/**
- * ESPN's win probability as a thin bar along the row's bottom edge: away's
- * share on the left, home's on the right, the favourite's part in amber.
- */
-function WinBar({ home }: { home: number }) {
-  const away = 1 - home
-  const lead = (mine: number, theirs: number) =>
-    mine > theirs ? 'bg-amber-400/70' : 'bg-slate-700'
-  return (
-    <span aria-hidden="true" data-winbar className="absolute inset-x-0 bottom-0 flex h-0.5">
-      <span className={lead(away, home)} style={{ width: `${Math.round(away * 1000) / 10}%` }} />
-      <span className={`flex-1 ${lead(home, away)}`} />
-    </span>
-  )
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -151,6 +136,8 @@ export function GameRow({
   // Timeouts matter at a glance only late in close games; otherwise they're
   // in the expanded view.
   const crunch = isCrunchTime(game)
+  // Whole percents that add up to 100 across the two sides.
+  const homeChance = live && game.winProb ? Math.round(game.winProb.home * 100) : null
   // Started games open to quarter scores and leaders; scheduled ones to the
   // line and weather, when ESPN has either.
   const expandable = (game.state !== 'pre' || hasPregame(game)) && onToggle !== undefined
@@ -171,27 +158,13 @@ export function GameRow({
           className="block w-full cursor-pointer text-left hover:bg-slate-800/30 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
         >
           {grid()}
-          {bar()}
         </button>
       ) : (
-        <>
-          {grid()}
-          {bar()}
-        </>
+        grid()
       )}
       {expandable && <GameDetails id={detailsId} game={game} hidden={!expanded} mode={mode} />}
     </li>
   )
-
-  // A zero-height anchor: the bar overlays the row's bottom edge without adding height.
-  function bar() {
-    if (!live || !game.winProb) return null
-    return (
-      <div className="relative h-0">
-        <WinBar home={game.winProb.home} />
-      </div>
-    )
-  }
 
   function grid() {
     return (
@@ -203,6 +176,7 @@ export function GameRow({
           align="start"
           ball={game.possession === 'away'}
           timeouts={crunch ? (game.timeouts?.away ?? null) : null}
+          chance={homeChance === null ? null : 100 - homeChance}
         />
         <div
           aria-hidden="true"
@@ -265,6 +239,7 @@ export function GameRow({
           align="end"
           ball={game.possession === 'home'}
           timeouts={crunch ? (game.timeouts?.home ?? null) : null}
+          chance={homeChance}
         />
       </div>
     )

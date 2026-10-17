@@ -9,7 +9,6 @@ type EspnCompetitor = {
   winner?: boolean
   /** College football poll rank; 99 means unranked. */
   curatedRank?: { current?: number }
-  records?: { type?: string; summary?: string }[]
   team?: {
     id?: string
     abbreviation?: string
@@ -77,7 +76,6 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     score: state === 'pre' || c.score === undefined || Number.isNaN(score) ? null : score,
     winner: c.winner === true,
     rank: rank(c.curatedRank?.current),
-    record: c.records?.find((r) => r.type === 'total')?.summary || null,
   }
 }
 
