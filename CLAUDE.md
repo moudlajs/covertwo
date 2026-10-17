@@ -125,7 +125,8 @@ is one CSS block in `src/index.css` that inverts the slate scale and deepens
 the accents under `html[data-theme=light]`, so components keep their dark
 class names. Use `bg-page`/`bg-chrome`/`bg-heading`, `bg-accent`/`text-on-accent`
 and `text-label` instead of hard-coded colours. Light uses normal team logos,
-dark ESPN's dark-background variants, both plain (24px, 20px under 380px; no glow: #241). An inline script in `index.html` sets the theme before first
+dark ESPN's dark-background variants, both plain (24px, 20px under 380px; no
+glow: #241). An inline script in `index.html` sets the theme before first
 paint. Every light text colour meets WCAG AA.
 
 **App icon** (#52): "Poster" (COVER / TWO_ in Anton, the amber-to-rose bar as

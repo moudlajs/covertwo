@@ -12,8 +12,6 @@ export type Team = {
   rank: number | null
   /** Season record, e.g. "5-1" or "5-1-1"; null when ESPN has none. */
   record: string | null
-  /** Team colour that reads on the dark panel (see teamColor), or null. */
-  color: string | null
 }
 
 /** A team not decided yet: ESPN's "TBD" placeholders (ids -1 and -2) in future playoff rounds. */

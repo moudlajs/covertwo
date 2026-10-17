@@ -31,4 +31,6 @@ competes with those signals, and it works on a light theme too.
   row. Nice atmosphere, but 14 tinted rows get busy, and it collides with the
   live and favourite row tints.
 
-Switching later: `Team.color` is still mapped and available to any variant.
+Switching later: `Team.color` and `teamColor()` (the brighter non-glare of
+ESPN's primary and alternate colour) were removed in #241; restore them from
+git history.
