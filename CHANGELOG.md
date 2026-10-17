@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.1](https://github.com/moudlajs/covertwo/compare/v1.29.0...v1.29.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* win chance under team names on live rows; drop record, bar and bye line ([#255](https://github.com/moudlajs/covertwo/issues/255)) ([b49f43f](https://github.com/moudlajs/covertwo/commit/b49f43fc9142c2197c0ce5371c264f42f88b58fd))
+
 ## [1.29.0](https://github.com/moudlajs/covertwo/compare/v1.28.1...v1.29.0) (2026-10-17)
 
 
