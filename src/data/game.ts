@@ -10,8 +10,6 @@ export type Team = {
   winner: boolean
   /** College football Top 25 rank; always null in the NFL. */
   rank: number | null
-  /** Season record, e.g. "5-1" or "5-1-1"; null when ESPN has none. */
-  record: string | null
 }
 
 /** A team not decided yet: ESPN's "TBD" placeholders (ids -1 and -2) in future playoff rounds. */
