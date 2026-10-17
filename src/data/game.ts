@@ -17,6 +17,9 @@ export type Team = {
 /** A team not decided yet: ESPN's "TBD" placeholders (ids -1 and -2) in future playoff rounds. */
 export const undecided = (t: Team) => Number(t.id) < 0 || t.abbr === 'TBD'
 
+/** A scheduled game has something to open: a line or an outdoor forecast. */
+export const hasPregame = (game: Game) => game.odds !== null || game.weather !== null
+
 export type Leader = {
   /** e.g. "J. Goff" */
   name: string
@@ -54,6 +57,10 @@ export type Game = {
   winProb: { home: number } | null
   /** Points per period (index 4+ is overtime); once the game has started. */
   quarters: { home: number[]; away: number[] } | null
+  /** Before kickoff: the betting line ("KC -3.5") and over/under, when ESPN has them. */
+  odds: { line: string | null; overUnder: number | null } | null
+  /** Before kickoff at an outdoor venue: forecast in °F and ESPN's condition text. */
+  weather: { tempF: number; condition: string | null } | null
   /** Top passer / rusher / receiver of the game, when ESPN lists them. */
   leaders: { passing?: Leader; rushing?: Leader; receiving?: Leader }
   home: Team

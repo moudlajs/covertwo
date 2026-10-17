@@ -150,6 +150,27 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').leaders).toEqual({})
   })
 
+  test('before kickoff: line, over/under and the outdoor forecast', () => {
+    expect(byMatchup('MIA', 'SF')).toMatchObject({
+      odds: { line: 'SF -6.5', overUnder: 47.5 },
+      weather: { tempF: 68, condition: 'Sunny' },
+    })
+  })
+
+  test('no weather indoors, or when ESPN has none', () => {
+    expect(byMatchup('NYG', 'LAR').weather).toBeNull() // SoFi: ESPN still sends a forecast
+    expect(byMatchup('NYG', 'LAR').odds).toEqual({ line: 'LAR -7.5', overUnder: 43 })
+    expect(byMatchup('IND', 'KC')).toMatchObject({ odds: null, weather: null })
+  })
+
+  test('line and weather only before kickoff', () => {
+    // A scheduled event with a line and forecast, flipped to live.
+    const pre = fixture.events.find((e) => e.id === '401872942')
+    const live = { ...pre, status: { ...pre?.status, type: { ...pre?.status.type, state: 'in' } } }
+    const [g] = mapScoreboard({ events: [live] })
+    expect(g).toMatchObject({ state: 'in', odds: null, weather: null })
+  })
+
   test('halftime is flagged', () => {
     expect(byMatchup('LV', 'LAC')).toMatchObject({ state: 'in', halftime: true })
   })

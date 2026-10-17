@@ -1,4 +1,4 @@
-import type { Game, Team } from '../data/game'
+import { hasPregame, type Game, type Team } from '../data/game'
 import { isCrunchTime } from '../data/crunch'
 import { COUNTDOWN_WINDOW_MS, formatCountdown } from '../time/countdown'
 import { formatTime, type TimeMode } from '../time/format'
@@ -151,8 +151,9 @@ export function GameRow({
   // Timeouts matter at a glance only late in close games; otherwise they're
   // in the expanded view.
   const crunch = isCrunchTime(game)
-  // Started games open to quarter scores and leaders; scheduled ones have none.
-  const expandable = game.state !== 'pre' && onToggle !== undefined
+  // Started games open to quarter scores and leaders; scheduled ones to the
+  // line and weather, when ESPN has either.
+  const expandable = (game.state !== 'pre' || hasPregame(game)) && onToggle !== undefined
   const detailsId = `details-${game.id}`
   // Dim the loser only when there is a winner; a tie dims neither side.
   const decided = game.state === 'post' && (game.home.winner || game.away.winner)
@@ -178,7 +179,7 @@ export function GameRow({
           {bar()}
         </>
       )}
-      {expandable && <GameDetails id={detailsId} game={game} hidden={!expanded} />}
+      {expandable && <GameDetails id={detailsId} game={game} hidden={!expanded} mode={mode} />}
     </li>
   )
 

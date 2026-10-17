@@ -65,10 +65,15 @@ app → `VITE_API_BASE/nfl/scoreboard` (`worker/`) →
 - `fixtures/espn-scoreboard.json` is real week-2 2026 data, with four games
   rewritten as live (3rd qtr, halftime, 4th qtr in the red zone, 1st qtr) and
   three as scheduled. The `situation` blocks on the live games are
-  hand-written to ESPN's shape, not captured. That includes
-  `lastPlay.probability` (#62), added 2026-10-17 when no game was live:
+  hand-written to ESPN's shape, not captured; so are the `odds` and `weather`
+  on MIA @ SF (outdoor) and NYG @ LAR (marked indoor, which hides weather),
+  and `lastPlay.probability` (#62), added 2026-10-17 when no game was live:
   confirm the field and its 0-1 scale on a real live scoreboard (the summary
   endpoint's `winprobability` uses 0-1).
+- Before kickoff (#61, #63): `competitions[].odds[0].details` ("JAX -2.5")
+  and `.overUnder`, and `event.weather` (`temperature` in °F, `displayValue`).
+  ESPN sends weather for domes too, so it's dropped unless
+  `venue.indoor === false`. Text only: no provider name, logos or links.
 - `fixtures/espn-nfl-wildcard.json` and `espn-nfl-superbowl.json` are real
   (captured 2026-09-25) future playoff rounds: "TBD @ TBD" teams (ids -1/-2)
   and, before times are set, `timeValid: false` with a placeholder 05:00Z.
