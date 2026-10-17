@@ -21,6 +21,7 @@ type EspnCompetitor = {
 type EspnEvent = {
   id?: string
   date?: string
+  weather?: { temperature?: number; displayValue?: string }
   status?: {
     period?: number
     displayClock?: string
@@ -31,7 +32,12 @@ type EspnEvent = {
     broadcast?: string
     /** false when only the day is set; `date` then holds a placeholder time. */
     timeValid?: boolean
-    venue?: { fullName?: string; address?: { city?: string; state?: string } }
+    venue?: {
+      fullName?: string
+      address?: { city?: string; state?: string }
+      indoor?: boolean
+    }
+    odds?: { details?: string; overUnder?: number }[]
     leaders?: {
       name?: string
       leaders?: {
@@ -111,6 +117,20 @@ function venue(v: NonNullable<EspnEvent['competitions']>[number]['venue']): stri
   return [v?.fullName, place].filter(Boolean).join(' · ') || null
 }
 
+function odds(list: NonNullable<EspnEvent['competitions']>[number]['odds']): Game['odds'] {
+  const o = list?.[0]
+  const line = o?.details?.trim() || null
+  const overUnder = typeof o?.overUnder === 'number' ? o.overUnder : null
+  return line || overUnder !== null ? { line, overUnder } : null
+}
+
+/** Outdoor games only: ESPN sends a forecast for domes too. */
+function weather(e: EspnEvent, indoor: boolean | undefined): Game['weather'] {
+  const t = e.weather?.temperature
+  if (indoor !== false || typeof t !== 'number') return null
+  return { tempF: t, condition: e.weather?.displayValue?.trim() || null }
+}
+
 function timeouts(
   state: string,
   s: { homeTimeouts?: number; awayTimeouts?: number } | undefined,
@@ -162,6 +182,8 @@ function mapEvent(e: EspnEvent | null): Game | null {
     // At halftime it only repeats "END OF 2ND QUARTER".
     quarters: state === 'pre' ? null : quarters(side('home'), side('away')),
     leaders: state === 'pre' ? {} : leaders(comp?.leaders, home.id, away.id),
+    odds: state === 'pre' ? odds(comp?.odds) : null,
+    weather: state === 'pre' ? weather(e, comp?.venue?.indoor) : null,
     lastPlay: (state === 'in' && !halftime && comp?.situation?.lastPlay?.text?.trim()) || null,
     home,
     away,

@@ -12,10 +12,12 @@ const FRIDAY = Date.parse('2026-09-18T12:00:00Z')
 /** Tuesday: Friday is final and older than the most recent past day (Monday). */
 const TUESDAY = Date.parse('2026-09-22T12:00:00Z')
 
-test('started games expand; scheduled games are not buttons', () => {
+test('started games expand; scheduled ones only with a line or weather', () => {
   render(<ScoreList games={games} mode="eu" now={FRIDAY} />)
-  expect(screen.getAllByRole('button')).toHaveLength(13) // 9 final + 4 live
-  expect(screen.queryByRole('button', { name: /Miami Dolphins at/ })).not.toBeInTheDocument()
+  // 9 final + 4 live + MIA @ SF and NYG @ LAR (IND @ KC has neither)
+  expect(screen.getAllByRole('button')).toHaveLength(15)
+  expect(screen.getByRole('button', { name: /^Miami Dolphins/ })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Indianapolis Colts/ })).not.toBeInTheDocument()
 })
 
 test('one row open at a time, toggled by click', async () => {

@@ -1,16 +1,44 @@
 import { Fragment, type ReactNode } from 'react'
 import type { Game, Leader } from '../data/game'
+import type { TimeMode } from '../time/format'
 
 const LEADER_LABELS = { passing: 'PASS', rushing: 'RUSH', receiving: 'REC' } as const
 
-/** Quarter-by-quarter score and the game's top passer, rusher and receiver. */
-export function GameDetails({ id, game, hidden }: { id: string; game: Game; hidden: boolean }) {
+/** "SF -6.5 · O/U 47.5", or whichever half ESPN has. */
+function oddsText(odds: NonNullable<Game['odds']>): string {
+  const ou = odds.overUnder === null ? null : `O/U ${odds.overUnder}`
+  return [odds.line, ou].filter(Boolean).join(' · ')
+}
+
+/** "20°C, Sunny" in EU mode, "68°F, Sunny" in US mode (ESPN gives °F). */
+function weatherText(w: NonNullable<Game['weather']>, mode: TimeMode): string {
+  const temp = mode === 'eu' ? `${Math.round(((w.tempF - 32) * 5) / 9)}°C` : `${w.tempF}°F`
+  return [temp, w.condition].filter(Boolean).join(', ')
+}
+
+/**
+ * Quarter-by-quarter score and the game's top passer, rusher and receiver;
+ * before kickoff, the line and the weather.
+ */
+export function GameDetails({
+  id,
+  game,
+  hidden,
+  mode,
+}: {
+  id: string
+  game: Game
+  hidden: boolean
+  mode: TimeMode
+}) {
   const { quarters } = game
   const periods = quarters?.home.length ?? 0
   const label = (i: number) => (i < 4 ? String(i + 1) : i === 4 ? 'OT' : `OT${i - 3}`)
   const leaders = Object.entries(game.leaders) as [keyof typeof LEADER_LABELS, Leader][]
 
   const lines: [string, ReactNode][] = []
+  if (game.odds) lines.push(['LINE', oddsText(game.odds)])
+  if (game.weather) lines.push(['WEATHER', weatherText(game.weather, mode)])
   if (game.lastPlay) lines.push(['PLAY', game.lastPlay])
   if (game.timeouts)
     lines.push([

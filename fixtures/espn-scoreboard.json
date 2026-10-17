@@ -4995,7 +4995,19 @@
       }
      },
      "startDate": "2026-09-20T20:25Z",
-     "broadcast": "FOX"
+     "broadcast": "FOX",
+     "odds": [
+      {
+       "provider": {
+        "id": "100",
+        "name": "DraftKings",
+        "priority": 1
+       },
+       "details": "SF -6.5",
+       "overUnder": 47.5,
+       "spread": -6.5
+      }
+     ]
     }
    ],
    "status": {
@@ -5011,6 +5023,12 @@
      "detail": "Sun, September 20th at 4:25 PM EDT",
      "shortDetail": "Sun, September 20th at 4:25 PM EDT"
     }
+   },
+   "weather": {
+    "displayValue": "Sunny",
+    "temperature": 68,
+    "highTemperature": 68,
+    "conditionId": "1"
    }
   },
   {
@@ -5230,7 +5248,7 @@
        "state": "CA",
        "country": "USA"
       },
-      "indoor": false
+      "indoor": true
      },
      "competitors": [
       {
@@ -5356,7 +5374,19 @@
       }
      },
      "startDate": "2026-09-22T00:15Z",
-     "broadcast": "ESPN/ABC"
+     "broadcast": "ESPN/ABC",
+     "odds": [
+      {
+       "provider": {
+        "id": "100",
+        "name": "DraftKings",
+        "priority": 1
+       },
+       "details": "LAR -7.5",
+       "overUnder": 43.0,
+       "spread": -7.5
+      }
+     ]
     }
    ],
    "status": {
@@ -5372,6 +5402,12 @@
      "detail": "Mon, September 21st at 8:15 PM EDT",
      "shortDetail": "Mon, September 21st at 8:15 PM EDT"
     }
+   },
+   "weather": {
+    "displayValue": "Clear",
+    "temperature": 75,
+    "highTemperature": 75,
+    "conditionId": "1"
    }
   }
  ],
