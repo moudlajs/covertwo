@@ -115,6 +115,17 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').winProb).toBeNull()
   })
 
+  test('win probability outside 0-1 or not a number is dropped', () => {
+    type Live = { competitions: { situation: { lastPlay: { probability: object } } }[] }
+    for (const bad of [68, -0.1, '0.68', null]) {
+      const e = structuredClone(fixture.events.find((x) => x.shortName === 'JAX @ DEN')) as Live
+      const situation = e.competitions[0]?.situation
+      if (!situation) throw new Error('fixture changed')
+      situation.lastPlay.probability = { homeWinPercentage: bad }
+      expect(mapScoreboard({ events: [e] })[0]?.winProb).toBeNull()
+    }
+  })
+
   test('last play while live only', () => {
     expect(byMatchup('JAX', 'DEN').lastPlay).toBe(
       'T.Etienne run up the middle to DEN 34 for 3 yards.',
