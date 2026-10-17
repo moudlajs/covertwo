@@ -99,30 +99,20 @@ export default function App() {
     <ThemeContext value={theme}>
       <Shell
         league={
-          <Segmented
-            label="League"
-            name="league"
-            value={league}
-            onChange={(l) => {
-              setLeague(l)
-              setWeek(null) // another league, another calendar: back to its current week
-            }}
-            options={(Object.keys(LEAGUES) as League[]).map((id) => ({
-              value: id,
-              label: LEAGUES[id].label,
-            }))}
-          />
-        }
-        view={
           <div className="flex items-center gap-2">
-            {/* No picker in demo mode: every week would show the same built-in data. */}
-            {!DEMO && season && shownWeek && (
-              <WeekPicker
-                season={season}
-                value={shownWeek}
-                onChange={(id) => setWeek(id === season.current ? null : id)}
-              />
-            )}
+            <Segmented
+              label="League"
+              name="league"
+              value={league}
+              onChange={(l) => {
+                setLeague(l)
+                setWeek(null) // another league, another calendar: back to its current week
+              }}
+              options={(Object.keys(LEAGUES) as League[]).map((id) => ({
+                value: id,
+                label: LEAGUES[id].label,
+              }))}
+            />
             {league === 'ncaaf' && (
               <Segmented
                 label="College games"
@@ -136,6 +126,18 @@ export default function App() {
               />
             )}
           </div>
+        }
+        view={
+          // No picker in demo mode: every week would show the same built-in data.
+          !DEMO &&
+          season &&
+          shownWeek && (
+            <WeekPicker
+              season={season}
+              value={shownWeek}
+              onChange={(id) => setWeek(id === season.current ? null : id)}
+            />
+          )
         }
         toast={<Toast message={toast} />}
         footer={
