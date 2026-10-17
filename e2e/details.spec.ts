@@ -13,6 +13,15 @@ test('tapping a finished game shows quarter scores and leaders', async ({ page }
   await expect(page.getByRole('table')).toBeHidden()
 })
 
+test('tapping a scheduled game shows the line and the weather', async ({ page }) => {
+  await mockEspn(page)
+  await page.goto('./')
+  const mia = page.getByRole('button', { name: /^Miami Dolphins/ })
+  await mia.click()
+  await expect(page.getByText('SF -6.5 · O/U 47.5')).toBeVisible()
+  await expect(page.getByText('20°C, Sunny')).toBeVisible()
+})
+
 test('an older finished day is folded until tapped', async ({ page }) => {
   await mockEspn(page)
   await page.clock.setFixedTime(new Date('2026-09-22T12:00:00Z')) // Tuesday: Friday is old and final
