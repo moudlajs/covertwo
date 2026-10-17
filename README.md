@@ -24,8 +24,7 @@ the scores, a widget rather than a website.
   season, including the playoff rounds before their matchups are set.
 - **Live detail, kept calm**: the score, clock, down and distance, red zone and
   possession in the row; tap a game for quarters, leaders and the last play.
-- **Your team** (★) pinned to the top and highlighted; every team's logo glows
-  in its own colours.
+- **Your team** (★) pinned to the top and highlighted.
 - **Lock-screen alerts** (🔔), even with covertwo closed: your team's scores,
   kickoff and final, close finishes, college upsets. Each one is optional.
 - **An app on your phone**: add it to the home screen for the full-screen app,

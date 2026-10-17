@@ -1,4 +1,3 @@
-import { teamColor } from './colors'
 import type { Game, GameState, Team } from './game'
 
 // Only the fields we read. Everything is optional: this is an unofficial API,
@@ -16,8 +15,6 @@ type EspnCompetitor = {
     abbreviation?: string
     displayName?: string
     logo?: string
-    color?: string
-    alternateColor?: string
   }
 }
 
@@ -75,7 +72,6 @@ function mapTeam(c: EspnCompetitor | undefined, state: GameState): Team | null {
     winner: c.winner === true,
     rank: rank(c.curatedRank?.current),
     record: c.records?.find((r) => r.type === 'total')?.summary || null,
-    color: teamColor(t.color, t.alternateColor),
   }
 }
 

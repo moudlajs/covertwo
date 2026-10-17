@@ -1,6 +1,11 @@
 # Team colours: design alternatives
 
-Decided 2026-09-25 (#47): **B, logo glow** is implemented. The other variants
+**Superseded 2026-10-17 (#241):** the glow read as a smudge row after row,
+so logos are now plain and a little bigger (24px), with no team-colour effect.
+The variants from that round (plain, colour chip, ring badge, jersey stripe,
+name tick, contained spot) were compared on a design page; plain won.
+
+Decided 2026-09-25 (#47): **B, logo glow** was implemented. The other variants
 are kept here in case the glow ever feels wrong. All screenshots come from the
 real app (`?demo`, iPhone 15, WebKit), with each team's colour chosen by
 `teamColor()`: the brighter of ESPN's primary and alternate that isn't
@@ -17,7 +22,7 @@ competes with those signals, and it works on a light theme too.
 - **A · edge bars:** a 3px team-colour bar at each side's outer edge.
   Colourful, but frames every row like a stadium board, and takes over the red
   edge that means "red zone".
-- **B · logo glow (implemented):** a soft `drop-shadow` halo in the team
+- **B · logo glow (implemented until #241):** a soft `drop-shadow` halo in the team
   colour behind each logo. Subtle, calm, and also helps dark logos.
 - **C · name underline:** a team-colour underline under each abbreviation.
   Barely visible at this size. (In the screenshot it's clipped by the
@@ -26,5 +31,6 @@ competes with those signals, and it works on a light theme too.
   row. Nice atmosphere, but 14 tinted rows get busy, and it collides with the
   live and favourite row tints.
 
-Switching later: `TeamLogo`'s `glow` prop is the only place B lives; `Team.color`
-is available to any other variant.
+Switching later: `Team.color` and `teamColor()` (the brighter non-glare of
+ESPN's primary and alternate colour) were removed in #241; restore them from
+git history.
