@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { LoadError } from './components/LoadError'
 import { Retrying } from './components/Retrying'
 import { ScoreList } from './components/ScoreList'
+import { ByeWeeks } from './components/ByeWeeks'
+import { byeTeams } from './data/byes'
 import { Segmented } from './components/Segmented'
 import { Shell } from './components/Shell'
 import { Skeleton } from './components/Skeleton'
@@ -237,6 +239,7 @@ export default function App() {
                 foldPast={isCurrentWeek}
               />
             </div>
+            {league === 'nfl' && <ByeWeeks teams={byeTeams(games, shownWeek)} />}
           </>
         )}
       </Shell>
