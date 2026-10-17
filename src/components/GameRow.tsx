@@ -95,7 +95,31 @@ function summary(game: Game, mode: TimeMode, now?: number): string {
     game.timeouts && isCrunchTime(game)
       ? `, timeouts: ${away.name} ${game.timeouts.away}, ${home.name} ${game.timeouts.home}`
       : ''
-  return `${name(away)} ${away.score ?? '-'}, ${name(home)} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}`
+  const odds = game.winProb ? `, ${oddsText(game, game.winProb.home)}` : ''
+  return `${name(away)} ${away.score ?? '-'}, ${name(home)} ${home.score ?? '-'}, ${status(game)}${down}${zone}${ball}${tos}${odds}`
+}
+
+/** "Denver Broncos 68% to win", or "even" at 50%. */
+function oddsText(game: Game, home: number): string {
+  const pct = Math.round(Math.max(home, 1 - home) * 100)
+  if (pct === 50) return 'win chances even'
+  return `${(home > 0.5 ? game.home : game.away).name} ${pct}% to win`
+}
+
+/**
+ * ESPN's win probability as a thin bar along the row's bottom edge: away's
+ * share on the left, home's on the right, the favourite's part in amber.
+ */
+function WinBar({ home }: { home: number }) {
+  const away = 1 - home
+  const lead = (mine: number, theirs: number) =>
+    mine > theirs ? 'bg-amber-400/70' : 'bg-slate-700'
+  return (
+    <span aria-hidden="true" data-winbar className="absolute inset-x-0 bottom-0 flex h-0.5">
+      <span className={lead(away, home)} style={{ width: `${Math.round(away * 1000) / 10}%` }} />
+      <span className={`flex-1 ${lead(home, away)}`} />
+    </span>
+  )
 }
 
 /** One compact row: away | score or kickoff + status | home. */
@@ -146,13 +170,27 @@ export function GameRow({
           className="block w-full cursor-pointer text-left hover:bg-slate-800/30 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
         >
           {grid()}
+          {bar()}
         </button>
       ) : (
-        grid()
+        <>
+          {grid()}
+          {bar()}
+        </>
       )}
       {expandable && <GameDetails id={detailsId} game={game} hidden={!expanded} />}
     </li>
   )
+
+  // A zero-height anchor: the bar overlays the row's bottom edge without adding height.
+  function bar() {
+    if (!live || !game.winProb) return null
+    return (
+      <div className="relative h-0">
+        <WinBar home={game.winProb.home} />
+      </div>
+    )
+  }
 
   function grid() {
     return (

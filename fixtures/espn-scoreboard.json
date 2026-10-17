@@ -3788,7 +3788,13 @@
       "possessionText": "DEN 34",
       "possession": "30",
       "lastPlay": {
-       "text": "T.Etienne run up the middle to DEN 34 for 3 yards."
+       "text": "T.Etienne run up the middle to DEN 34 for 3 yards.",
+       "probability": {
+        "tiePercentage": 0,
+        "homeWinPercentage": 0.318,
+        "awayWinPercentage": 0.682,
+        "secondsLeft": 0
+       }
       }
      }
     }
@@ -4121,7 +4127,13 @@
       "homeTimeouts": 3,
       "awayTimeouts": 3,
       "lastPlay": {
-       "text": "END OF 2ND QUARTER"
+       "text": "END OF 2ND QUARTER",
+       "probability": {
+        "tiePercentage": 0,
+        "homeWinPercentage": 0.706,
+        "awayWinPercentage": 0.294,
+        "secondsLeft": 0
+       }
       }
      }
     }
@@ -4482,7 +4494,13 @@
       "possessionText": "WSH 12",
       "possession": "6",
       "lastPlay": {
-       "text": "D.Prescott pass short right to C.Lamb to WSH 12 for 21 yards."
+       "text": "D.Prescott pass short right to C.Lamb to WSH 12 for 21 yards.",
+       "probability": {
+        "tiePercentage": 0,
+        "homeWinPercentage": 0.584,
+        "awayWinPercentage": 0.416,
+        "secondsLeft": 0
+       }
       }
      }
     }
@@ -4813,7 +4831,13 @@
       "possessionText": "SEA 29",
       "possession": "26",
       "lastPlay": {
-       "text": "K.Walker III rush to the left for 2 yards."
+       "text": "K.Walker III rush to the left for 2 yards.",
+       "probability": {
+        "tiePercentage": 0,
+        "homeWinPercentage": 0.627,
+        "awayWinPercentage": 0.373,
+        "secondsLeft": 0
+       }
       }
      }
     }

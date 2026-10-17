@@ -108,6 +108,13 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').timeouts).toBeNull()
   })
 
+  test('win probability while live only', () => {
+    expect(byMatchup('JAX', 'DEN').winProb).toEqual({ home: 0.318 })
+    expect(byMatchup('LV', 'LAC').winProb).toEqual({ home: 0.706 }) // halftime still counts
+    expect(byMatchup('DET', 'BUF').winProb).toBeNull()
+    expect(byMatchup('MIA', 'SF').winProb).toBeNull()
+  })
+
   test('last play while live only', () => {
     expect(byMatchup('JAX', 'DEN').lastPlay).toBe(
       'T.Etienne run up the middle to DEN 34 for 3 yards.',

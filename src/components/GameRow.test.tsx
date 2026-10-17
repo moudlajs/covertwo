@@ -49,7 +49,7 @@ describe('GameRow', () => {
     renderRow('JAX', 'DEN')
     expect(
       screen.getByText(
-        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball',
+        'Jacksonville Jaguars 17, Denver Broncos 10, Q3 · 8:42, 2nd & 7 at DEN 34, Jacksonville Jaguars ball, Jacksonville Jaguars 68% to win',
       ),
     ).toHaveClass('sr-only')
     expect(screen.getByText('Q3 · 8:42')).toBeInTheDocument()
@@ -86,7 +86,7 @@ describe('GameRow', () => {
     expect(screen.getByRole('listitem')).toHaveClass('shadow-rose-500')
     expect(
       screen.getByText(
-        /, red zone, Dallas Cowboys ball, timeouts: Washington Commanders 0, Dallas Cowboys 1$/,
+        /, red zone, Dallas Cowboys ball, timeouts: Washington Commanders 0, Dallas Cowboys 1, Dallas Cowboys 58% to win$/,
       ),
     ).toHaveClass('sr-only')
   })
@@ -224,5 +224,37 @@ describe('GameRow', () => {
     )
     expect(screen.queryByText('(0-2)')).not.toBeInTheDocument()
     expect(screen.getByText('(2-0)')).toBeInTheDocument()
+  })
+
+  test('live: win probability bar split away | home, the favourite in amber', () => {
+    const { container } = renderRow('JAX', 'DEN') // DEN 31.8% at home
+    const [away, home] = container.querySelectorAll<HTMLElement>('[data-winbar] > span')
+    expect(away?.style.width).toBe('68.2%')
+    expect(away).toHaveClass('bg-amber-400/70')
+    expect(home).toHaveClass('bg-slate-700')
+    expect(screen.getByText(/Jacksonville Jaguars 68% to win$/)).toHaveClass('sr-only')
+  })
+
+  test('no win probability bar without data or outside live games', () => {
+    const game = games.find((g) => g.away.abbr === 'JAX' && g.home.abbr === 'DEN')
+    if (!game) throw new Error('no JAX @ DEN in fixture')
+    const { container } = render(
+      <ul>
+        <GameRow game={{ ...game, winProb: null }} mode="eu" />
+      </ul>,
+    )
+    expect(container.querySelector('[data-winbar]')).toBeNull()
+    expect(renderRow('DET', 'BUF').container.querySelector('[data-winbar]')).toBeNull()
+  })
+
+  test('an even game is spoken as even', () => {
+    const game = games.find((g) => g.away.abbr === 'JAX' && g.home.abbr === 'DEN')
+    if (!game) throw new Error('no JAX @ DEN in fixture')
+    render(
+      <ul>
+        <GameRow game={{ ...game, winProb: { home: 0.5 } }} mode="eu" />
+      </ul>,
+    )
+    expect(screen.getByText(/win chances even$/)).toHaveClass('sr-only')
   })
 })

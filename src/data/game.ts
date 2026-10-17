@@ -50,6 +50,8 @@ export type Game = {
   redZone: boolean
   /** Which side has the ball; only while live and ESPN reports it. */
   possession: 'home' | 'away' | null
+  /** ESPN's chance the home team wins (0-1), while live and ESPN reports it. */
+  winProb: { home: number } | null
   /** Points per period (index 4+ is overtime); once the game has started. */
   quarters: { home: number[]; away: number[] } | null
   /** Top passer / rusher / receiver of the game, when ESPN lists them. */

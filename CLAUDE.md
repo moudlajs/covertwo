@@ -116,7 +116,9 @@ title (the slot was reserved from the start). No NFL shield logo.
   score (monospace, tabular) or kickoff time, with a status line under it:
   "Final", network for scheduled games, or a pulsing rose dot + "Q3 · 8:42 ·
   2nd & 7" when live. The losing team is dimmed on finals. Live rows get a
-  lighter background; red zone adds a rose left edge and an "RZ" tag.
+  lighter background; red zone adds a rose left edge and an "RZ" tag. Live
+  rows also get a 2px win-probability bar on their bottom edge (#62; ESPN's
+  `situation.lastPlay.probability`), the favourite's share in amber.
 - Footer: monospace source and "updated Xs ago".
 
 **Light theme** (#48, variant A "warm paper"): the first visit follows the
