@@ -17,6 +17,7 @@ test('teams without a game are listed as on bye, NFL only', async ({ page }) => 
 test('a full week shows no bye line', async ({ page }) => {
   await mockEspn(page)
   await page.goto('./')
-  await expect(page.getByRole('list').first()).toBeVisible()
+  // The board has rendered (a game from the fixture week), so the check below means something.
+  await expect(page.getByText('Final/OT').first()).toBeVisible()
   await expect(page.getByText(/^On bye: /)).toHaveCount(0)
 })

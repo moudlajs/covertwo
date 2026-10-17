@@ -34,3 +34,10 @@ test('none outside the regular season, without a week, or with no games', () => 
 test('every NFL team has an abbreviation', () => {
   expect(NFL_TEAMS.filter((t) => !NFL_ABBR[t.id])).toEqual([])
 })
+
+test('the abbreviations match ESPN', () => {
+  // The fixture week has all 32 teams.
+  const espn = week.flatMap((g) => [g.home, g.away])
+  expect(espn).toHaveLength(32)
+  for (const t of espn) expect(NFL_ABBR[t.id]).toBe(t.abbr)
+})
