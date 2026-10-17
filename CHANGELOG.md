@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.28.1](https://github.com/moudlajs/covertwo/compare/v1.28.0...v1.28.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* keep the week picker in one spot on both leagues ([#246](https://github.com/moudlajs/covertwo/issues/246)) ([a6354f8](https://github.com/moudlajs/covertwo/commit/a6354f8b8859ca2df1fc52267d7c278772593ec6))
+* plain team logos instead of the colour glow ([#245](https://github.com/moudlajs/covertwo/issues/245)) ([d9b38d6](https://github.com/moudlajs/covertwo/commit/d9b38d6f28a4e4567f4f1183d0b6bffa973a7e01))
+
 ## [1.28.0](https://github.com/moudlajs/covertwo/compare/v1.27.1...v1.28.0) (2026-10-17)
 
 
