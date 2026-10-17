@@ -132,7 +132,7 @@ describe('mapScoreboard', () => {
     expect(byMatchup('MIA', 'SF').leaders).toEqual({})
   })
 
-  test('team colours are mapped for the logo glow', () => {
+  test('team colours are mapped', () => {
     expect(byMatchup('NO', 'BAL').home.color).toBe('#29126f') // Ravens purple (ESPN)
   })
 
