@@ -15,9 +15,9 @@ export function Shell({
   toast,
   children,
 }: {
-  /** Second header row, left: which league. */
+  /** Second header row, left: which league, and on college which games (Top 25 / All FBS). */
   league?: ReactNode
-  /** Second header row, right: the week picker, and on college which games (Top 25 / All FBS). */
+  /** Second header row, right: the week picker, in the same spot on both leagues. */
   view?: ReactNode
   controls?: ReactNode
   footer?: ReactNode

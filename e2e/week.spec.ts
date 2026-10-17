@@ -45,19 +45,24 @@ test('the week picker sits at the right end of the league row', async ({ page })
   expect(header.x + header.width - (next.x + next.width)).toBeLessThan(20)
 })
 
-test('on college the picker and the Top 25 toggle fit in one row', async ({ page }) => {
+test('on college Top 25 sits by the league toggle and the picker stays put', async ({ page }) => {
   await mockEspn(page)
   await page.goto('./')
+  const nfl = await page.getByRole('button', { name: 'Next week' }).boundingBox()
   await page.getByText('NCAA', { exact: true }).click()
   const row = await page.getByRole('group', { name: 'League' }).boundingBox()
   const prev = await page.getByRole('button', { name: 'Previous week' }).boundingBox()
+  const next = await page.getByRole('button', { name: 'Next week' }).boundingBox()
   const view = await page.getByRole('group', { name: 'College games' }).boundingBox()
   const header = await page.getByTestId('pinned-header').boundingBox()
-  if (!row || !prev || !view || !header) throw new Error('no layout')
-  // Same line, in order, nothing past the panel's edge.
+  if (!nfl || !row || !prev || !next || !view || !header) throw new Error('no layout')
+  // Same line, in order: league, Top 25, then the picker, nothing past the panel's edge.
   expect(Math.abs(prev.y + prev.height / 2 - (view.y + view.height / 2))).toBeLessThan(4)
-  expect(prev.x).toBeGreaterThan(row.x + row.width)
-  expect(view.x + view.width).toBeLessThanOrEqual(header.x + header.width)
+  expect(view.x).toBeGreaterThan(row.x + row.width)
+  expect(prev.x).toBeGreaterThan(view.x + view.width)
+  expect(next.x + next.width).toBeLessThanOrEqual(header.x + header.width)
+  // The picker's right edge doesn't move when switching leagues.
+  expect(Math.abs(next.x - nfl.x)).toBeLessThan(2)
 })
 
 test('a playoff round without matchups shows one card, not TBD rows', async ({ page }) => {
