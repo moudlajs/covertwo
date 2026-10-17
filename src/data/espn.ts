@@ -53,7 +53,7 @@ type EspnEvent = {
       isRedZone?: boolean
       homeTimeouts?: number
       awayTimeouts?: number
-      lastPlay?: { text?: string }
+      lastPlay?: { text?: string; probability?: { homeWinPercentage?: number } }
     }
   }[]
 }
@@ -140,6 +140,11 @@ function timeouts(
   return { home: s.homeTimeouts, away: s.awayTimeouts }
 }
 
+function winProb(state: string, home: number | undefined): Game['winProb'] {
+  if (state !== 'in' || typeof home !== 'number' || !(home >= 0 && home <= 1)) return null
+  return { home }
+}
+
 function mapEvent(e: EspnEvent | null): Game | null {
   if (!e || typeof e !== 'object') return null
   const type = e.status?.type
@@ -179,6 +184,7 @@ function mapEvent(e: EspnEvent | null): Game | null {
     down,
     redZone: inPlay && comp?.situation?.isRedZone === true,
     timeouts: timeouts(state, comp?.situation),
+    winProb: winProb(state, comp?.situation?.lastPlay?.probability?.homeWinPercentage),
     // At halftime it only repeats "END OF 2ND QUARTER".
     quarters: state === 'pre' ? null : quarters(side('home'), side('away')),
     leaders: state === 'pre' ? {} : leaders(comp?.leaders, home.id, away.id),

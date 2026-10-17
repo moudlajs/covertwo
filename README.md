@@ -23,9 +23,10 @@ the scores, a widget rather than a website.
 - **NFL and college**: college as the Top 25 or all FBS games; any week of the
   season, including the playoff rounds before their matchups are set. NFL
   weeks list the teams on bye.
-- **Live detail, kept calm**: the score, clock, down and distance, red zone and
-  possession in the row; tap a game for quarters, leaders and the last play,
-  or before kickoff for the line, over/under and weather.
+- **Live detail, kept calm**: the score, clock, down and distance, red zone,
+  possession and a thin win-probability bar in the row; tap a game for
+  quarters, leaders and the last play, or before kickoff for the line,
+  over/under and weather.
 - **Your team** (★) pinned to the top and highlighted.
 - **Lock-screen alerts** (🔔), even with covertwo closed: your team's scores,
   kickoff and final, close finishes, college upsets. Each one is optional.
