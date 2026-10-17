@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.29.0](https://github.com/moudlajs/covertwo/compare/v1.28.1...v1.29.0) (2026-10-17)
+
+
+### Features
+
+* line and weather for scheduled games ([#250](https://github.com/moudlajs/covertwo/issues/250)) ([43029ff](https://github.com/moudlajs/covertwo/commit/43029ff4397a7efc213813b5427997d9deb70f1b))
+* teams on bye under the week ([#248](https://github.com/moudlajs/covertwo/issues/248)) ([abc5325](https://github.com/moudlajs/covertwo/commit/abc5325131d3b14d815b921a0d682a806c717b1a))
+* win probability bar on live rows ([#249](https://github.com/moudlajs/covertwo/issues/249)) ([c9b82b3](https://github.com/moudlajs/covertwo/commit/c9b82b37c5bb849f0fde428b7516953e3b51e4a4))
+
 ## [1.28.1](https://github.com/moudlajs/covertwo/compare/v1.28.0...v1.28.1) (2026-10-17)
 
 
