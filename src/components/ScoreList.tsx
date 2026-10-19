@@ -28,15 +28,15 @@ export function ScoreList({
   /** Favourite team id. */
   favorite?: string | null
   now?: number
-  /** Scopes the remembered open days, so NFL and college don't share them. */
+  /** Scopes the remembered day toggles, so NFL and college don't share them. */
   league?: League
   /** Fold finished past days; off when browsing another week (you went there to see it). */
   foldPast?: boolean
 }) {
   // One row open at a time.
   const [open, setOpen] = useState<string | null>(null)
-  // Finished days opened this session, per league.
-  const [opened, toggleDay] = useSessionSet('covertwo:opened-days')
+  // Days the user opened or closed this session, per league.
+  const [flipped, toggleDay] = useSessionSet('covertwo:flipped-days')
   const isFavorite = (g: Game) => g.home.id === favorite || g.away.id === favorite
   const pinned = favorite ? games.filter(isFavorite) : []
   const rest = pinned.length > 0 ? games.filter((g) => !isFavorite(g)) : games
@@ -66,9 +66,9 @@ export function ScoreList({
     </section>
   )
 
-  // Past days where every game is final fold to their heading (tap to open).
-  // Today never folds, nor does the most recent past day: on Monday morning
-  // Sunday's results stay open, and only older days fold.
+  // Every day heading toggles its games. Past days where every game is final
+  // start folded; the rest start open. Today never folds by default, nor does
+  // the most recent past day: on Monday morning Sunday's results stay open.
   const days = groupByDay(rest, mode)
   const today = dayKey(new Date(now ?? Date.now()).toISOString(), mode)
   const lastPast = days.filter((d) => d.key < today).at(-1)?.key
@@ -77,30 +77,37 @@ export function ScoreList({
     day.key < today &&
     day.key !== lastPast &&
     day.games.every((g) => g.state === 'post')
-  const folded = (day: Day) => (
-    <section key={day.key} aria-labelledby={`day-${day.key}`}>
-      <h2 id={`day-${day.key}`} className={HEADING.replace(' px-3', '')}>
-        <button
-          type="button"
-          aria-expanded={opened.has(`${league}:${day.key}`)}
-          aria-controls={`games-${day.key}`}
-          onClick={() => toggleDay(`${league}:${day.key}`)}
-          className="flex w-full cursor-pointer items-center gap-2 px-3 text-left uppercase hover:text-amber-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
-        >
-          <span aria-hidden="true" className="w-2 text-slate-500">
-            {opened.has(`${league}:${day.key}`) ? '▾' : '▸'}
-          </span>
-          {day.label}
-          <span className="text-slate-600">
-            {day.games.length} {day.games.length === 1 ? 'game' : 'games'} · final
-          </span>
-        </button>
-      </h2>
-      <div id={`games-${day.key}`} hidden={!opened.has(`${league}:${day.key}`)}>
-        {rows(day.games)}
-      </div>
-    </section>
-  )
+  const daySection = (day: Day) => {
+    const folds = finished(day)
+    // A tap is remembered against the day's default, so it lapses once that changes.
+    const flip = `${league}:${day.key}:${folds ? 'opened' : 'closed'}`
+    const isOpen = folds === flipped.has(flip)
+    return (
+      <section key={day.key} aria-labelledby={`day-${day.key}`}>
+        <h2 id={`day-${day.key}`} className={HEADING.replace(' px-3', '')}>
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={`games-${day.key}`}
+            onClick={() => toggleDay(flip)}
+            className="flex w-full cursor-pointer items-center gap-2 px-3 text-left uppercase hover:text-amber-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-300/60"
+          >
+            <span aria-hidden="true" className="w-2 text-slate-500">
+              {isOpen ? '▾' : '▸'}
+            </span>
+            {day.label}
+            <span className="text-slate-600">
+              {day.games.length} {day.games.length === 1 ? 'game' : 'games'}
+              {folds && ' · final'}
+            </span>
+          </button>
+        </h2>
+        <div id={`games-${day.key}`} hidden={!isOpen}>
+          {rows(day.games)}
+        </div>
+      </section>
+    )
+  }
 
   const first = pinned[0]
   const team = first && (first.home.id === favorite ? first.home : first.away)
@@ -118,20 +125,7 @@ export function ScoreList({
           pinned,
           true,
         )}
-      {days.map((day) =>
-        finished(day)
-          ? folded(day)
-          : section(
-              day.key,
-              <>
-                {day.label}
-                <span className="text-slate-600">
-                  {day.games.length} {day.games.length === 1 ? 'game' : 'games'}
-                </span>
-              </>,
-              day.games,
-            ),
-      )}
+      {days.map(daySection)}
     </>
   )
 }
