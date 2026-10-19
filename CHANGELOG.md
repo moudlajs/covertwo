@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.0](https://github.com/moudlajs/covertwo/compare/v1.29.1...v1.30.0) (2026-10-19)
+
+
+### Features
+
+* every day heading collapses its games ([#258](https://github.com/moudlajs/covertwo/issues/258)) ([f0d1c37](https://github.com/moudlajs/covertwo/commit/f0d1c376e888154dff644dcb55a816f0dbdd5191))
+
 ## [1.29.1](https://github.com/moudlajs/covertwo/compare/v1.29.0...v1.29.1) (2026-10-17)
 
 
