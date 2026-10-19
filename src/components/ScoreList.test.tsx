@@ -14,8 +14,8 @@ const TUESDAY = Date.parse('2026-09-22T12:00:00Z')
 
 test('started games expand; scheduled ones only with a line or weather', () => {
   render(<ScoreList games={games} mode="eu" now={FRIDAY} />)
-  // 9 final + 4 live + MIA @ SF and NYG @ LAR (IND @ KC has neither)
-  expect(screen.getAllByRole('button')).toHaveLength(15)
+  // 9 final + 4 live + MIA @ SF and NYG @ LAR (IND @ KC has neither), plus 4 day headings
+  expect(screen.getAllByRole('button')).toHaveLength(19)
   expect(screen.getByRole('button', { name: /^Miami Dolphins/ })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Indianapolis Colts/ })).not.toBeInTheDocument()
 })
@@ -109,4 +109,44 @@ test('today and the most recent past day never fold; unfinished days never fold'
   expect(folded).toHaveLength(2) // Friday and Sunday; Monday (last past) and Tuesday (today) stay open
   expect(folded.join()).toMatch(/Friday 18/)
   expect(folded.join()).toMatch(/Sunday 20/)
+})
+
+test('an open day collapses on tap and stays collapsed for the session', async () => {
+  const user = userEvent.setup()
+  sessionStorage.clear()
+  const { unmount } = render(<ScoreList games={games} mode="eu" now={FRIDAY} />)
+  const sunday = screen.getByRole('button', { name: /Sunday 20 Sept/ })
+  expect(sunday).toHaveAttribute('aria-expanded', 'true')
+  const list = document.getElementById('games-2026-09-20')
+  expect(list).toBeVisible()
+
+  await user.click(sunday)
+  expect(sunday).toHaveAttribute('aria-expanded', 'false')
+  expect(list).not.toBeVisible()
+
+  unmount()
+  render(<ScoreList games={games} mode="eu" now={FRIDAY} />)
+  expect(screen.getByRole('button', { name: /Sunday 20/ })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  sessionStorage.clear()
+})
+
+test('a collapsed open day does not flip open once it becomes an older finished day', async () => {
+  const user = userEvent.setup()
+  sessionStorage.clear()
+  const allFinal = games.map((g) => ({ ...g, state: 'post' as const }))
+  const { rerender } = render(<ScoreList games={allFinal} mode="eu" now={FRIDAY} />)
+  await user.click(screen.getByRole('button', { name: /Friday 18/ }))
+  expect(screen.getByRole('button', { name: /Friday 18/ })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  rerender(<ScoreList games={allFinal} mode="eu" now={TUESDAY} />)
+  expect(screen.getByRole('button', { name: /Friday 18/ })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  sessionStorage.clear()
 })
