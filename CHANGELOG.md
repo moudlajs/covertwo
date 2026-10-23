@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.0](https://github.com/moudlajs/covertwo/compare/v1.30.0...v1.31.0) (2026-10-23)
+
+
+### Features
+
+* season record under each team name ([#261](https://github.com/moudlajs/covertwo/issues/261)) ([c10740c](https://github.com/moudlajs/covertwo/commit/c10740c31dcc5caf8b295d8681770611759191b2))
+
 ## [1.30.0](https://github.com/moudlajs/covertwo/compare/v1.29.1...v1.30.0) (2026-10-19)
 
 
