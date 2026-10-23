@@ -124,10 +124,12 @@ title (the slot was reserved from the start). No NFL shield logo.
   score (monospace, tabular) or kickoff time, with a status line under it:
   "Final", network for scheduled games, or a pulsing rose dot + "Q3 · 8:42 ·
   2nd & 7" when live. The losing team is dimmed on finals. Live rows get a
-  lighter background; red zone adds a rose left edge and an "RZ" tag. Live
-  rows show each team's win chance, "(68%)", under its abbreviation (#254;
-  ESPN's `situation.lastPlay.probability`); in crunch time "TO n" takes that
-  spot. No season records, no bye line: a score tracker shows the games (#254).
+  lighter background; red zone adds a rose left edge and an "RZ" tag. Every
+  row shows each team's season record, "5-1", under its abbreviation (#260;
+  no brackets, so it can't be read as the win chance). Live rows add the win
+  chance after it, "5-1 (68%)" (#254; ESPN's `situation.lastPlay.probability`);
+  in crunch time "TO n" takes the chance's spot. No win-probability bar, no
+  bye line (#254).
 - Footer: monospace source and "updated Xs ago".
 
 **Light theme** (#48, variant A "warm paper"): the first visit follows the
