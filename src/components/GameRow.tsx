@@ -62,15 +62,16 @@ function Side({
           )}
           {team.abbr}
         </span>
-        {/* Late in close games the timeouts take the win chance's place. */}
-        {timeouts !== null ? (
-          <span className="font-mono text-[9px] leading-none text-label">TO {timeouts}</span>
-        ) : (
-          chance !== null && (
-            <span className="font-mono text-[9px] leading-none text-slate-400 tabular-nums">
-              ({chance}%)
-            </span>
-          )
+        {(team.record || timeouts !== null || chance !== null) && (
+          <span className="flex gap-1 font-mono text-[9px] leading-none tabular-nums">
+            {team.record && <span className={dim ? '' : 'text-slate-400'}>{team.record}</span>}
+            {/* Late in close games the timeouts take the win chance's place. */}
+            {timeouts !== null ? (
+              <span className="text-label">TO {timeouts}</span>
+            ) : (
+              chance !== null && <span className="text-slate-400">({chance}%)</span>
+            )}
+          </span>
         )}
       </span>
       {ball && <Ball />}
@@ -87,8 +88,10 @@ function summary(game: Game, mode: TimeMode, now?: number): string {
   const { away, home } = game
   // "No. 5 Miami Hurricanes" for ranked college teams.
   const name = (t: Team) => (t.rank === null ? t.name : `No. ${t.rank} ${t.name}`)
+  // Records only before kickoff: next to a score they'd read as more numbers.
+  const withRecord = (t: Team) => (t.record ? `${name(t)} (${t.record})` : name(t))
   if (game.state === 'pre')
-    return `${name(away)} at ${name(home)}, ${kickoff(game, mode)}, ${status(game, now)}`
+    return `${withRecord(away)} at ${withRecord(home)}, ${kickoff(game, mode)}, ${status(game, now)}`
   const ball = game.possession ? `, ${game[game.possession].name} ball` : ''
   const down = game.down ? `, ${downText(game.down)}` : ''
   const zone = game.redZone ? ', red zone' : ''

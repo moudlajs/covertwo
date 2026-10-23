@@ -201,11 +201,29 @@ describe('GameRow', () => {
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '')
   })
 
-  test('scheduled summary names both teams and the kickoff', () => {
+  test('scheduled summary names both teams with their records, and the kickoff', () => {
     renderRow('MIA', 'SF')
-    expect(screen.getByText('Miami Dolphins at San Francisco 49ers, 22:25, FOX')).toHaveClass(
-      'sr-only',
+    expect(
+      screen.getByText('Miami Dolphins (0-2) at San Francisco 49ers (2-0), 22:25, FOX'),
+    ).toHaveClass('sr-only')
+  })
+
+  test('each team shows its record under its name, without brackets', () => {
+    const { container } = renderRow('MIA', 'SF')
+    expect(container.querySelector('[data-side="away"]')).toHaveTextContent(/^MIA0-2$/)
+    expect(container.querySelector('[data-side="home"]')).toHaveTextContent(/^SF2-0$/)
+  })
+
+  test('no record when ESPN has none', () => {
+    const game = games.find((g) => g.away.abbr === 'MIA' && g.home.abbr === 'SF')
+    if (!game) throw new Error('no MIA @ SF in fixture')
+    const { container } = render(
+      <ul>
+        <GameRow game={{ ...game, away: { ...game.away, record: null } }} mode="eu" />
+      </ul>,
     )
+    expect(container.querySelector('[data-side="away"]')).toHaveTextContent(/^MIA$/)
+    expect(container.querySelector('[data-side="home"]')).toHaveTextContent(/^SF2-0$/)
   })
 
   test('live: each team shows its win chance under its name, adding up to 100', () => {
